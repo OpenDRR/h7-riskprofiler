@@ -1,0 +1,103 @@
+//
+// REQUIRED INCLUDES
+//
+
+@import "../../../fw-parent/resources/vendor/bootstrap/scss/functions";
+@import "../../../fw-parent/resources/vendor/bootstrap/scss/variables";
+@import "../../../fw-parent/resources/vendor/bootstrap/scss/mixins";
+@import 'variables';
+@import '../../../fw-parent/resources/scss/helpers/mixins';
+@import '../../../fw-parent/resources/scss/bootstrap/mixins';
+
+//
+// MIXINS
+//
+
+
+//
+// VARIABLES
+//
+
+
+//
+// FONTS
+//
+
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap');
+
+@font-face {
+	font-family: 'RPSans';
+	src: url("../fonts/RPSans.woff") format('woff');
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'RPSans';
+	src: url("../fonts/RPSans-Medium.woff") format('woff');
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'RPSans';
+	src: url("../fonts/RPSans-Bold.woff") format('woff');
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+}
+
+//
+// TAGS
+//
+
+
+
+//
+// CLASSES
+//
+//
+
+
+//
+// STRUCTURE
+//
+
+
+//
+// COMMON
+//
+
+
+//
+// BOOTSTRAP COMPONENTS
+//
+
+
+//
+// CONTENT TYPES
+//
+
+
+//
+// TEMPLATE
+//
+
+@import 'template';
+
+//
+// PAGES
+//
+
+@import 'pages';
+
+//
+// COMPONENTS
+//
+
+@import 'components';
+
+//
+// VENDOR
+//

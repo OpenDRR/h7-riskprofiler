@@ -1,0 +1,133 @@
+//
+// HEADER
+//
+
+#main-header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background-color: $gray-100;
+	font-family: $headings-font-family;
+	font-weight: 500;
+	z-index: 100;
+
+	a {
+		color: $body-color;
+	}
+}
+
+#header-logo {
+	img {
+		max-width: 60px;
+		margin: auto;
+	}
+}
+
+#header-wordmark {
+	img {
+		max-width: 120px;
+	}
+}
+
+#header-primary {
+	font-size: 1.125rem;
+
+	.current-nav-item {
+		a {
+			background-color: $white;
+		}
+	}
+}
+
+#header-secondary {
+	margin-bottom: 1.2rem;
+	font-size: 0.6875rem;
+	@include all-caps;
+}
+
+//
+// FOOTER
+//
+
+#main-footer {
+	background-color: $gray-100;
+	font-size: 0.75rem;
+}
+
+//
+// APP
+//
+
+.app-page {
+	overflow: hidden;
+
+	// template
+
+	#main-header {
+		position: relative;
+	}
+
+	// page
+
+	main {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		height: 100vh;
+	}
+
+	// section
+
+	.app-main {
+		flex-grow: 1;
+		background-color: $light;
+		font-size: 0.875rem;
+
+		.section-wrap {
+			@include full-size;
+			display: flex;
+			flex-direction: column;
+		}
+	}
+
+	// container
+
+	.app-container {
+		position: relative;
+		flex-grow: 1;
+	}
+
+	// sidebar
+
+	.app-sidebar {
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		background-color: transparentize($gray-500, 0.08);
+		color: $white;
+		transition: 0.25s;
+		z-index: 10;
+	}
+
+	// map
+
+	.app-map {
+		@include full-size;
+		z-index: 1;
+	}
+
+	#map {
+		@include full-size;
+	}
+
+	// adjust for admin bar
+
+	&.admin-bar {
+		main {
+			height: calc(100vh - 32px);
+		}
+	}
+
+}
