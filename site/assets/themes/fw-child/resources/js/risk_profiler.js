@@ -1,11 +1,11 @@
-// profiler
+// risk profiler
 // v1.0
 
 (function ($) {
 
   // custom select class
 
-  function profiler(item, options) {
+  function risk_profiler(item, options) {
 
     // options
 
@@ -24,7 +24,7 @@
     this.init();
   }
 
-  profiler.prototype = {
+  risk_profiler.prototype = {
 
     // init
 
@@ -40,8 +40,12 @@
       //
 
       if (plugin_settings.debug == true) {
-        console.log('profiler', 'initializing')
+        console.log('risks', 'initializing')
       }
+
+			//
+			// MAP
+			//
 
 	    var map = L.map('map').setView([51.505, -0.09], 13);
 
@@ -54,26 +58,30 @@
 			    .openPopup();
 
 
+			//
+			// DUMMY CLICKS
+			//
+
     },
 
-    // find_objects: function(fn_options) {
-		//
-    //   var plugin_instance = this
-    //   var plugin_item = this.item
-    //   var plugin_settings = plugin_instance.options
-    //   var plugin_elements = plugin_settings.elements
-		//
-    //   // options
-		//
-    //   var settings = $.extend(true, {
-    //     parent: 'body'
-    //   }, fn_options)
-		//
-    //   // console.log('finding objects', settings.parent)
-		//
-		//
-		//
-    // },
+    select_item: function(fn_options) {
+
+      var plugin_instance = this
+      var plugin_item = this.item
+      var plugin_settings = plugin_instance.options
+      var plugin_elements = plugin_settings.elements
+
+      // options
+
+      var settings = $.extend(true, {
+        parent: 'body'
+      }, fn_options)
+
+      // console.log('finding objects', settings.parent)
+
+
+
+    },
 		//
 		//
     // _eval: function(fn_code) {
@@ -86,18 +94,18 @@
 
   // jQuery plugin interface
 
-  $.fn.profiler = function (opt) {
+  $.fn.risk_profiler = function (opt) {
     var args = Array.prototype.slice.call(arguments, 1);
 
     return this.each(function () {
 
       var item = $(this);
-      var instance = item.data('profiler');
+      var instance = item.data('risk_profiler');
 
       if (!instance) {
 
         // create plugin instance if not created
-        item.data('profiler', new profiler(this, opt));
+        item.data('risk_profiler', new risk_profiler(this, opt));
 
       } else {
 

@@ -54,7 +54,9 @@ function child_theme_enqueue() {
   // SCRIPTS
   //
 
-	wp_register_script ( 'profiler', $child_js_dir . 'profiler.js', array ( 'leaflet' ), NULL, true );
+	wp_register_script ( 'scenario-profiler', $child_js_dir . 'scenario_profiler.js', array ( 'leaflet' ), NULL, true );
+
+	wp_register_script ( 'risk-profiler', $child_js_dir . 'risk_profiler.js', array ( 'leaflet' ), NULL, true );
 
   wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions' ), NULL, true );
 
@@ -80,9 +82,13 @@ function child_theme_enqueue() {
 
 		wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', null, '1.7.1', 'all' );
 
-		wp_enqueue_script ( 'profiler' );
-
   }
+
+	if ( is_page ( 'scenarios' ) ) {
+		wp_enqueue_script ( 'scenario-profiler' );
+	} elseif ( is_page ( 'risks' ) ) {
+		wp_enqueue_script ( 'risk-profiler' );
+	}
 
 }
 

@@ -17,28 +17,19 @@ var child_logging = true
     // VENDOR
     //
 
-		// BOOTSTRAP
-
-		// STICKY KIT
-
-		// $('#topic-sidebar-inner').stick_in_parent({
-		// 	offset_top: sticky_offset
-		// })
-
 		if ($('body').attr('id') == 'page-scenarios') {
 
-			$(document).profiler({
-				app: 'scenarios'
+			$(document).scenario_profiler({
+
 			})
 
 		} else if ($('body').attr('id') == 'page-risks') {
 
-			$(document).profiler({
-				app: 'risks'
+			$(document).risk_profiler({
+
 			})
 
 		}
-
 
     if (child_logging == true) {
       console.log('end of child-functions.js')

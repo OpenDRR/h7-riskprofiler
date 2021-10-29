@@ -18,6 +18,10 @@
 // VARIABLES
 //
 
+:root {
+	--swiper-theme-color: #{$primary};
+	--swiper-pagination-bullet-inactive-color: #{$gray-500};
+}
 
 //
 // FONTS
@@ -52,13 +56,29 @@
 // TAGS
 //
 
-
+h6 {
+	font-weight: normal;
+	@include all-caps;
+}
 
 //
 // CLASSES
 //
 //
 
+.btn-outline-primary,
+.btn-outline-secondary {
+	color: $body-color;
+}
+
+.jumbo-btn {
+	border: none;
+	border-bottom: 0.375rem solid $primary;
+
+	&.btn-white {
+		color: $black;
+	}
+}
 
 //
 // STRUCTURE
@@ -74,6 +94,16 @@
 // BOOTSTRAP COMPONENTS
 //
 
+.breadcrumb {
+	font-family: $headings-font-family;
+
+}
+
+.breadcrumb-item {
+	&.tip {
+		color: $gray-500;
+	}
+}
 
 //
 // CONTENT TYPES
