@@ -1,4 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap");
+@charset "UTF-8";
+@import '../vendor/font-awesome-pro/css/all.css';
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap");
 :root {
   --swiper-theme-color: #d90429;
   --swiper-pagination-bullet-inactive-color: #8d99ae;
@@ -24,6 +26,51 @@
   font-weight: 600;
   font-display: swap;
 }
+@font-face {
+  font-family: "RPTitle";
+  src: url("../fonts/RPTitle.woff") format("woff");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "RPIcons";
+  src: url("../vendor/RPIcons-v1.0/fonts/RPIcons.eot?k4tk6");
+  src: url("../vendor/RPIcons-v1.0/fonts/RPIcons.eot?k4tk6#iefix") format("embedded-opentype"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.ttf?k4tk6") format("truetype"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.woff?k4tk6") format("woff"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.svg?k4tk6#RPIcons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+.rp-icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "RPIcons" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-chart:before {
+  content: "";
+}
+
+.icon-search:before {
+  content: "";
+}
+
+.icon-filter:before {
+  content: "";
+}
+
+.icon-sort:before {
+  content: "";
+}
+
 h6 {
   font-weight: normal;
   text-decoration: none;
@@ -44,12 +91,58 @@ h6 {
   color: #000;
 }
 
+.data-cols h6 {
+  margin-bottom: 0.125rem;
+  font-size: 0.625rem;
+  color: #9595a0;
+}
+.data-cols p {
+  margin-bottom: 0;
+}
+
 .breadcrumb {
   font-family: "RPSans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .breadcrumb-item.tip {
   color: #8d99ae;
+}
+
+[data-toggle=collapse] {
+  cursor: pointer;
+}
+
+.accordion .card-header {
+  transition: 0.25s;
+}
+.accordion .card-header i {
+  transition: 0.25s;
+}
+.accordion .card-header.open {
+  color: #d90429;
+}
+.accordion .card-header.open i {
+  transform: rotate(180deg);
+}
+
+input.text-white::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+input.text-white::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+input.text-white::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+input.text-white:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+input.text-white:-moz-placeholder {
+  color: rgba(255, 255, 255, 0.75);
 }
 
 #main-header {
@@ -155,14 +248,91 @@ h6 {
   position: relative;
   flex-grow: 1;
 }
+.app-page .app-head {
+  display: flex;
+}
+.app-page .app-head[data-mode=scenario-detail] .app-filter {
+  left: -25vw;
+  width: 0;
+}
+.app-page .app-head[data-mode=scenario-detail] .app-head-back {
+  opacity: 1;
+  left: 0;
+  width: 3rem;
+}
+.app-page .app-head[data-mode=risk-detail] .app-filter {
+  left: -25vw;
+  width: 0;
+}
+.app-page .app-head[data-mode=risk-detail] .app-head-back {
+  opacity: 1;
+  left: 0;
+  width: 3rem;
+}
+.app-page .app-head-back {
+  position: relative;
+  top: 0;
+  left: -3rem;
+  width: 0rem;
+  height: 3rem;
+  opacity: 0;
+  transition: 0.25s;
+  background-color: #d90429;
+  color: #fff;
+  font-size: 1.25rem;
+  line-height: 3rem;
+  text-align: center;
+  cursor: pointer;
+}
+.app-page .app-head-back:hover {
+  background-color: #8b0707;
+}
+.app-page .app-filter {
+  position: relative;
+  left: 0;
+  width: 25vw;
+  transition: 0.25s;
+  background-color: #8d99ae;
+  color: #fff;
+}
+.app-page .app-filter .app-filter-content {
+  display: flex;
+  height: 3rem;
+  transition: 0.25s;
+}
+.app-page .app-filter .filter-toggles {
+  line-height: 3rem;
+  cursor: pointer;
+}
+.app-page .app-filter .filter-toggle {
+  background-color: #636b80;
+  transition: 0.25s;
+}
+.app-page .app-filter .filter-toggle:hover {
+  background-color: #50576c;
+}
 .app-page .app-sidebar {
   position: absolute;
   left: 0;
   top: 0;
+  width: 25%;
   height: 100%;
-  background-color: rgba(141, 153, 174, 0.92);
+  overflow: auto;
+  background-color: #8d99ae;
+  box-shadow: 0.25rem 0 rgba(43, 44, 66, 0.1);
   transition: 0.25s;
   z-index: 10;
+}
+.app-page .app-sidebar[data-width=half] {
+  width: 50%;
+}
+.app-page .app-breadcrumb {
+  transition: 0.25s;
+}
+.app-page .app-breadcrumb .breadcrumb {
+  height: 3rem;
+  padding-left: 1.75rem;
+  align-items: center;
 }
 .app-page .app-map {
   position: absolute;
@@ -262,13 +432,8 @@ h6 {
   position: relative;
   z-index: 2;
 }
-.sidebar-item.scenario .sidebar-item-body h6 {
-  margin-bottom: 0.125rem;
-  font-size: 0.625rem;
-  color: #9595a0;
-}
-.sidebar-item.scenario .sidebar-item-body p {
-  margin-bottom: 0;
+.sidebar-item.scenario .data-cols p {
+  font-size: 0.75rem;
 }
 .sidebar-item.scenario .sidebar-button {
   background-color: #d90429;
@@ -284,6 +449,9 @@ h6 {
   pointer-events: none;
   z-index: 1;
 }
+.sidebar-item.scenario .sidebar-button:hover {
+  background-color: #8b0707;
+}
 .sidebar-item.scenario.selected {
   border: 3px solid #fff;
   box-shadow: 0 0.375rem 0.625rem rgba(43, 44, 66, 0.4);
@@ -294,6 +462,33 @@ h6 {
   padding: 0.75rem;
   pointer-events: auto;
   transition: all 0.25s ease 0.15s;
+}
+.sidebar-item.city {
+  padding-top: 0.5rem;
+  font-weight: 500;
+  transition: 0.25s;
+}
+.sidebar-item.city .sidebar-item-value {
+  width: 15%;
+  font-family: "RPTitle", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+.sidebar-item.city .sidebar-item-header {
+  font-size: 0.8125rem;
+}
+.sidebar-item.city .sidebar-item-province {
+  font-size: 0.625rem;
+  color: #8d99ae;
+}
+.sidebar-item.city.hover {
+  background-color: #ecf1f4;
+}
+.sidebar-item.city.selected {
+  background-color: #dee2e6;
+}
+
+.sidebar-detail.scenario .card-header {
+  font-family: "RPTitle", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1.125rem;
 }
 
 .swiper-pagination-bullet {

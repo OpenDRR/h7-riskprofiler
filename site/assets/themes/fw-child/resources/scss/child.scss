@@ -27,7 +27,9 @@
 // FONTS
 //
 
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap');
+@import '../vendor/font-awesome-pro/css/all.css';
+
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap');
 
 @font-face {
 	font-family: 'RPSans';
@@ -51,6 +53,19 @@
 	font-weight: 600;
 	font-display: swap;
 }
+
+@font-face {
+	font-family: 'RPTitle';
+	src: url("../fonts/RPTitle.woff") format('woff');
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+}
+
+$icomoon-font-family: "RPIcons";
+$icomoon-font-path: "../vendor/RPIcons-v1.0/fonts";
+
+@import '../vendor/RPIcons-v1.0/style';
 
 //
 // TAGS
@@ -80,6 +95,19 @@ h6 {
 	}
 }
 
+.data-cols {
+
+	h6 {
+		margin-bottom: 0.125rem;
+		font-size: 0.625rem;
+		color: $gray-400;
+	}
+
+	p {
+		margin-bottom: 0;
+	}
+}
+
 //
 // STRUCTURE
 //
@@ -105,9 +133,52 @@ h6 {
 	}
 }
 
+[data-toggle="collapse"] {
+	cursor: pointer;
+}
+
+.accordion {
+	.card-header {
+		transition: 0.25s;
+
+		i {
+			transition: 0.25s;
+		}
+
+		&.open {
+			color: $primary;
+
+			i {
+				transform: rotate(180deg);
+			}
+		}
+	}
+}
+
+input.text-white::placeholder {
+  color: transparentize($white, 0.25);
+}
+
+input.text-white::-webkit-input-placeholder {
+  color: transparentize($white, 0.25);
+}
+
+input.text-white::-moz-placeholder {
+  color: transparentize($white, 0.25);
+}
+
+input.text-white:-ms-input-placeholder {
+  color: transparentize($white, 0.25);
+}
+
+input.text-white:-moz-placeholder {
+  color: transparentize($white, 0.25);
+}
+
 //
 // CONTENT TYPES
 //
+
 
 
 //

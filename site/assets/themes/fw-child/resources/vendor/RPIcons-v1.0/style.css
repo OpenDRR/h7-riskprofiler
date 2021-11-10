@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'RPIcons';
+  src:  url('fonts/RPIcons.eot?h5f5o6');
+  src:  url('fonts/RPIcons.eot?h5f5o6#iefix') format('embedded-opentype'),
+    url('fonts/RPIcons.ttf?h5f5o6') format('truetype'),
+    url('fonts/RPIcons.woff?h5f5o6') format('woff'),
+    url('fonts/RPIcons.svg?h5f5o6#RPIcons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+.rp-icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'RPIcons' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-chart:before {
+  content: "\e900";
+}
+.icon-arrow-left:before {
+  content: "\e904";
+}
+.icon-search:before {
+  content: "\e901";
+}
+.icon-filter:before {
+  content: "\e902";
+}
+.icon-sort:before {
+  content: "\e903";
+}

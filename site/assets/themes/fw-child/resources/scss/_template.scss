@@ -94,6 +94,9 @@
 // APP
 //
 
+$app-head-height: 3rem;
+$app-transition: 0.25s;
+
 .app-page {
 	display: flex;
 	flex-direction: column;
@@ -139,17 +142,120 @@
 		flex-grow: 1;
 	}
 
+	// head
+
+	.app-head {
+		display: flex;
+
+		&[data-mode="scenario-detail"] {
+			.app-filter {
+				left: -25vw;
+				width: 0;
+			}
+
+			.app-head-back {
+				opacity: 1;
+				left: 0;
+				width: 3rem;
+			}
+		}
+
+		&[data-mode="risk-detail"] {
+			.app-filter {
+				left: -25vw;
+				width: 0;
+			}
+
+			.app-head-back {
+				opacity: 1;
+				left: 0;
+				width: 3rem;
+			}
+		}
+	}
+
+	// back button
+
+	.app-head-back {
+		position: relative;
+		top: 0;
+		left: -$app-head-height;
+		width: 0rem;
+		height: $app-head-height;
+		opacity: 0;
+		transition: $app-transition;
+		background-color: $primary;
+		color: $white;
+		font-size: 1.25rem;
+		line-height: $app-head-height;
+		text-align: center;
+		cursor: pointer;
+
+		&:hover {
+			background-color: $red-dark;
+		}
+	}
+
+	// filter
+
+	.app-filter {
+		position: relative;
+		left: 0;
+		width: 25vw;
+		transition: $app-transition;
+		background-color: $gray-500;
+		color: $white;
+
+		.app-filter-content {
+			display: flex;
+			height: $app-head-height;
+			transition: $app-transition;
+		}
+
+		.filter-toggles {
+			line-height: $app-head-height;
+			cursor: pointer;
+		}
+
+		.filter-toggle {
+			background-color: $gray-600;
+			transition: $app-transition;
+
+			&:hover {
+				background-color: $gray-700;
+			}
+		}
+	}
+
 	// sidebar
 
 	.app-sidebar {
 		position: absolute;
 		left: 0;
 		top: 0;
+		width: 25%;
 		height: 100%;
-		background-color: transparentize($gray-500, 0.08);
-		// color: $white;
-		transition: 0.25s;
+		overflow: auto;
+		background-color: $gray-500;//transparentize($gray-500, 0.08);
+		box-shadow: 0.25rem 0 transparentize($gray-900, 0.9);
+		transition: $app-transition;
 		z-index: 10;
+
+		&[data-width="half"] {
+			width: 50%;
+		}
+	}
+
+	// breadcrumb
+
+	.app-breadcrumb {
+		transition: $app-transition;
+
+		.breadcrumb {
+			height: $app-head-height;
+			padding-left: 1.75rem;
+			align-items: center;
+		}
 	}
 
 	// map

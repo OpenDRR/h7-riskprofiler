@@ -111,15 +111,11 @@
 		.sidebar-item-body {
 			position: relative;
 			z-index: 2;
+		}
 
-			h6 {
-				margin-bottom: 0.125rem;
-				font-size: 0.625rem;
-				color: $gray-400;
-			}
-
+		.data-cols {
 			p {
-				margin-bottom: 0;
+				font-size: 0.75rem;
 			}
 		}
 
@@ -134,6 +130,10 @@
 			max-height: 0;
 			pointer-events: none;
 			z-index: 1;
+
+			&:hover {
+				background-color: $red-dark;
+			}
 		}
 
 		&.selected {
@@ -149,4 +149,45 @@
 			}
 		}
 	}
+
+	&.city {
+		padding-top: 0.5rem;
+		font-weight: 500;
+		transition: 0.25s;
+
+		.sidebar-item-value {
+			width: 15%;
+			font-family: $font-family-title;
+		}
+
+		.sidebar-item-header {
+			font-size: 0.8125rem;
+		}
+
+		.sidebar-item-province {
+			font-size: 0.625rem;
+			color: $gray-500;
+		}
+
+		&.hover {
+			background-color: $gray-100;
+		}
+
+		&.selected {
+			background-color: $gray-300;
+		}
+	}
 }
+
+.sidebar-detail {
+	&.scenario {
+		.card-header {
+			font-family: $font-family-title;
+			font-size: 1.125rem;
+		}
+	}
+}
+
+//
+// RISKS
+//

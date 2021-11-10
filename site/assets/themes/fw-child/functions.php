@@ -54,9 +54,11 @@ function child_theme_enqueue() {
   // SCRIPTS
   //
 
-	wp_register_script ( 'scenario-profiler', $child_js_dir . 'scenario_profiler.js', array ( 'leaflet' ), NULL, true );
+	wp_register_script ( 'profiler', $child_js_dir . 'profiler.js', array ( 'leaflet' ), NULL, true );
 
-	wp_register_script ( 'risk-profiler', $child_js_dir . 'risk_profiler.js', array ( 'leaflet' ), NULL, true );
+	wp_register_script ( 'rp-scenarios', $child_js_dir . 'rp_scenarios.js', array ( 'profiler' ), NULL, true );
+
+	wp_register_script ( 'rp-risks', $child_js_dir . 'rp_risks.js', array ( 'profiler' ), NULL, true );
 
   wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions' ), NULL, true );
 
@@ -85,9 +87,9 @@ function child_theme_enqueue() {
   }
 
 	if ( is_page ( 'scenarios' ) ) {
-		wp_enqueue_script ( 'scenario-profiler' );
+		wp_enqueue_script ( 'rp-scenarios' );
 	} elseif ( is_page ( 'risks' ) ) {
-		wp_enqueue_script ( 'risk-profiler' );
+		wp_enqueue_script ( 'rp-risks' );
 	}
 
 }
@@ -156,7 +158,7 @@ function add_favicon() {
 
 }
 
-add_action( 'wp_head', 'add_favicon' );
+// add_action( 'wp_head', 'add_favicon' );
 
 //
 // ADMIN STUFF

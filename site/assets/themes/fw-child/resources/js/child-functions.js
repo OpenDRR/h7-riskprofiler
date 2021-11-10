@@ -14,22 +14,40 @@ var child_logging = true
     $(document).data('child_theme_dir', child_theme_dir)
 
     //
-    // VENDOR
+    // APP
     //
 
-		if ($('body').attr('id') == 'page-scenarios') {
+		if ($('body').hasClass('app-page')) {
 
-			$(document).scenario_profiler({
+			$(document).profiler()
 
-			})
+			if ($('body').attr('id') == 'page-scenarios') {
 
-		} else if ($('body').attr('id') == 'page-risks') {
+				$(document).rp_scenarios({
 
-			$(document).risk_profiler({
+				})
 
-			})
+			} else if ($('body').attr('id') == 'page-risks') {
+
+				$(document).rp_risks({
+
+				})
+
+			}
 
 		}
+
+		//
+		// BOOTSTRAP
+		//
+
+		$('.accordion').on('hidden.bs.collapse', function (e) {
+
+			console.log(e)
+
+			console.log($(this))
+
+		})
 
     if (child_logging == true) {
       console.log('end of child-functions.js')

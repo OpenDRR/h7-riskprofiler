@@ -11,8 +11,8 @@ $gray-200: #dde0e7;
 $gray-300: #dee2e6 !default;
 $gray-400: #9595a0;
 $gray-500: #8d99ae;
-$gray-600: #6c757d !default;
-$gray-700: #495057 !default;
+$gray-600: #636b80;
+$gray-700: #50576c;
 $gray-800: #343a40 !default;
 $gray-900: #2b2c42;
 $black:    #000 !default;
@@ -34,16 +34,19 @@ $grays: map-merge(
   $grays
 );
 
-$blue:    #007bff !default;
-$indigo:  #6610f2 !default;
-$purple:  #6f42c1 !default;
-$pink:    #e83e8c !default;
-$red:     #d90429;
-$orange:  #fd7e14 !default;
-$yellow:  #ffc107 !default;
-$green:   #28a745 !default;
-$teal:    #20c997 !default;
-$cyan:    #17a2b8 !default;
+$blue:			#007bff !default;
+$indigo:		#6610f2 !default;
+$purple:		#6f42c1 !default;
+$pink:			#e83e8c !default;
+
+$red:				#d90429;
+$red-dark:	#8b0707;
+
+$orange:		#fd7e14 !default;
+$yellow:		#ffc107 !default;
+$green:			#28a745 !default;
+$teal:			#20c997 !default;
+$cyan:			#17a2b8 !default;
 
 $colors: ();
 
@@ -88,7 +91,9 @@ $theme-colors: map-merge(
     "danger":     $danger,
     "light":      $light,
     "dark":       $dark,
-		"gray-400":		$gray-400
+		"gray-400":		$gray-400,
+		"gray-500":		$gray-500,
+		"gray-600":		$gray-600,
   ),
   $theme-colors
 );
@@ -294,6 +299,7 @@ $embed-responsive-aspect-ratios: join(
 $font-stack-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
 $font-family-sans-serif:      'Work Sans', $font-stack-base;
+$font-family-title:						'RPTitle', $font-stack-base;
 $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
 $font-family-base:            $font-family-sans-serif;
 // stylelint-enable value-keyword-case
@@ -404,7 +410,7 @@ $table-border-level:          -6 !default;
 
 $input-btn-padding-y:         .375rem !default;
 $input-btn-padding-x:         .75rem !default;
-$input-btn-font-family:       null !default;
+$input-btn-font-family:       $font-family-title;
 $input-btn-font-size:         $font-size-base !default;
 $input-btn-line-height:       $line-height-base !default;
 
@@ -431,7 +437,7 @@ $input-btn-border-width:      2px;
 
 $btn-padding-y:               $input-btn-padding-y !default;
 $btn-padding-x:               $input-btn-padding-x !default;
-$btn-font-family:             $input-btn-font-family !default;
+$btn-font-family:             $input-btn-font-family;
 $btn-font-size:               $input-btn-font-size !default;
 $btn-line-height:             $input-btn-line-height !default;
 $btn-white-space:             null !default; // Set to `nowrap` to prevent text wrapping
@@ -843,17 +849,17 @@ $jumbotron-bg:                      $gray-200 !default;
 
 // Cards
 
-$card-spacer-y:                     0.75rem;
-$card-spacer-x:                     0.75rem;
+$card-spacer-y:                     1rem;
+$card-spacer-x:                     1rem;
 $card-border-width:                 0;
 $card-border-radius:                $border-radius;
 $card-border-color:                 transparent;
 $card-inner-border-radius:          subtract($card-border-radius, $card-border-width);
-$card-cap-bg:                       rgba($black, .03) !default;
+$card-cap-bg:                       $white;
 $card-cap-color:                    null !default;
 $card-height:                       null !default;
 $card-color:                        $body-color;
-$card-bg:                           $white !default;
+$card-bg:                           $gray-100;
 
 $card-img-overlay-padding:          1.25rem !default;
 
@@ -1035,7 +1041,7 @@ $list-group-border-radius:          $border-radius;
 $list-group-item-padding-y:         .75rem !default;
 $list-group-item-padding-x:         1.25rem !default;
 
-$list-group-hover-bg:               $gray-100 !default;
+$list-group-hover-bg:               $gray-100;
 $list-group-active-color:           $component-active-color !default;
 $list-group-active-bg:              $component-active-bg !default;
 $list-group-active-border-color:    $list-group-active-bg !default;
@@ -1043,11 +1049,11 @@ $list-group-active-border-color:    $list-group-active-bg !default;
 $list-group-disabled-color:         $gray-600 !default;
 $list-group-disabled-bg:            $list-group-bg !default;
 
-$list-group-action-color:           $gray-700 !default;
-$list-group-action-hover-color:     $list-group-action-color !default;
+$list-group-action-color:           $gray-700;
+$list-group-action-hover-color:     $list-group-action-color;
 
 $list-group-action-active-color:    $body-color !default;
-$list-group-action-active-bg:       $gray-200 !default;
+$list-group-action-active-bg:       $gray-200;
 
 
 // Image thumbnails
@@ -1076,7 +1082,7 @@ $breadcrumb-item-padding:           0.5rem;
 
 $breadcrumb-margin-bottom:          0;
 
-$breadcrumb-bg:                     $white;
+$breadcrumb-bg:                     transparent;
 $breadcrumb-divider-color:          $gray-500;
 $breadcrumb-active-color:           $gray-900;
 $breadcrumb-divider:                quote(">");
@@ -1113,9 +1119,9 @@ $carousel-transition:                transform $carousel-transition-duration eas
 
 // Spinners
 
-$spinner-width:         2rem !default;
-$spinner-height:        $spinner-width !default;
-$spinner-border-width:  .25em !default;
+$spinner-width:         3rem;
+$spinner-height:        $spinner-width;
+$spinner-border-width:  0.125rem;
 
 $spinner-width-sm:        1rem !default;
 $spinner-height-sm:       $spinner-width-sm !default;
