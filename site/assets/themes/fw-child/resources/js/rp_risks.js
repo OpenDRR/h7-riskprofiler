@@ -10,14 +10,18 @@
     // options
 
     var defaults = {
-      chart_dir: child_theme_dir + 'resources/js/charts/',
-      chart_options: null,
-      charts: {},
-      map_dir: child_theme_dir + 'resources/js/maps/',
-      generated_ID: 1,
-			geojson: null,
-			regions: {},
-			selected_polygon: null,
+			map: {
+				object: null,
+				offset: $('.app-sidebar').outerWidth(),
+				geojson: null,
+				choropleth: null,
+				selected_polygon: null,
+			},
+			colors: {
+				shape: '#8b0707',
+				shape_hover: '#ba0728',
+				shape_select: '#d90429'
+			},
       debug: false
     };
 
@@ -50,15 +54,25 @@
 			// MAP
 			//
 
-	    var map = L.map('map').setView([55,-105], 4);
+			// create object
+
+	    plugin_settings.map.object = L.map('map', {
+				zoomControl: false
+			}).setView([55,-105], 4);
+
+			L.control.zoom({
+				position: 'bottomleft'
+			}).addTo(plugin_settings.map.object);
+
+			// basemaps
 
 			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-			}).addTo(map)
+			}).addTo(plugin_settings.map.object)
 
 			// GEOJSON
 
-			plugin_settings.geojson = [{
+			plugin_settings.map.geojson = [{
 		    "type": "Feature",
 		    "properties": {
 					id: 1,
@@ -90,38 +104,49 @@
 		    }
 			}]
 
-			plugin_settings.choropleth = L.geoJSON(plugin_settings.geojson, {
+			plugin_settings.map.choropleth = L.geoJSON(plugin_settings.map.geojson, {
 		    style: {
-					color: '#8b0707',
-					fillColor: '#8b0707'
+					color: plugin_settings.colors.shape,
+					fillColor: plugin_settings.colors.shape
 				},
 				onEachFeature: function (feature, layer) {
 
 					if (typeof feature !== 'undefined') {
 
 						layer
-							.bindPopup(plugin_instance.create_popup(feature.properties.id))
+							.bindPopup(plugin_instance.create_popup(feature.properties.id), {
+								className: 'risk-popup'
+							})
 							.on('mouseover', function () {
 
-	              this.setStyle({
-									'color': '#d90429',
-									'fillColor': '#d90429'
-								})
+								// if the shape isn't already selected
 
-								$('.sidebar-item').removeClass('hover')
+								if (plugin_settings.map.selected_polygon != feature.properties.id) {
 
-								$('.sidebar-item[data-id="' + feature.properties.id + '"]').addClass('hover')
+									this.setStyle({
+										'color': plugin_settings.colors.shape_hover,
+										'fillColor': plugin_settings.colors.shape_hover
+									})
+
+									$('.sidebar-item').removeClass('hover')
+
+									$('.sidebar-item[data-id="' + feature.properties.id + '"]').addClass('hover')
+
+								}
 
 	            })
 							.on('mouseout', function () {
 
+								// if already selected, do nothing
+								// if another layer is selected, reset this one
+
 								$('.sidebar-item').removeClass('hover')
 
-								if (plugin_settings.selected_polygon != feature.properties.id) {
+								if (plugin_settings.map.selected_polygon != feature.properties.id) {
 
 									this.setStyle({
-										'color': '#8b0707',
-										'fillColor': '#8b0707'
+										'color': plugin_settings.colors.shape,
+										'fillColor': plugin_settings.colors.shape
 									})
 
 								}
@@ -140,12 +165,16 @@
 
 				}
 
-			}).addTo(map)
+			}).addTo(plugin_settings.map.object)
 
 			// EVENTS
 
-			map.on('popupclose', function(e) {
-				plugin_settings.choropleth.resetStyle()
+			plugin_settings.map.object.on('popupclose', function(e) {
+
+				plugin_instance.item_select({
+					event: 'popupclose'
+				})
+
 			});
 
 			//
@@ -160,12 +189,102 @@
 
 			$(document).profiler('get_sidebar', 'risks/items.php')
 
+			$('body').on('mouseover', '.sidebar-item.city', function() {
+
+				// if this item is not already selected
+
+				if (!$(this).hasClass('selected')) {
+
+					// this shape is not selected
+
+					var this_id = parseInt($(this).attr('data-id'))
+
+					// reset the choropleth, then go through all the shapes and re-evaluate
+
+					plugin_settings.map.choropleth.resetStyle().eachLayer(function(layer) {
+
+						if (layer.feature.properties.id == plugin_settings.map.selected_polygon) {
+
+							// if the shape is selected
+
+							layer.setStyle({
+								'color': plugin_settings.colors.shape_select,
+								'fillColor': plugin_settings.colors.shape_select
+							})
+
+						} else if (this_id == layer.feature.properties.id) {
+
+							// if the shape matches the hovered sidebar item
+
+							layer.setStyle({
+								'color': plugin_settings.colors.shape_hover,
+								'fillColor': plugin_settings.colors.shape_hover
+							})
+
+						}
+
+					})
+
+				}
+
+			}).on('mouseleave', '.sidebar-item.city', function() {
+
+				// if this item is not already selected
+
+				if (!$(this).hasClass('selected')) {
+
+					// this shape is not selected
+
+					var this_id = parseInt($(this).attr('data-id'))
+
+					// reset the choropleth, then find the selected polygon and set its colors
+
+					plugin_settings.map.choropleth.resetStyle().eachLayer(function(layer) {
+
+						if (layer.feature.properties.id == plugin_settings.map.selected_polygon) {
+
+							layer.setStyle({
+								'color': plugin_settings.colors.shape_select,
+								'fillColor': plugin_settings.colors.shape_select
+							})
+
+						}
+
+					})
+
+				}
+
+			}).on('click', '.sidebar-item.city', function() {
+
+				if (!$(this).hasClass('selected')) {
+
+					var this_id = parseInt($(this).attr('data-id'))
+
+					plugin_settings.map.choropleth.resetStyle().eachLayer(function(layer) {
+
+						if (this_id == layer.feature.properties.id) {
+
+							plugin_instance.item_select({
+								item_id: layer.feature.properties.id,
+								polygon: layer
+							})
+
+							layer.openPopup()
+
+						}
+
+					})
+
+				}
+
+			})
+
 			//
 			// DUMMY CLICKS
 			//
 
 			$('body').on('click', '.risk-detail-link', function() {
-				map.closePopup()
+				plugin_settings.map.object.closePopup()
 
 				plugin_instance.item_detail($(this).attr('data-id'))
 			})
@@ -185,6 +304,14 @@
 					}
 				})
 
+			})
+
+			//
+			// MISC
+			//
+
+			$(window).resize(function() {
+				plugin_settings.map.offset = $('.app-sidebar').outerWidth()
 			})
 
     },
@@ -224,17 +351,16 @@
 
 			var this_popup = popup_data[settings.item_id]
 
-			var popup_markup = '<div>'
+			var popup_markup = '<div class="d-flex align-items-center">'
 
-			popup_markup += '<h4>' + this_popup.city + '</h4>'
-
-			popup_markup += '<div>' + this_popup.rank + '</div>'
-
-			popup_markup += '<div>'
-
-			popup_markup += '<span class="risk-detail-link" data-id="' + settings.item_id + '">View Details</span>'
+				popup_markup += '<h5 class="risk-popup-city flex-grow-1 mb-0 p-2">' + this_popup.city + '</h5>'
+				popup_markup += '<div class="risk-popup-rank border-left py-2 px-3 font-size-lg text-primary">' + this_popup.rank + '</div>'
 
 			popup_markup += '</div>'
+
+			popup_markup += '<div class="risk-popup-details bg-light p-2">'
+
+				popup_markup += '<span class="risk-detail-link btn btn-outline-primary" data-id="' + settings.item_id + '">View Details</span>'
 
 			popup_markup += '</div>'
 
@@ -252,7 +378,9 @@
       // options
 
 			var defaults = {
-				item_id: null
+				item_id: null,
+				polygon: null,
+				event: null
 			}
 
 			if (typeof fn_options == 'number') {
@@ -262,26 +390,54 @@
 
       var settings = $.extend(true, defaults, fn_options)
 
-			console.log('risks', 'select', settings.item_id)
+			console.log('risks', 'select', settings)
 
-			plugin_settings.selected_polygon = settings.item_id
+			var timeout = 250
 
-			plugin_settings.choropleth.resetStyle()
+ 			// if this is triggered by a popup close,
+			// wait and see if another one was opened
 
-			settings.polygon.setStyle({
-				color: '#d90429',
-				fillColor: '#d90429'
-			})
+			if (settings.event == 'popupclose') {
 
-			$('.sidebar-item').removeClass('selected')
-
-			if (settings.item_id != null) {
-
-				$('.sidebar-item[data-id="' + settings.item_id + '"]').addClass('selected')
+				timeout = 0
 
 			}
 
+			setTimeout(function() {
 
+				// selected polygon = clicked ID or null
+				plugin_settings.map.selected_polygon = settings.item_id
+
+				// reset choropleth
+				plugin_settings.map.choropleth.resetStyle()
+
+				// reset sidebar
+				$('.sidebar-item').removeClass('selected')
+
+				if (settings.item_id != null) {
+
+					// select the polygon
+
+					settings.polygon.setStyle({
+						color: plugin_settings.colors.shape_select,
+						fillColor: plugin_settings.colors.shape_select
+					})
+
+					// center the map on the clicked polygon
+
+					$('body').profiler('_center_map', {
+						map: plugin_settings.map.object,
+						coords: settings.polygon.getCenter(),
+						offset: plugin_settings.map.offset
+					})
+
+					// select the sidebar item
+
+					$('.sidebar-item[data-id="' + settings.item_id + '"]').addClass('selected')
+
+				}
+
+			}, timeout)
 
     },
 
@@ -343,7 +499,7 @@
 			})
 
 
-    }
+    },
 
   }
 

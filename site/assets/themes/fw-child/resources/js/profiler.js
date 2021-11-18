@@ -99,8 +99,6 @@
 
 			})
 
-
-
     },
 
     get_filter: function(fn_options) {
@@ -143,6 +141,27 @@
 			})
 
     },
+
+		_center_map: function(fn_options) {
+
+			// centers the map on a point with an X offset of half of the width of the sidebar
+
+      var plugin_instance = this
+      var plugin_item = this.item
+      var plugin_settings = plugin_instance.options
+      var plugin_elements = plugin_settings.elements
+
+			var settings = $.extend(true, {
+				map: null,
+				coords: [0, 0],
+				offset: 0
+			}, fn_options)
+
+			var center = settings.map.project(settings.coords)
+
+      settings.map.panTo(settings.map.unproject(new L.point(center.x - (settings.offset / 2), center.y)))
+
+		}
 
 		//
     // _eval: function(fn_code) {

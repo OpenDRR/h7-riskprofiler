@@ -108,6 +108,26 @@ h6 {
 	}
 }
 
+.font-size-xs {
+	font-size: 0.625rem;
+}
+
+.font-size-sm {
+	font-size: 0.75rem;
+}
+
+.font-size-lg {
+	font-size: 1.25rem;
+}
+
+.font-size-xl {
+	font-size: 1.5rem;
+}
+
+.font-size-2xl {
+	font-size: 1.875rem;
+}
+
 //
 // STRUCTURE
 //
@@ -202,3 +222,12 @@ input.text-white:-moz-placeholder {
 //
 // VENDOR
 //
+
+.leaflet-popup-content-wrapper {
+	border-radius: 0;
+	box-shadow: 0 4px 8px transparentize($black, 0.85);
+}
+
+.leaflet-container {
+	font-family: inherit;
+}

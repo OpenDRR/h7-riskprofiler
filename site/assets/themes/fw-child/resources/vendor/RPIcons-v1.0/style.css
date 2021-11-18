@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'RPIcons';
-  src:  url('fonts/RPIcons.eot?h5f5o6');
-  src:  url('fonts/RPIcons.eot?h5f5o6#iefix') format('embedded-opentype'),
-    url('fonts/RPIcons.ttf?h5f5o6') format('truetype'),
-    url('fonts/RPIcons.woff?h5f5o6') format('woff'),
-    url('fonts/RPIcons.svg?h5f5o6#RPIcons') format('svg');
+  src:  url('fonts/RPIcons.eot?y0lbwn');
+  src:  url('fonts/RPIcons.eot?y0lbwn#iefix') format('embedded-opentype'),
+    url('fonts/RPIcons.ttf?y0lbwn') format('truetype'),
+    url('fonts/RPIcons.woff?y0lbwn') format('woff'),
+    url('fonts/RPIcons.svg?y0lbwn#RPIcons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-rank:before {
+  content: "\e905";
+}
 .icon-chart:before {
   content: "\e900";
 }

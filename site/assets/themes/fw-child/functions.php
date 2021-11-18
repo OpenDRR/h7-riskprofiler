@@ -48,6 +48,16 @@ function child_theme_enqueue() {
   // STYLES
   //
 
+	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) ) {
+
+		wp_enqueue_style ( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', null, '1.7.1', 'all' );
+
+		wp_enqueue_style ( 'leaflet-cluster', $child_theme_dir . 'resources/vendor/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css', null, null, 'all' );
+
+		wp_enqueue_style ( 'leaflet-cluster-default', $child_theme_dir . 'resources/vendor/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css', null, null, 'all' );
+
+  }
+
   wp_enqueue_style ( 'child-style', $child_theme_dir . 'style.css', array ( 'global-style' ), NULL, 'all' );
 
   //
@@ -82,14 +92,24 @@ function child_theme_enqueue() {
 
 		wp_enqueue_script ( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', null, '1.7.1', true );
 
-		wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', null, '1.7.1', 'all' );
-
   }
 
 	if ( is_page ( 'scenarios' ) ) {
+
+		wp_enqueue_script ( 'leaflet-cluster', $child_theme_dir . 'resources/vendor/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js', array ( 'leaflet' ), '1.4.1', true );
+
+		wp_enqueue_script ( 'leaflet-heat', $child_theme_dir . 'resources/js/leaflet-heat.js', array ( 'leaflet' ), null, true );
+
+		wp_enqueue_script ( 'spherical-mercator', $child_theme_dir . 'resources/js/sphericalmercator.js', array ( 'leaflet' ), null, true );
+
+		wp_enqueue_script ( 'leaflet-geopackage', 'https://unpkg.com/@ngageoint/leaflet-geopackage@3.0.3/dist/leaflet-geopackage.min.js', array ( 'leaflet' ), null, true );
+
 		wp_enqueue_script ( 'rp-scenarios' );
-	} elseif ( is_page ( 'risks' ) ) {
+
+  } elseif ( is_page ( 'risks' ) ) {
+
 		wp_enqueue_script ( 'rp-risks' );
+
 	}
 
 }

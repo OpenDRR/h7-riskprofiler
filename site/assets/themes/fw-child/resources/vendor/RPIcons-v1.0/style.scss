@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: '#{$icomoon-font-family}';
-  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?h5f5o6');
-  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?h5f5o6#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?h5f5o6') format('truetype'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff?h5f5o6') format('woff'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg?h5f5o6##{$icomoon-font-family}') format('svg');
+  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?y0lbwn');
+  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?y0lbwn#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?y0lbwn') format('truetype'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff?y0lbwn') format('woff'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg?y0lbwn##{$icomoon-font-family}') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -27,6 +27,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-rank {
+  &:before {
+    content: $icon-rank; 
+  }
+}
 .icon-chart {
   &:before {
     content: $icon-chart; 

@@ -99,6 +99,18 @@
 
 }
 
+.scenario-cluster {
+	width: 40px;
+	height: 40px;
+	font-size: 1.125rem;
+	line-height: 40px;
+	text-align: center;
+	font-family: $font-family-title;
+	background: $primary;
+	color: $white;
+	border-radius: 50%;
+}
+
 .sidebar-item {
 	position: relative;
 
@@ -149,6 +161,23 @@
 			}
 		}
 	}
+}
+
+.sidebar-detail {
+	&.scenario {
+		.card-header {
+			font-family: $font-family-title;
+			font-size: 1.125rem;
+		}
+	}
+}
+
+//
+// RISKS
+//
+
+.sidebar-item {
+
 
 	&.city {
 		padding-top: 0.5rem;
@@ -179,15 +208,15 @@
 	}
 }
 
-.sidebar-detail {
-	&.scenario {
-		.card-header {
-			font-family: $font-family-title;
-			font-size: 1.125rem;
-		}
+.risk-popup {
+	color: $primary;
+
+	.leaflet-popup-content {
+		min-width: 25vw;
+		margin: 0;
+	}
+
+	.risk-popup-city {
+		font-size: 1.25rem;
 	}
 }
-
-//
-// RISKS
-//

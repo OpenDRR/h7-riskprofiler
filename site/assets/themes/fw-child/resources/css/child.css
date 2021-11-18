@@ -35,8 +35,8 @@
 }
 @font-face {
   font-family: "RPIcons";
-  src: url("../vendor/RPIcons-v1.0/fonts/RPIcons.eot?k4tk6");
-  src: url("../vendor/RPIcons-v1.0/fonts/RPIcons.eot?k4tk6#iefix") format("embedded-opentype"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.ttf?k4tk6") format("truetype"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.woff?k4tk6") format("woff"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.svg?k4tk6#RPIcons") format("svg");
+  src: url("../vendor/RPIcons-v1.0/fonts/RPIcons.eot?y0lbwn");
+  src: url("../vendor/RPIcons-v1.0/fonts/RPIcons.eot?y0lbwn#iefix") format("embedded-opentype"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.ttf?y0lbwn") format("truetype"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.woff?y0lbwn") format("woff"), url("../vendor/RPIcons-v1.0/fonts/RPIcons.svg?y0lbwn#RPIcons") format("svg");
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -55,8 +55,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-rank:before {
+  content: "";
+}
+
 .icon-chart:before {
   content: "";
+}
+
+.icon-arrow-left:before {
+  content: "";
 }
 
 .icon-search:before {
@@ -98,6 +106,26 @@ h6 {
 }
 .data-cols p {
   margin-bottom: 0;
+}
+
+.font-size-xs {
+  font-size: 0.625rem;
+}
+
+.font-size-sm {
+  font-size: 0.75rem;
+}
+
+.font-size-lg {
+  font-size: 1.25rem;
+}
+
+.font-size-xl {
+  font-size: 1.5rem;
+}
+
+.font-size-2xl {
+  font-size: 1.875rem;
 }
 
 .breadcrumb {
@@ -161,6 +189,9 @@ input.text-white:-moz-placeholder {
 #header-logo img {
   max-width: 60px;
   margin: auto;
+}
+#header-logo .block-type-animation {
+  height: 60px;
 }
 
 #header-wordmark img {
@@ -349,6 +380,39 @@ input.text-white:-moz-placeholder {
   width: 100%;
   height: 100%;
 }
+.app-page .leaflet-left {
+  left: 25%;
+}
+.app-page .leaflet-left .leaflet-control {
+  margin-left: 1rem;
+}
+.app-page .leaflet-bottom .leaflet-control-zoom {
+  margin-bottom: 1rem;
+}
+.app-page .leaflet-control-container .leaflet-control-layers,
+.app-page .leaflet-control-container .leaflet-control-zoom {
+  border: none;
+}
+.app-page .leaflet-control-container .leaflet-control-layers a,
+.app-page .leaflet-control-container .leaflet-control-zoom a {
+  width: 50px;
+  height: 50px;
+  font-size: 25px;
+  line-height: 50px;
+  border-radius: 0;
+  border-bottom: none;
+  margin-bottom: 1rem;
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.2);
+  transition: 0.25s;
+}
+.app-page .leaflet-control-container .leaflet-control-layers a:hover,
+.app-page .leaflet-control-container .leaflet-control-zoom a:hover {
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.3);
+}
+.app-page .leaflet-control-container .leaflet-control-layers a:last-child,
+.app-page .leaflet-control-container .leaflet-control-zoom a:last-child {
+  margin-bottom: 0;
+}
 .app-page.admin-bar {
   height: calc(100vh - 32px);
 }
@@ -419,6 +483,18 @@ input.text-white:-moz-placeholder {
   margin-left: 1rem;
 }
 
+.scenario-cluster {
+  width: 40px;
+  height: 40px;
+  font-size: 1.125rem;
+  line-height: 40px;
+  text-align: center;
+  font-family: "RPTitle", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  background: #d90429;
+  color: #fff;
+  border-radius: 50%;
+}
+
 .sidebar-item {
   position: relative;
 }
@@ -463,6 +539,12 @@ input.text-white:-moz-placeholder {
   pointer-events: auto;
   transition: all 0.25s ease 0.15s;
 }
+
+.sidebar-detail.scenario .card-header {
+  font-family: "RPTitle", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1.125rem;
+}
+
 .sidebar-item.city {
   padding-top: 0.5rem;
   font-weight: 500;
@@ -486,13 +568,28 @@ input.text-white:-moz-placeholder {
   background-color: #dee2e6;
 }
 
-.sidebar-detail.scenario .card-header {
-  font-family: "RPTitle", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 1.125rem;
+.risk-popup {
+  color: #d90429;
+}
+.risk-popup .leaflet-popup-content {
+  min-width: 25vw;
+  margin: 0;
+}
+.risk-popup .risk-popup-city {
+  font-size: 1.25rem;
 }
 
 .swiper-pagination-bullet {
   transition: 0.25s;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-container {
+  font-family: inherit;
 }
 
 /*# sourceMappingURL=child.css.map */
