@@ -195,6 +195,37 @@ input.text-white:-moz-placeholder {
   color: transparentize($white, 0.25);
 }
 
+.spinner-border {
+	border-color: $gray-500;
+	border-left-color: transparent;
+}
+
+#spinner {
+	top: auto;
+	bottom: 52%;
+	transform: translate(-50%, 0%);
+}
+
+#spinner-progress {
+	position: fixed;
+	top: 51%;
+	left: -9999px;
+	transform: translateX(-50%);
+	text-align: center;
+	color: $gray-500;
+	opacity: 0;
+	transition: left 0s ease 0.25s, opacity 0.25s ease 0s;
+	z-index: 2100;
+}
+
+body.spinner-on {
+	#spinner-progress {
+		transition: left 0s ease 0s, opacity 0.25s ease 0s;
+		left: 50%;
+		opacity: 1;
+	}
+}
+
 //
 // CONTENT TYPES
 //
@@ -223,6 +254,8 @@ input.text-white:-moz-placeholder {
 // VENDOR
 //
 
+// LEAFLET
+
 .leaflet-popup-content-wrapper {
 	border-radius: 0;
 	box-shadow: 0 4px 8px transparentize($black, 0.85);
@@ -231,3 +264,14 @@ input.text-white:-moz-placeholder {
 .leaflet-container {
 	font-family: inherit;
 }
+
+// TOGGLEBOX
+
+$tb-box-background: $gray-100;
+$tb-switch-color: $gray-500;
+$tb-switch-width: 1.25rem;
+$tb-switch-height: 1.25rem;
+$tb-label-width: 1rem;
+$tb-state-on-bg: $gray-500;
+
+@import '../vendor/pe-togglebox/togglebox';

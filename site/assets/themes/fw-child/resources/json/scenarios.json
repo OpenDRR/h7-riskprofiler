@@ -1,0 +1,44 @@
+[
+    {
+        "id": 226,
+        "title": "Cascadia Interface Best Fault",
+        "description": "Magnitude 9.0 scenario based on complete rupture of the CanSHM6 Hazard Model implementation of the Cascadia Interface Best Fault.",
+        "magnitude": "9",
+        "key": "SIM9p0_CascadiaInterfaceBestFault",
+        "coords": {
+            "lat": "48.250",
+            "lng": "-125.217"
+        },
+        "deaths": "3417",
+        "damage": "18375",
+        "dollars": "38402326693"
+    },
+    {
+        "id": 224,
+        "title": "Sidney",
+        "description": "Evaluating impact of increasing magnitude using the 2015 Mw 4.7 Sidney, BC, Earthquake hypocentre. More info at https:\/\/earthquakescanada.nrcan.gc.ca\/recent\/2015\/20151230.0739\/index-en.php - Strike selected to approximately parallel the strike of the subducting slab for this deep intraslab extensional event.",
+        "magnitude": "7.1",
+        "key": "IDM7p1_Sidney",
+        "coords": {
+            "lat": "48.620",
+            "lng": "-123.300"
+        },
+        "deaths": "897",
+        "damage": "6060",
+        "dollars": "19773094869"
+    },
+    {
+        "id": 217,
+        "title": "Leech River Full Fault",
+        "description": "Magnitude 7.3 scenario based on complete rupture of the CanSHM6 Hazard Model implementation of the Leech River Full Fault.",
+        "magnitude": "7.3",
+        "key": "ACM7p3_LeechRiverFullFault",
+        "coords": {
+            "lat": "48.405",
+            "lng": "-123.412"
+        },
+        "deaths": "986",
+        "damage": "6861",
+        "dollars": "19533572079"
+    }
+]

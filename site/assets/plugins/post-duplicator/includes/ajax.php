@@ -1,7 +1,7 @@
 <?php
 
 /* --------------------------------------------------------- */
-/* !Duplicate the post - 2.22 */
+/* !Duplicate the post - 2.26 */
 /* --------------------------------------------------------- */
 
 function mtphr_duplicate_post( $original_id, $args=array(), $do_action=true ) {
@@ -16,9 +16,9 @@ function mtphr_duplicate_post( $original_id, $args=array(), $do_action=true ) {
 	$settings = wp_parse_args( $args, $global_settings );
 	
 	// Modify some of the elements
-	$appended = ( $settings['title'] != '' ) ? ' '.$settings['title'] : '';
-	$duplicate['post_title'] = $duplicate['post_title'].' '.$appended;
-	$duplicate['post_name'] = sanitize_title($duplicate['post_name'].'-'.$settings['slug']);
+	$appended = isset( $settings['title'] ) ? $settings['title'] : esc_html__( 'Copy', 'post-duplicator' );
+	$duplicate['post_title'] = $duplicate['post_title'] . ' ' . $appended;
+	$duplicate['post_name'] = sanitize_title( $duplicate['post_name'] . '-' . $settings['slug'] );
 	
 	// Set the status
 	if( $settings['status'] != 'same' ) {
@@ -74,11 +74,17 @@ function mtphr_duplicate_post( $original_id, $args=array(), $do_action=true ) {
   foreach ( $custom_fields as $key => $value ) {
 	  if( is_array($value) && count($value) > 0 ) {
 			foreach( $value as $i=>$v ) {
-				$result = $wpdb->insert( $wpdb->prefix.'postmeta', array(
-					'post_id' => $duplicate_id,
-					'meta_key' => $key,
-					'meta_value' => $v
-				));
+				$data = array(
+					'post_id' 		=> $duplicate_id,
+					'meta_key' 		=> $key,
+					'meta_value' 	=> $v,
+				);
+				$formats = array(
+					'%d',
+					'%s',
+					'%s',
+				);
+				$result = $wpdb->insert( $wpdb->prefix.'postmeta', $data, $formats );
 			}
 		}
   }
@@ -93,7 +99,7 @@ function mtphr_duplicate_post( $original_id, $args=array(), $do_action=true ) {
 
 
 /* --------------------------------------------------------- */
-/* !Ajax duplicate post - 2.2.0 */
+/* !Ajax duplicate post - 2.25 */
 /* --------------------------------------------------------- */
 
 function m4c_duplicate_post() {
@@ -102,13 +108,14 @@ function m4c_duplicate_post() {
 	check_ajax_referer( 'm4c_ajax_file_nonce', 'security' );
 	
 	// Get variables
-	$original_id  = $_POST['original_id'];
+	$original_id  = intval( $_POST['original_id'] );
 	
 	// Duplicate the post
 	$duplicate_id = mtphr_duplicate_post( $original_id );
-
-	echo $duplicate_id;
-
-	die(); // this is required to return a proper result
+	
+	$data = array(
+		'duplicate_id' => esc_attr( $duplicate_id ),
+	);
+	wp_send_json( $data );
 }
 add_action( 'wp_ajax_m4c_duplicate_post', 'm4c_duplicate_post' );

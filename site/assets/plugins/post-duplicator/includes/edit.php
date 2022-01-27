@@ -3,9 +3,15 @@
 /**
  * Add a duplicate post link.
  *
- * @since 2.20
+ * @since 2.26
  */
 function mtphr_post_duplicator_action_row_link( $post ) {
+	
+	// Do not show on trash page
+	$post_status = isset( $_GET['post_status'] ) ? $_GET['post_status'] : false;
+	if ( 'trash' == $post_status ) {
+		return false;
+	}
 
 	$settings = get_mtphr_post_duplicator_settings();
 	if ( 'current_user' === $settings['post_duplication'] ) {
@@ -32,7 +38,7 @@ function mtphr_post_duplicator_action_row_link( $post ) {
 	$nonce = wp_create_nonce( 'm4c_ajax_file_nonce' );
 	
 	// Return the link
-	return '<a class="m4c-duplicate-post" rel="'.$nonce.'" href="#" data-postid="'.$post->ID.'">'.$label.'</a>';
+	return '<a class="m4c-duplicate-post" rel="'.esc_attr( $nonce ).'" href="#" data-postid="'.esc_attr( $post->ID ).'">'.wp_kses_post( $label ).'</a>';
 }
 
 // Add the duplicate link to post actions

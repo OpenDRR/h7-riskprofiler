@@ -1,0 +1,94 @@
+// variables
+
+$tb-transition-duration: 0.25s !default;
+
+$tb-box-padding: 6px;
+$tb-box-background: transparentize($black, 0.8) !default;
+$tb-box-color: $white !default;
+
+$tb-switch-width: 1rem !default;
+$tb-switch-height: $tb-switch-width !default;
+$tb-switch-color: $white !default;
+
+$tb-label-width: 2rem !default;
+
+$tb-state-on-bg: green !default;
+
+$tb-box-width: calc(#{$tb-label-width} + #{$tb-switch-width}) !default;
+
+$tb-track-width: calc((#{$tb-label-width} + #{$tb-switch-width}) * 2) !default;
+
+// hide the checkbox
+
+.togglebox-input {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  opacity: 0;
+}
+
+// box
+
+.togglebox {
+  display: block;
+  width: $tb-box-width;
+  position: relative;
+  background-color: $tb-box-background;
+  transition: background-color $tb-transition-duration;
+  color: $white;
+  line-height: 1;
+  cursor: grab;
+  overflow: hidden;
+
+  // track
+
+  .togglebox-track {
+    width: $tb-track-width;
+    margin-left: -$tb-label-width;
+    white-space: nowrap;
+    transition: $tb-transition-duration;
+  }
+
+  // labels
+
+  .on,
+  .off {
+    display: inline-block;
+    width: $tb-label-width;
+    line-height: $tb-switch-height;
+    text-align: center;
+    vertical-align: top;
+  }
+
+  // switch
+
+  .switch {
+    display: inline-block;
+    width: $tb-switch-width;
+    height: $tb-switch-width;
+    background: $tb-switch-color;
+    box-shadow: 0 1px 4px transparentize($black, 0.75);
+    transition: $tb-transition-duration;
+    vertical-align: top;
+  }
+
+  // states
+
+  // hover
+
+  &:hover {
+    .switch {
+      box-shadow: 0 1px 6px transparentize($black, 0.5);
+    }
+  }
+
+  // on
+
+  &[data-state="on"] {
+    background-color: $tb-state-on-bg;
+
+    .togglebox-track {
+      margin-left: 0;
+    }
+  }
+}

@@ -173,6 +173,35 @@ input.text-white:-moz-placeholder {
   color: rgba(255, 255, 255, 0.75);
 }
 
+.spinner-border {
+  border-color: #8d99ae;
+  border-left-color: transparent;
+}
+
+#spinner {
+  top: auto;
+  bottom: 52%;
+  transform: translate(-50%, 0%);
+}
+
+#spinner-progress {
+  position: fixed;
+  top: 51%;
+  left: -9999px;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #8d99ae;
+  opacity: 0;
+  transition: left 0s ease 0.25s, opacity 0.25s ease 0s;
+  z-index: 2100;
+}
+
+body.spinner-on #spinner-progress {
+  transition: left 0s ease 0s, opacity 0.25s ease 0s;
+  left: 50%;
+  opacity: 1;
+}
+
 #main-header {
   position: absolute;
   left: 0;
@@ -242,6 +271,14 @@ input.text-white:-moz-placeholder {
   font-size: 0.75rem;
 }
 
+#footer-logo img {
+  width: 100%;
+  max-width: 50px;
+}
+#footer-logo .image-wrap {
+  align-items: center;
+}
+
 .app-page {
   display: flex;
   flex-direction: column;
@@ -253,6 +290,23 @@ input.text-white:-moz-placeholder {
 }
 .app-page #main-header a:after {
   display: none;
+}
+.app-page #spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  left: -9999px;
+  opacity: 0;
+  transition: left 0s ease 0.25s, opacity 0.25s ease 0s;
+  background-color: rgba(255, 255, 255, 0.75);
+  z-index: 1900;
+}
+.app-page.spinner-on #spinner-overlay {
+  transition: left 0s ease 0s, opacity 0.25s ease 0s;
+  left: 0;
+  opacity: 1;
 }
 .app-page main {
   flex-grow: 1;
@@ -282,7 +336,7 @@ input.text-white:-moz-placeholder {
 .app-page .app-head {
   display: flex;
 }
-.app-page .app-head[data-mode=scenario-detail] .app-filter {
+.app-page .app-head[data-mode=scenario-detail] .app-controls {
   left: -25vw;
   width: 0;
 }
@@ -291,7 +345,7 @@ input.text-white:-moz-placeholder {
   left: 0;
   width: 3rem;
 }
-.app-page .app-head[data-mode=risk-detail] .app-filter {
+.app-page .app-head[data-mode=risk-detail] .app-controls {
   left: -25vw;
   width: 0;
 }
@@ -318,7 +372,7 @@ input.text-white:-moz-placeholder {
 .app-page .app-head-back:hover {
   background-color: #8b0707;
 }
-.app-page .app-filter {
+.app-page .app-controls {
   position: relative;
   left: 0;
   width: 25vw;
@@ -326,20 +380,20 @@ input.text-white:-moz-placeholder {
   background-color: #8d99ae;
   color: #fff;
 }
-.app-page .app-filter .app-filter-content {
+.app-page .app-controls .app-controls-content {
   display: flex;
   height: 3rem;
   transition: 0.25s;
 }
-.app-page .app-filter .filter-toggles {
+.app-page .app-controls .control-toggles {
   line-height: 3rem;
   cursor: pointer;
 }
-.app-page .app-filter .filter-toggle {
+.app-page .app-controls .control-toggle {
   background-color: #636b80;
   transition: 0.25s;
 }
-.app-page .app-filter .filter-toggle:hover {
+.app-page .app-controls .control-toggle:hover {
   background-color: #50576c;
 }
 .app-page .app-sidebar {
@@ -349,13 +403,10 @@ input.text-white:-moz-placeholder {
   width: 25%;
   height: 100%;
   overflow: auto;
-  background-color: #8d99ae;
+  background-color: rgba(141, 153, 174, 0.92);
   box-shadow: 0.25rem 0 rgba(43, 44, 66, 0.1);
   transition: 0.25s;
   z-index: 10;
-}
-.app-page .app-sidebar[data-width=half] {
-  width: 50%;
 }
 .app-page .app-breadcrumb {
   transition: 0.25s;
@@ -364,6 +415,34 @@ input.text-white:-moz-placeholder {
   height: 3rem;
   padding-left: 1.75rem;
   align-items: center;
+}
+.app-page .app-breadcrumb .breadcrumb-item {
+  padding-right: 0.25rem;
+}
+.app-page .app-breadcrumb .breadcrumb-item:not(:first-child):before {
+  content: "";
+  border: 5px solid transparent;
+  border-left-color: #9595a0;
+}
+.app-page #retrofit .togglebox {
+  margin-right: 0.75rem;
+  border-radius: 50px;
+}
+.app-page #retrofit .togglebox .switch {
+  box-shadow: none;
+  border-radius: 50%;
+  border: 3px solid #ecf1f4;
+}
+.app-page #retrofit .togglebox[data-state=on] .switch {
+  background-color: #fff;
+  border-color: #8d99ae;
+}
+.app-page #retrofit .togglebox.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.app-page #retrofit h6 {
+  font-size: 0.625rem;
 }
 .app-page .app-map {
   position: absolute;
@@ -382,6 +461,7 @@ input.text-white:-moz-placeholder {
 }
 .app-page .leaflet-left {
   left: 25%;
+  transition: 0.25s;
 }
 .app-page .leaflet-left .leaflet-control {
   margin-left: 1rem;
@@ -413,9 +493,32 @@ input.text-white:-moz-placeholder {
 .app-page .leaflet-control-container .leaflet-control-zoom a:last-child {
   margin-bottom: 0;
 }
+.app-page[data-sidebar-width=half] .app-sidebar {
+  width: 50%;
+}
+.app-page[data-sidebar-width=half] .leaflet-left {
+  left: 50%;
+}
 .app-page.admin-bar {
   height: calc(100vh - 32px);
 }
+.app-page .legend {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+}
+.app-page .legend i {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.375rem;
+}
+.app-page .leaflet-pulsing-icon {
+  box-shadow: none;
+}
+.app-page .leaflet-pulsing-icon:after {
+  box-shadow: 0 0 0 2px #2b2c42 !important;
+}
+
 .home #main-header {
   background-color: rgba(255, 255, 255, 0.4);
 }
@@ -441,7 +544,7 @@ input.text-white:-moz-placeholder {
 .home #hero-nrcan img {
   max-width: 150px;
 }
-.home p {
+.home main p {
   font-size: 1.25rem;
 }
 
@@ -544,6 +647,9 @@ input.text-white:-moz-placeholder {
   font-family: "RPTitle", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 1.125rem;
 }
+.sidebar-detail.scenario .indicator-item.selected {
+  color: #d90429;
+}
 
 .sidebar-item.city {
   padding-top: 0.5rem;
@@ -590,6 +696,57 @@ input.text-white:-moz-placeholder {
 
 .leaflet-container {
   font-family: inherit;
+}
+
+.togglebox-input {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  opacity: 0;
+}
+
+.togglebox {
+  display: block;
+  width: calc(1rem + 1.25rem);
+  position: relative;
+  background-color: #ecf1f4;
+  transition: background-color 0.25s;
+  color: #fff;
+  line-height: 1;
+  cursor: grab;
+  overflow: hidden;
+}
+.togglebox .togglebox-track {
+  width: calc((1rem + 1.25rem) * 2);
+  margin-left: -1rem;
+  white-space: nowrap;
+  transition: 0.25s;
+}
+.togglebox .on,
+.togglebox .off {
+  display: inline-block;
+  width: 1rem;
+  line-height: 1.25rem;
+  text-align: center;
+  vertical-align: top;
+}
+.togglebox .switch {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: #8d99ae;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: 0.25s;
+  vertical-align: top;
+}
+.togglebox:hover .switch {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+.togglebox[data-state=on] {
+  background-color: #8d99ae;
+}
+.togglebox[data-state=on] .togglebox-track {
+  margin-left: 0;
 }
 
 /*# sourceMappingURL=child.css.map */

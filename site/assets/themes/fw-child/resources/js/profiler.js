@@ -43,6 +43,8 @@
         console.log('profiler', 'initializing')
       }
 
+			$('<div id="spinner-overlay">').insertBefore('#spinner')
+			$('<div id="spinner-progress">').insertAfter('#spinner')
 
     },
 
@@ -57,6 +59,8 @@
 
 			var defaults = {
 				url: '',
+				method: 'GET',
+				data: null,
 				before: null,
 				success: null,
 				complete: null
@@ -70,6 +74,7 @@
       var settings = $.extend(true, defaults, fn_options)
 
 			$('body').addClass('spinner-on')
+			$('#spinner-progress').text('Initializing')
 
 			if (typeof settings.before == 'function') {
 				settings.before()
@@ -79,6 +84,8 @@
 
 				$.ajax({
 					url: '/site/assets/themes/fw-child/template/' + settings.url,
+					method: settings.method,
+					data: settings.data,
 					success: function(data) {
 
 						$('.app-sidebar-content').html(data).fadeIn(500)
@@ -90,6 +97,7 @@
 					complete: function() {
 
 	          $('body').removeClass('spinner-on')
+						$('#spinner-progress').text('')
 
 	          if (typeof settings.complete == 'function') {
 	            settings.complete()
@@ -101,7 +109,7 @@
 
     },
 
-    get_filter: function(fn_options) {
+    get_controls: function(fn_options) {
 
       var plugin_instance = this
       var plugin_item = this.item
@@ -111,38 +119,63 @@
       // options
 
 			var defaults = {
-				url: ''
+				dir: ''
 			}
 
 			if (typeof fn_options == 'string') {
-				defaults.url = fn_options
+				defaults.dir = fn_options
 				fn_options = {}
 			}
 
       var settings = $.extend(true, defaults, fn_options)
 
-			$.ajax({
-				url: '/site/assets/themes/fw-child/template/' + settings.url,
-				success: function(data) {
-					$('.app-filter-content').html(data)
+			// bar
 
-					if (typeof settings.success == 'function') {
-            settings.success()
-          }
+			$.ajax({
+				url: '/site/assets/themes/fw-child/template/' + settings.dir + '/control-bar.php',
+				success: function(bar_data) {
+					$('.app-controls-content').html(bar_data)
+
+					// filter
+
+					$.ajax({
+						url: '/site/assets/themes/fw-child/template/' + settings.dir + '/control-filter.php',
+						success: function(filter_data) {
+							$('.app-sidebar-filter').html(filter_data)
+
+							// sort
+
+							$.ajax({
+								url: '/site/assets/themes/fw-child/template/' + settings.dir + '/control-sort.php',
+								success: function(sort_data) {
+									$('.app-sidebar-sort').html(sort_data)
+
+									if (typeof settings.success == 'function') {
+				            settings.success()
+				          }
+
+				          if (typeof settings.complete == 'function') {
+				            settings.complete()
+				          }
+								},
+								complete: function() {
+				          $('body').removeClass('spinner-on')
+									$('#spinner-progress').text('')
+								}
+							})
+
+						}
+					})
+
 				},
 				complete: function() {
 
-          $('body').removeClass('spinner-on')
-
-          if (typeof settings.complete == 'function') {
-            settings.complete()
-          }
         }
 			})
 
     },
 
-		_center_map: function(fn_options) {
+		center_map: function(fn_options) {
 
 			// centers the map on a point with an X offset of half of the width of the sidebar
 
@@ -154,14 +187,19 @@
 			var settings = $.extend(true, {
 				map: null,
 				coords: [0, 0],
-				offset: 0
+				offset: 0,
+				zoom: 5
 			}, fn_options)
 
 			var center = settings.map.project(settings.coords)
 
-      settings.map.panTo(settings.map.unproject(new L.point(center.x - (settings.offset / 2), center.y)))
+			center = settings.map.unproject(new L.point(center.x - (settings.offset / 2), center.y))
 
-		}
+			console.log('center', settings.coords, center)
+
+      settings.map.setView([center.lat, center.lng], settings.zoom)
+
+		},
 
 		//
     // _eval: function(fn_code) {

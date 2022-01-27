@@ -56,6 +56,8 @@ function child_theme_enqueue() {
 
 		wp_enqueue_style ( 'leaflet-cluster-default', $child_theme_dir . 'resources/vendor/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css', null, null, 'all' );
 
+		wp_enqueue_style ( 'leaflet-pulse', $child_theme_dir . 'resources/vendor/leaflet-icon-pulse/dist/L.Icon.Pulse.css', null, null, 'all' );
+
   }
 
   wp_enqueue_style ( 'child-style', $child_theme_dir . 'style.css', array ( 'global-style' ), NULL, 'all' );
@@ -82,7 +84,7 @@ function child_theme_enqueue() {
 
   // VENDOR
 
-  //wp_register_script ( '', $bower_dir . '.js', NULL, true );
+  wp_register_script ( 'togglebox', $child_theme_dir . 'resources/vendor/pe-togglebox/togglebox.js', NULL, true );
 
   wp_enqueue_script ( 'child-functions' );
 
@@ -98,12 +100,15 @@ function child_theme_enqueue() {
 
 		wp_enqueue_script ( 'leaflet-cluster', $child_theme_dir . 'resources/vendor/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js', array ( 'leaflet' ), '1.4.1', true );
 
+		wp_enqueue_script ( 'leaflet-pulse', $child_theme_dir . 'resources/vendor/leaflet-icon-pulse/dist/L.Icon.Pulse.js', array ( 'leaflet' ), '1.4.1', true );
+
 		wp_enqueue_script ( 'leaflet-heat', $child_theme_dir . 'resources/js/leaflet-heat.js', array ( 'leaflet' ), null, true );
 
 		wp_enqueue_script ( 'spherical-mercator', $child_theme_dir . 'resources/js/sphericalmercator.js', array ( 'leaflet' ), null, true );
 
 		wp_enqueue_script ( 'leaflet-geopackage', 'https://unpkg.com/@ngageoint/leaflet-geopackage@3.0.3/dist/leaflet-geopackage.min.js', array ( 'leaflet' ), null, true );
 
+		wp_enqueue_script ( 'togglebox' );
 		wp_enqueue_script ( 'rp-scenarios' );
 
   } elseif ( is_page ( 'risks' ) ) {
@@ -232,3 +237,88 @@ add_action ( 'wp_before_admin_bar_render', function() {
 //
 // add_action ( 'wp_ajax_get_job_post', 'get_job_post' );
 // add_action ( 'wp_ajax_nopriv_get_job_post', 'get_job_post' );
+
+//
+// SCENARIO JSON
+// update scenarios.json whenever a post is created/updated
+//
+//
+// // function to create the JSON file
+//
+// function create_scenarios_json() {
+//
+// 	$scenarios = array();
+//
+// 	$scenario_query = new WP_Query ( array (
+// 		'post_type' => 'scenario',
+// 		'posts_per_page' => -1
+// 	));
+//
+// 	while ( $scenario_query->have_posts() ) {
+// 		$scenario_query->the_post();
+//
+// 		$scenarios[] = array (
+// 			'id' => get_the_ID(),
+// 			'title' => get_the_title(),
+// 			'description' => get_field ( 'scenario_description' ),
+// 			'magnitude' => get_field ( 'scenario_magnitude' ),
+// 			'key' => get_field ( 'scenario_key' ),
+// 			'coords' => get_field ( 'scenario_coords' ),
+// 			'deaths' => get_field ( 'scenario_deaths' ),
+// 			'damage' => get_field ( 'scenario_damage' ),
+// 			'dollars' => get_field ( 'scenario_dollars' )
+// 		);
+//
+// 	}
+//
+// 	// wp_reset_postdata();
+//
+// 	// open the file
+//
+// 	$path = locate_template ( 'resources/json/scenarios.json' );
+// 	$fp = fopen ( $path, 'w' );
+//
+// 	if ( !$fp ) {
+// 		echo 'error';
+// 	}
+//
+// 	// write
+// 	fwrite ( $fp, json_encode ( $scenarios, JSON_PRETTY_PRINT ) );
+//
+// 	// close
+// 	fclose ( $fp );
+//
+// }
+//
+// // create_scenarios_json();
+//
+// // UPDATE ON EDIT
+//
+// function scenario_json ( $post_id, $post, $update ) {
+//
+// 	echo 'json';
+//
+// }
+//
+// // add_action ( 'save_post_scenario', 'scenario_json' );
+
+//
+// ACF ADMIN COLUMNS
+//
+
+function add_acf_columns ( $columns ) {
+  return array_merge ( $columns, array (
+		'indicator_key' => __ ( 'Key' )
+  ) );
+}
+
+add_filter ( 'manage_indicator_posts_columns', 'add_acf_columns' );
+
+function indicator_custom_column ( $column, $post_id ) {
+	switch ( $column ) {
+		case 'indicator_key':
+			echo get_post_meta ( $post_id, 'indicator_key', true );
+			break;
+	}
+}
+add_action ( 'manage_indicator_posts_custom_column', 'indicator_custom_column', 10, 2 );
