@@ -355,9 +355,18 @@ $app-transition: 0.25s;
 		.leaflet-control-zoom {
 			margin-bottom: 1rem;
 		}
+
+		&.leaflet-left {
+			z-index: 1001;
+		}
 	}
 
 	.leaflet-control-container {
+		.leaflet-control-attribution {
+			opacity: 1;
+			transition: opacity 0.25s;
+		}
+
 		.leaflet-control-layers,
 		.leaflet-control-zoom {
 			border: none;
@@ -395,6 +404,11 @@ $app-transition: 0.25s;
 			left: 50%;
 		}
 
+		.leaflet-control-container {
+			.leaflet-control-attribution {
+				opacity: 0;
+			}
+		}
 	}
 
 	// adjust for admin bar
@@ -412,14 +426,28 @@ $app-transition: 0.25s;
 	// legend
 
 	.legend {
-		padding: 0.5rem;
-		background: transparentize($white, 0.05);
+		margin: 0 !important;
 
-		i {
-			display: inline-block;
-			width: 0.75rem;
+		h6 {
+			margin-bottom: 0;
+			padding: 0.75rem;
+			font-size: 1rem;
+			font-weight: 500;
+			text-transform: none;
+			letter-spacing: normal;
+			pointer-events: none;
+			text-shadow: 0 1px $white;
+		}
+
+		.items {
+			display: flex;
+			width: 50vw;
+		}
+
+		.legend-item {
+			flex-grow: 1;
 			height: 0.75rem;
-			margin-right: 0.375rem;
+			opacity: 0.8;
 		}
 	}
 

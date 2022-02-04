@@ -173,8 +173,26 @@
 		}
 
 		.indicator-item {
+			cursor: pointer;
+
 			&.selected {
 				color: $primary;
+			}
+		}
+
+		.card-header.indicator-item {
+
+		}
+
+		li.indicator-item {
+			transition: 0.25s;
+
+			&:hover {
+				background-color: $gray-200;
+			}
+
+			&.selected {
+				background-color: $gray-300;
 			}
 		}
 	}

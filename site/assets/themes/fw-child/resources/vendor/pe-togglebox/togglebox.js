@@ -112,6 +112,16 @@
 
     },
 
+		toggle: function(action = null) {
+
+			if (action == null) {
+
+				plugin_elements.box.trigger('click')
+
+			}
+
+		},
+
 		disable: function(fn_options) {
 
       var plugin_instance = this
@@ -134,8 +144,6 @@
       var plugin_elements = plugin_settings.elements
 
 			plugin_item.prop('disabled', false)
-
-			console.log(plugin_item, plugin_elements.box)
 
 			plugin_item.removeClass('disabled')
 			plugin_elements.box.removeClass('disabled')

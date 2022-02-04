@@ -876,8 +876,8 @@ $card-columns-margin:               $card-spacer-y !default;
 
 $tooltip-font-size:                 $font-size-sm !default;
 $tooltip-max-width:                 200px !default;
-$tooltip-color:                     $white !default;
-$tooltip-bg:                        $black !default;
+$tooltip-color:                     $body-color;
+$tooltip-bg:                        $white;
 $tooltip-border-radius:             $border-radius;
 $tooltip-opacity:                   .9 !default;
 $tooltip-padding-y:                 .25rem !default;
@@ -886,7 +886,7 @@ $tooltip-margin:                    0 !default;
 
 $tooltip-arrow-width:               .8rem !default;
 $tooltip-arrow-height:              .4rem !default;
-$tooltip-arrow-color:               $tooltip-bg !default;
+$tooltip-arrow-color:               $tooltip-bg;
 
 // Form tooltips must come after regular tooltips
 $form-feedback-tooltip-padding-y:     $tooltip-padding-y !default;
