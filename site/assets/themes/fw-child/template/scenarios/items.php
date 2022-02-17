@@ -30,6 +30,7 @@
 
 			echo json_encode ( array (
 				'id' => get_the_ID(),
+				'url' => get_the_permalink(),
 				'title' => get_the_title(),
 				'description' => get_field ( 'scenario_description' ),
 				'magnitude' => get_field ( 'scenario_magnitude' ),

@@ -96,9 +96,6 @@
 					},
 					complete: function() {
 
-	          $('body').removeClass('spinner-on')
-						$('#spinner-progress').text('')
-
 	          if (typeof settings.complete == 'function') {
 	            settings.complete()
 	          }

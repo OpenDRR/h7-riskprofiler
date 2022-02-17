@@ -2,7 +2,7 @@ const geoapi_url = 'https://geo-api.stage.riskprofiler.ca'
 const elastic_url = 'https://api.stage.riskprofiler.ca'
 
 // var feature_index = "opendrr_dsra_sim9p0_cascadiainterfacebestfault_indicators_s",
-var feature_index_prop = "sH_PGA",
+var feature_index_prop = "sH_PGAXX",
 		base_url = elastic_url + '/',
 		featureLimit = 10000,
 		markers = [],
@@ -24,7 +24,7 @@ var feature_index_prop = "sH_PGA",
 				base_URL: geoapi_url + '/collections/opendrr_dsra_',
 				retrofit: 'b0', // or r1
 				aggregation: 'csd', // or s
-				agg_prop: 'csduid', // or Sauid
+				agg_prop: 'csduid', // or Sauid,
 				featureProperties: '', // Limit fetched properties for performance
 				limit: 10,
 				lang: 'en_US',
@@ -33,6 +33,23 @@ var feature_index_prop = "sH_PGA",
 				data: [],
 				features: []
 			},
+      aggregation: {
+        'current': {},
+        'previous': null,
+        'settings': {
+          'shake': [
+            { min: 11, max: 15, agg: '5km', prop: 'sH_PGA_max', bbox: true, limit: 500 },
+            { min: 8, max: 10, agg: '10km', prop: 'sH_PGA_max', bbox: true, limit: 100 },
+            { min: 4, max: 7, agg: '25km', prop: 'sH_PGA_max', bbox: false, limit: 100 },
+            { min: 1, max: 3, agg: '50km', prop: 'sH_PGA_max', bbox: false, limit: 100
+            }
+          ],
+          'default': [
+            { min: 11, max: 15, agg: 's', prop: 'Sauid', bbox: true, limit: 500 },
+            { min: 1, max: 10, agg: 'csd', prop: 'csduid', bbox: false, limit: 100 }
+          ]
+        }
+      },
 			elastic: {
 				merc: null
 			},
@@ -53,7 +70,7 @@ var feature_index_prop = "sH_PGA",
 				geojsonLayer: null,
 				current_zoom: 4,
 				last_zoom: -1,
-				zoom_changed_agg: false,
+				zoom_changed_agg: false
 			},
 			breadcrumbs: {
 				'init': [
@@ -84,7 +101,8 @@ var feature_index_prop = "sH_PGA",
 			scenario: {},
 			indicator: {},
 			legend: {
-				max: 0
+				max: 0,
+        grades: []
 			},
 			colors: {
 				marker: '#9595a0',
@@ -111,9 +129,7 @@ var feature_index_prop = "sH_PGA",
     init: function () {
 
       var plugin_instance = this
-      //var plugin_item = this.item
       var plugin_settings = plugin_instance.options
-      //var plugin_elements = plugin_settings.elements
 
       //
       // INITIALIZE
@@ -202,7 +218,8 @@ var feature_index_prop = "sH_PGA",
 						append = plugin_settings.indicator.legend.append,
 						aggregation = plugin_settings.indicator.aggregation
 
-				switch (aggregation[plugin_settings.api.aggregation]['rounding']) {
+				// switch (aggregation[plugin_settings.api.aggregation]['rounding']) {
+				switch (aggregation[plugin_settings.aggregation.current.agg]['rounding']) {
 					case -9 :
 						append = 'billion ' + append
 						break
@@ -220,29 +237,31 @@ var feature_index_prop = "sH_PGA",
 
 				legend_markup += '<div class="items">'
 
-				legend_markup += '<div class="legend-item" data-toggle="tooltip" data-placement="top" style="background-color: '
-					+ plugin_instance._choro_color(grades[0]) + ';"'
-					+ ' title="'
-					+ prepend
-					+ '0 – '
-					+ prepend
-					+ grades[0].toLocaleString(undefined, { maximumFractionDigits: aggregation[plugin_settings.api.aggregation]['decimals'] })
-					+ ' '
-					+ append
-					+ '"></div>'
+        // #ffffcc
+        // #ffeda0
+        // #fed976
+        // #feb24c
+        // #fd8d3c
+        // #fc4e2a
+        // #e31a1c
+        // #bd0026
+        // #800026
 
-				for (var i = 0; i < grades.length; i++ ) {
+				for (var i = 1; i <= grades.length; i++) {
 
-					var row_markup = '<div class="legend-item" data-toggle="tooltip" data-placement="top" style="background-color: ' + plugin_instance._choro_color(grades[i] + 1) + ';"'
+          var row_color = plugin_instance._choro_color(grades[i - 1])
+
+					var row_markup = '<div class="legend-item" data-toggle="tooltip" data-placement="top" style="background-color: '
+            + row_color + ';"'
 						+ ' title="'
 						+ prepend
-						+ grades[i].toLocaleString(undefined, { maximumFractionDigits: aggregation[plugin_settings.api.aggregation]['decimals'] })
+						+ grades[i - 1].toLocaleString(undefined, { maximumFractionDigits: aggregation[plugin_settings.aggregation.current.agg]['decimals'] })
 
-					if (grades[i + 1]) {
+					if (grades[i]) {
 
 						row_markup += ' – '
 							+ prepend
-							+ grades[i + 1].toLocaleString(undefined, { maximumFractionDigits: aggregation[plugin_settings.api.aggregation]['decimals'] })
+							+ grades[i].toLocaleString(undefined, { maximumFractionDigits: aggregation[plugin_settings.aggregation.current.agg]['decimals'] })
 							+ ' '
 							+ append
 
@@ -340,7 +359,7 @@ var feature_index_prop = "sH_PGA",
 					fillColor: '#aaa',
 					fillOpacity: 0.7,
 					color: '#4b4d4d',
-					weight: 0.4,
+					weight: 0,
 					opacity: 0.8
 				},
 				pane: 'data',
@@ -348,19 +367,29 @@ var feature_index_prop = "sH_PGA",
 
 					var prop_key = plugin_settings.indicator.key + ((plugin_settings.indicator.retrofit !== false) ? '_' + plugin_settings.api.retrofit : '')
 
+          var stroke = 0.4
+
+          if (plugin_settings.indicator.key == 'sH_PGA') {
+            prop_key = 'sH_PGA_max'
+            stroke = 0
+          }
+
 					plugin_settings.api.features[feature.id] = layer
 
-					var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding'])
+					// var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding'])
+					var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
 
 					layer.setStyle({
-						fillColor: plugin_instance._choro_color(rounded_color)
+						fillColor: plugin_instance._choro_color(rounded_color),
+            weight: stroke
 					})
 
 					layer.bindPopup(function(e) {
 
 						return L.Util.template('<p>'
-							+ plugin_settings.indicator.legend.prepend + ' '
-							+ e.feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['decimals'] }) + ' '
+							+ plugin_settings.indicator.legend.prepend
+							// + e.feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['decimals'] }) + ' '
+							+ e.feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['decimals'] }) + ' '
 							+ plugin_settings.indicator.legend.append
 							+ '</p>')
 
@@ -368,7 +397,9 @@ var feature_index_prop = "sH_PGA",
 
 						click: function(e) {
 
-							if ( selection ) {
+							if (selection) {
+
+                // console.log(selection.feature)
 
 								// reset style of previously selected feature
 								selection.setStyle(plugin_instance._choro_style(selection.feature))
@@ -381,6 +412,8 @@ var feature_index_prop = "sH_PGA",
 						},
 
 						popupclose: function(e) {
+
+              // console.log(e.target.feature)
 
 							// reset the shape's style
 							selection.setStyle(plugin_instance._choro_style(e.target.feature))
@@ -509,7 +542,11 @@ var feature_index_prop = "sH_PGA",
 
 					plugin_settings.map.object.addLayer(plugin_settings.map.clusters)
 
-				}
+				},
+        complete: function() {
+          $('body').removeClass('spinner-on')
+					$('#spinner-progress').text('')
+        }
 			})
 
 			//
@@ -524,6 +561,8 @@ var feature_index_prop = "sH_PGA",
 				if (plugin_settings.current_view == 'detail') {
 
 					plugin_settings.map.current_zoom = e.target.getZoom()
+
+          plugin_settings.aggregation.previous = plugin_settings.aggregation.current.agg
 
 					plugin_instance.prep_for_api()
 
@@ -571,30 +610,35 @@ var feature_index_prop = "sH_PGA",
 
 			$('.app-sidebar').on('click', '.indicator-item', function() {
 
-				if (!$(this).hasClass('selected')) {
+        var this_indicator = JSON.parse($(this).attr('data-indicator'))
 
-					// close popup
+        if (this_indicator.key != plugin_settings.indicator.key) {
 
-					plugin_settings.map.object.closePopup()
+    			if (!$(this).hasClass('selected')) {
 
-					// switch retrofit off
+    				// close popup
 
-					if ($('#retrofit .togglebox').attr('data-state') == 'on') {
-						$('#retrofit .togglebox').trigger('click')
-					}
+    				plugin_settings.map.object.closePopup()
 
-					// set classes
+    				// switch retrofit off
 
-					$('.app-sidebar').find('.indicator-item').removeClass('selected')
-					$(this).addClass('selected')
+    				if ($('#retrofit .togglebox').attr('data-state') == 'on') {
+    					$('#retrofit .togglebox').trigger('click')
+    				}
 
-					// update layer
+    				// set classes
 
-					plugin_instance.set_indicator(JSON.parse($(this).attr('data-indicator')))
+    				$('.app-sidebar').find('.indicator-item').removeClass('selected')
+    				$(this).addClass('selected')
 
-					plugin_instance.get_layer()
+    				// update layer
 
-				}
+    				plugin_instance.set_indicator(this_indicator)
+    				plugin_instance.get_layer()
+
+    			}
+
+        }
 
 			})
 
@@ -613,8 +657,11 @@ var feature_index_prop = "sH_PGA",
 
 						plugin_settings.api.features = []
 
-						plugin_settings.api.aggregation = 'csd'
-						plugin_settings.api.agg_prop = 'csduid'
+            plugin_settings.aggregation.current = {}
+            plugin_settings.aggregation.previous = null
+
+						// plugin_settings.api.aggregation = 'csd'
+						// plugin_settings.api.agg_prop = 'csduid'
 						plugin_settings.api.bbox = null
 
 						// empty the data and shakemaps layer
@@ -650,7 +697,11 @@ var feature_index_prop = "sH_PGA",
 					success: function() {
 
 
-					}
+					},
+          complete: function() {
+	          $('body').removeClass('spinner-on')
+						$('#spinner-progress').text('')
+          }
 				})
 
 			})
@@ -699,7 +750,7 @@ var feature_index_prop = "sH_PGA",
 
 			plugin_settings.indicator = indicator
 
-			if (indicator.key == 'sh_PGA') {
+			if (indicator.key == 'sH_PGAXX') {
 				plugin_settings.api.limit = 1000
 			}
 
@@ -810,15 +861,14 @@ var feature_index_prop = "sH_PGA",
 
 			// set param values for initial view
 
-			plugin_settings.api.limit = 10
+			plugin_settings.api.limit = 100
 
 			var detail_html
 
 			// load the detail sidebar template
 
 			$(document).profiler('get_sidebar', {
-				url: 'scenarios/detail.php',
-				data: plugin_settings.scenario,
+				url: plugin_settings.scenario.url,
 				before: function() {
 
 					$('body').attr('data-sidebar-width', 'half')
@@ -967,7 +1017,7 @@ var feature_index_prop = "sH_PGA",
 				plugin_settings.map.object.closePopup()
 
 				// use the selected scenario to populate the API url
-				plugin_instance.update_api_url()
+				//plugin_instance.update_api_url()
 
 				// spinner
 				$('body').addClass('spinner-on')
@@ -984,7 +1034,7 @@ var feature_index_prop = "sH_PGA",
 				// if shakemap, run the elasticsearch function,
 				// if anything else, run the geoAPI function
 
-				if (plugin_settings.indicator.key == 'sh_PGA') {
+				if (plugin_settings.indicator.key == 'sH_PGAXX') {
 
 					// swap pane display
 
@@ -1032,14 +1082,14 @@ var feature_index_prop = "sH_PGA",
 
 					// pane/layer visibility
 
-					plugin_settings.map.layers.shake_choro.clearLayers()
-					plugin_settings.map.layers.shake_grid.clearLayers()
+					// plugin_settings.map.layers.shake_choro.clearLayers()
+					// plugin_settings.map.layers.shake_grid.clearLayers()
 
-					plugin_settings.map.object.removeLayer(plugin_settings.map.layers.shake_choro)
-					plugin_settings.map.object.removeLayer(plugin_settings.map.layers.shake_grid)
+					// plugin_settings.map.object.removeLayer(plugin_settings.map.layers.shake_choro)
+					// plugin_settings.map.object.removeLayer(plugin_settings.map.layers.shake_grid)
 
 					plugin_settings.map.panes.data.style.display = ''
-					plugin_settings.map.panes.shakemap.style.display = 'none'
+					// plugin_settings.map.panes.shakemap.style.display = 'none'
 
 
 				}
@@ -1055,37 +1105,35 @@ var feature_index_prop = "sH_PGA",
       var plugin_instance = this
       var plugin_settings = plugin_instance.options
 
-			if (plugin_settings.indicator.key == 'sh_PGA') {
-
-				url = elastic_url
-					+ '/opendrr_dsra_'
+			url = plugin_settings.api.base_URL
 					+ plugin_settings.scenario.key.toLowerCase()
-					+ '_indicators_' + plugin_settings.api.aggregation
-					+ '/_search'
+          + '_'
 
-				if (plugin_settings.map.current_zoom > 11) {
-					url += '?scroll=1m'
-				}
+      if (plugin_settings.indicator.key == 'sH_PGA') {
+        // url += 'shakemap_hexbin_' + plugin_settings.api.aggregation
+        url += 'shakemap_hexbin_' + plugin_settings.aggregation.current.agg
+      } else {
+        // url += 'indicators_' + plugin_settings.api.aggregation
+        url += 'indicators_' + plugin_settings.aggregation.current.agg
+      }
 
-			} else {
+      url += '/items?'
+					+ 'lang=' + plugin_settings.api.lang
+					+ '&f=json'
+					+ '&limit=' + plugin_settings.api.limit
 
-				url = plugin_settings.api.base_URL
-					+ plugin_settings.scenario.key.toLowerCase()
-					+ '_indicators_'
-					+ plugin_settings.api.aggregation
-					+ '/items?'
-					+ "lang=" + plugin_settings.api.lang
-					+ "&f=json"
-					+ "&limit=" + plugin_settings.api.limit
-					+ '&properties=' + plugin_settings.api.agg_prop + ','
+      if (plugin_settings.indicator.key !== 'sH_PGA') {
+				// url += '&properties=' + plugin_settings.api.agg_prop + ','
+				url += '&properties=' + plugin_settings.aggregation.current.prop + ','
 					 	+ plugin_settings.indicator.key
-					+ ((plugin_settings.indicator.retrofit !== false) ? '_' + plugin_settings.api.retrofit : '')
+  					+ ((plugin_settings.indicator.retrofit !== false) ? '_' + plugin_settings.api.retrofit : '')
+      }
 
-					if (plugin_settings.api.bbox !== null) {
-						url += '&bbox=' + plugin_settings.api.bbox
-					}
+      if (plugin_settings.api.bbox !== null) {
+        url += '&bbox=' + plugin_settings.api.bbox
+      }
 
-			}
+			// }
 
 			plugin_settings.api.geojson_URL = url
 
@@ -1100,130 +1148,110 @@ var feature_index_prop = "sH_PGA",
       var plugin_instance = this
       var plugin_settings = plugin_instance.options
 
-			console.log('prep', plugin_settings.indicator.key)
+			// console.log('prep', plugin_settings.indicator.key)
 
-			// SHAKEMAP OR OTHER
+      var fetch = false
 
-			if (plugin_settings.indicator.key == 'sh_PGA') {
+      // go through the aggregation settings to find the right keys
+      // for the current indicator and zoom level
 
-				// clear existing shakemap layers
-				plugin_settings.map.layers.shake_choro.clearLayers()
-				plugin_settings.map.layers.shake_grid.clearLayers()
+      var agg_key = 'default'
 
-				// remove the legend
-				plugin_settings.map.legend.remove()
+      if (plugin_settings.indicator.key == 'sH_PGA') {
+        agg_key = 'shake'
+      }
 
-				if ( plugin_settings.map.object.getZoom() > 11 ) {
+      plugin_settings.aggregation.settings[agg_key].forEach(function (i) {
 
-					plugin_settings.api.aggregation = 's'
+        // console.log('checking ' + plugin_settings.map.current_zoom + ' vs ' + i.min + ', ' + i.max )
 
-					// show shake choro layer
+        if (
+          plugin_settings.map.current_zoom >= i.min &&
+          plugin_settings.map.current_zoom <= i.max
+        ) {
 
-					plugin_settings.map.object.removeLayer(plugin_settings.map.layers.shake_grid)
-					plugin_settings.map.object.addLayer(plugin_settings.map.layers.shake_choro)
+          // found the agg settings that match the zoom level
 
-					// get feature data
-					plugin_instance.getFeatureData(scroll_id)
+          if (plugin_settings.aggregation.current.agg != i.agg) {
 
-				} else {
+            // agg settings doesn't match the plugin's current aggregation
 
-					plugin_settings.api.aggregation = 'b'
+            // plugin_settings.api.aggregation = i.agg
+            // plugin_settings.api.agg_prop = i.prop
 
-					// show shake grid layer
+            //
+            // // run the geoapi call
+            // fetch = true
 
-					plugin_settings.map.object.removeLayer(plugin_settings.map.layers.shake_choro)
-					plugin_settings.map.object.addLayer(plugin_settings.map.layers.shake_grid)
+            plugin_settings.aggregation.current = i
 
-					// get grid data
-					plugin_instance.getGridData()
+          }
 
-				}
+        }
 
-			} else {
+      })
 
-				var fetch = false
+      // conditions for fetching new data
+      // 1. zoom action changed the aggregation setting
+      // 2. previous aggregation is empty - initial load of scenario
+      // 3. current aggregation uses bbox
 
-				if ( plugin_settings.map.current_zoom > 10 ) {
+      if (
+        (
+          plugin_settings.aggregation.previous !== null &&
+          plugin_settings.aggregation.current.agg !== plugin_settings.aggregation.previous
+        ) ||
+        plugin_settings.aggregation.previous == null ||
+        plugin_settings.aggregation.current.bbox == true
+      ) {
 
-					if (plugin_settings.map.last_zoom <= 10) {
-						console.log('zoomed past 10')
-						plugin_settings.map.zoom_changed_agg = true
-					}
+        // console.log('changed agg')
 
-					// if zooming in past 10,
-					// always run it because we're using the bounding box
+        // plugin_settings.map.zoom_changed_agg = true
 
-					// reset the layer
-					plugin_settings.map.layers.choro.clearLayers()
-					plugin_settings.api.features = []
+        // RESET MAP FEATURES
 
-					// adjust the query and rebuild geojson_URL
-					var bounds = plugin_settings.map.object.getBounds()
+        // features
+        plugin_settings.api.features = []
 
-					plugin_settings.api.bbox = [
-						bounds.getSouthWest().lng,
-						bounds.getSouthWest().lat,
-						bounds.getNorthEast().lng,
-						bounds.getNorthEast().lat,
-					]
+        // clear layer
+        plugin_settings.map.layers.choro.clearLayers()
 
-					plugin_settings.api.limit = 500
-					plugin_settings.api.aggregation = 's'
-					plugin_settings.api.agg_prop = 'Sauid'
+        // reset legend max
+        plugin_settings.legend.max = 0
 
-					plugin_settings.legend.max = 0
+        // empty the API data array
+        plugin_settings.api.data = []
 
-					// empty the API data array
-					plugin_settings.api.data = []
+        // UPDATE PARAMS
 
-					// run the geoapi call
-					fetch = true
+        // bbox
 
-				} else if (plugin_settings.map.last_zoom > 10) {
+        if (plugin_settings.aggregation.current.bbox == true) {
 
-					plugin_settings.map.zoom_changed_agg = true
+          var bounds = plugin_settings.map.object.getBounds()
 
-					// if zooming out from 10
+          plugin_settings.api.bbox = [bounds.getSouthWest().lng, bounds.getSouthWest().lat, bounds.getNorthEast().lng, bounds.getNorthEast().lat]
 
-					// clear the layers
-					plugin_settings.map.layers.choro.clearLayers()
+        } else {
 
-					plugin_settings.api.features = []
-					plugin_settings.api.bbox = null
-					plugin_settings.api.limit = 10
-					plugin_settings.api.aggregation = 'csd'
-					plugin_settings.api.agg_prop = 'csduid'
+          plugin_settings.api.bbox = null
 
-					plugin_settings.legend.max = 0
+        }
 
-					// empty the API data array
-					plugin_settings.api.data = []
+        // limit
 
-					// run the geoapi call
-					fetch = true
+        plugin_settings.api.limit = plugin_settings.aggregation.current.limit
 
-				} else if (plugin_settings.api.data.length == 0) {
+        // run the geoapi call
+        fetch = true
 
-					// if initial load
+      }
 
-					// plugin_settings.api.features = []
-					plugin_settings.api.bbox = null
-					plugin_settings.api.limit = 10
-					plugin_settings.api.aggregation = 'csd'
-					plugin_settings.api.agg_prop = 'csduid'
-
-					plugin_settings.legend.max = 0
-
-					fetch = true
-
-				}
-
-				if (fetch == true) {
-					// run the geoapi call
-					plugin_instance.fetch_geoapi() // do legend
-				}
-
-			}
+      if (fetch == true) {
+        // run the geoapi call
+        plugin_instance.fetch_geoapi() // do legend
+      }
 
 
 		},
@@ -1279,6 +1307,10 @@ var feature_index_prop = "sH_PGA",
 								feature_val_key += '_' + plugin_settings.api.retrofit
 							}
 
+              if (plugin_settings.indicator.key == 'sH_PGA') {
+                feature_val_key = 'sH_PGA_max'
+              }
+
 							// check/update max value
 
 							if (feature.properties[feature_val_key] > plugin_settings.legend.max) {
@@ -1319,15 +1351,17 @@ var feature_index_prop = "sH_PGA",
 
 						// determine legend grades
 
-						console.log(plugin_settings.indicator)
-						console.log(plugin_settings.api.aggregation)
-						console.log(plugin_settings.indicator.aggregation[plugin_settings.api.aggregation])
+						// var max_step = plugin_settings.legend.max * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding'])
 
-						var max_step = plugin_settings.legend.max * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding']),
-								pow = 0,
+            var max_step = plugin_settings.legend.max * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
+
+            var pow = 0,
+                legend_steps = 9,
 								legend_step = 0
 
-						console.log('max ' + max_step)
+						plugin_settings.legend.grades = []
+
+						// console.log('max ' + max_step)
 
 						if (max_step >= 1) {
 
@@ -1338,39 +1372,33 @@ var feature_index_prop = "sH_PGA",
 
 							// create an array of breaks for the legend values
 
-							legend_step = max_step / 5
+							legend_step = max_step / legend_steps
 
 							// console.log('step', legend_step)
 
-							plugin_settings.legend.grades = [
-								(max_step - (legend_step)) * Math.pow(10, pow),
-								(max_step - (legend_step * 2)) * Math.pow(10, pow),
-								(max_step - (legend_step * 3)) * Math.pow(10, pow),
-								(max_step - (legend_step * 4)) * Math.pow(10, pow)
-							]
+              for (i = 1; i <= legend_steps; i += 1) {
+                plugin_settings.legend.grades.push((max_step - (legend_step * i)) * Math.pow(10, pow))
+              }
 
 						} else {
 
-							legend_step = max_step / 5
+							legend_step = max_step / legend_steps
 
-							console.log('step', legend_step)
+							// console.log('step', legend_step)
 
-							plugin_settings.legend.grades = [
-								max_step - (legend_step),
-								max_step - (legend_step * 2),
-								max_step - (legend_step * 3),
-								max_step - (legend_step * 4)
-							]
+              for (i = 1; i <= legend_steps; i += 1) {
+                plugin_settings.legend.grades.push(max_step - (legend_step * i))
+              }
 
 						}
 
-						console.log('legend', plugin_settings.legend.grades)
+						// console.log('legend', plugin_settings.legend.grades)
 
 					}
 
-					if (plugin_settings.map.zoom_changed_agg == true) {
-						plugin_settings.map.zoom_changed_agg = false
-					}
+					// if (plugin_settings.map.zoom_changed_agg == true) {
+					// 	plugin_settings.map.zoom_changed_agg = false
+					// }
 
 					plugin_instance.process_geoapi()
 
@@ -1393,12 +1421,13 @@ var feature_index_prop = "sH_PGA",
       var plugin_settings = plugin_instance.options
       //var plugin_elements = plugin_settings.elements
 
-			console.log('processing', plugin_settings.api.data)
+			// console.log('processing', plugin_settings.api.data)
+
 			$('#spinner-progress').text('Drawing layers')
 
 			// iterate through collections
 
-			if (plugin_settings.indicator.key == 'sh_PGA') {
+			if (plugin_settings.indicator.key == 'sH_PGAXX') {
 
 				// if the data is a shakemap
 
@@ -1431,11 +1460,15 @@ var feature_index_prop = "sH_PGA",
 
 							// console.log(feature.properties)
 
-							var prop_key = plugin_settings.indicator.key
+              var prop_key = plugin_settings.indicator.key
 
 							if (plugin_settings.indicator.retrofit !== false) {
 								prop_key += '_' + plugin_settings.api.retrofit
 							}
+
+              if (plugin_settings.indicator.key == 'sH_PGA') {
+                prop_key = 'sH_PGA_max'
+              }
 
 							// if the feature already exists on the map,
 
@@ -1447,7 +1480,11 @@ var feature_index_prop = "sH_PGA",
 
 							// update its color
 
-							var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding'])
+              // console.log(prop_key, feature.properties[prop_key])
+
+							// var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding'])
+
+              var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
 
 							plugin_settings.api.features[feature.id].setStyle({
 								fillColor: plugin_instance._choro_color(rounded_color)
@@ -1456,8 +1493,9 @@ var feature_index_prop = "sH_PGA",
 								// update the popup content
 
 								return L.Util.template('<p>'
-									+ plugin_settings.indicator.legend.prepend + ' '
-									+ feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['decimals'] })
+									+ plugin_settings.indicator.legend.prepend
+									// + feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['decimals'] })
+									+ feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['decimals'] })
 									+ ' '
 									+ plugin_settings.indicator.legend.append
 									+ '</p>'
@@ -1492,7 +1530,13 @@ var feature_index_prop = "sH_PGA",
 
 				// if retrofit is off, add the legend
 
-				if (plugin_settings.indicator.retrofit == true && plugin_settings.api.retrofit == 'b0') {
+				if (
+          plugin_settings.indicator.key == 'sH_PGA' ||
+          (
+            plugin_settings.indicator.retrofit == true &&
+            plugin_settings.api.retrofit == 'b0'
+          )
+        ) {
 
 					plugin_settings.map.legend.addTo(plugin_settings.map.object)
 
@@ -1539,15 +1583,17 @@ var feature_index_prop = "sH_PGA",
 		_choro_color: function(d) {
 
       var plugin_instance = this
-      //var plugin_item = this.item
       var plugin_settings = plugin_instance.options
-      //var plugin_elements = plugin_settings.elements
 
-			return d > plugin_settings.legend.grades[0] ? '#ff3b00' :
-				d > plugin_settings.legend.grades[1]   ? '#ff6500' :
-					d > plugin_settings.legend.grades[2]   ? '#ff9000' :
-						d > plugin_settings.legend.grades[3]   ? '#ffba00' :
-							'#fff176'
+			return d >= plugin_settings.legend.grades[0] ? '#800026' :
+				d >= plugin_settings.legend.grades[1] ? '#bd0026' :
+				d >= plugin_settings.legend.grades[2] ? '#e31a1c' :
+				d >= plugin_settings.legend.grades[3] ? '#fc4e2a' :
+				d >= plugin_settings.legend.grades[4] ? '#fd8d3c' :
+				d >= plugin_settings.legend.grades[5] ? '#feb24c' :
+				d >= plugin_settings.legend.grades[6] ? '#fed976' :
+				d >= plugin_settings.legend.grades[7] ? '#ffeda0' :
+        '#ffffcc'
 
 		},
 
@@ -1560,13 +1606,21 @@ var feature_index_prop = "sH_PGA",
 
 			// console.log(feature)
 
+      var stroke = 0.4
+
 			var prop_key = plugin_settings.indicator.key + ((plugin_settings.indicator.retrofit !== false) ? '_' + plugin_settings.api.retrofit : '')
 
-			var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding'])
+      if (plugin_settings.indicator.key == 'sH_PGA') {
+        prop_key = 'sH_PGA_max'
+        stroke = 0
+      }
+
+			// var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding'])
+			var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
 
 			return {
 					fillColor: plugin_instance._choro_color(rounded_color),
-					weight: 0.4,
+					weight: stroke,
 					fillOpacity: 0.7,
 					color: '#4b4d4d',
 					opacity: 1
@@ -1725,7 +1779,7 @@ var feature_index_prop = "sH_PGA",
 								"aggs": {
 									"avg_my_field": {
 										"avg": {
-											"field": "properties.sH_PGA"
+											"field": "properties.sH_PGAXX"
 										}
 									},
 									"large-grid": {
@@ -1926,7 +1980,7 @@ var feature_index_prop = "sH_PGA",
 
 		addGeoJSONFeatures: function( data, callback ) {
 
-			// adds sh_PGA choropleth in the map.layers.shake_choro layer
+			// adds sH_PGAXX choropleth in the map.layers.shake_choro layer
 
       var plugin_instance = this
       var plugin_settings = plugin_instance.options
