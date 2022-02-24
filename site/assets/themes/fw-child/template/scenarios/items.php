@@ -26,6 +26,10 @@
 	<div
 		class="sidebar-item scenario bg-white mb-2"
 		data-id="<?php echo get_the_ID(); ?>"
+		data-magnitude="<?php the_field ( 'scenario_magnitude' ); ?>"
+		data-deaths="<?php the_field ( 'scenario_deaths' ); ?>"
+		data-damage="<?php the_field ( 'scenario_damage' ); ?>"
+		data-dollars="<?php the_field ( 'scenario_dollars' ); ?>"
 		data-scenario='<?php
 
 			echo json_encode ( array (

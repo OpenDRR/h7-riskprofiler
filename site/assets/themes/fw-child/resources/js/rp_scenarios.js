@@ -708,7 +708,7 @@ var feature_index_prop = "sH_PGAXX",
 
 			// click the 'retrofit' toggle
 
-			$('#retrofit').click(function() {
+			$('#retrofit-toggle').click(function() {
 				if (!$(this).hasClass('disabled')) {
 
 					if (plugin_settings.api.retrofit == 'b0') {

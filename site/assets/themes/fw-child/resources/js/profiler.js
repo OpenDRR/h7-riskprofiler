@@ -167,10 +167,47 @@
 				},
 				complete: function() {
 
+					$('body').on('click', '.sort-item span', function(e) {
+
+
+						// sort by what
+
+						var sort_key = $(this).closest('.sort-item').attr('data-sort-key')
+
+						// sort order
+
+						var sort_order = $(this).text()
+
+						plugin_instance.sort_items(sort_key, sort_order)
+						console.log('click', sort_key, sort_order)
+
+					})
+
         }
 			})
 
     },
+
+		sort_items: function(sort_key, sort_order) {
+
+      var plugin_instance = this
+      var plugin_settings = plugin_instance.options
+
+			var result = $('body').find('.sidebar-item').sort(function (a, b) {
+
+			  var contentA = parseInt( $(a).attr('data-' + sort_key))
+			  var contentB = parseInt( $(b).attr('data-' + sort_key))
+
+				if (sort_order == 'asc') {
+					return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0
+				} else {
+					return (contentA > contentB) ? -1 : (contentA < contentB) ? 1 : 0
+				}
+			})
+
+			$('body').find('.sidebar-items').html(result)
+
+		},
 
 		center_map: function(fn_options) {
 
