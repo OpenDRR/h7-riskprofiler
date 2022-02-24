@@ -1,4 +1,0 @@
-[submodule "fw-parent"]
-	path = site/assets/themes
-	url = https://github.com/phil-evans/framework
-	branch = master
