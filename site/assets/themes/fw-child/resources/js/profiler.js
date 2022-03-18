@@ -46,6 +46,36 @@
 			$('<div id="spinner-overlay">').insertBefore('#spinner')
 			$('<div id="spinner-progress">').insertAfter('#spinner')
 
+			//
+			// ACTIONS
+			//
+
+			// CONTROLS
+
+			$('body').on('click', '.control-toggle', function() {
+
+				var this_control = $(this).attr('data-control')
+
+				if ($(this).hasClass('open')) {
+
+					$(this).removeClass('open')
+
+					$('body').find('#app-control-' + this_control).slideUp(200)
+
+				} else {
+
+					$('body').find('.control-toggle').removeClass('open')
+
+					$(this).addClass('open')
+
+					$('body').find('.app-sidebar-control').not('#app-control-' + this_control).slideUp(200)
+
+					$('body').find('#app-control-' + this_control).slideDown(200)
+
+				}
+
+			})
+
     },
 
     get_sidebar: function(fn_options) {
@@ -88,7 +118,7 @@
 					data: settings.data,
 					success: function(data) {
 
-						$('.app-sidebar-content').html(data).fadeIn(500)
+						$('.app-sidebar-content').html(data).fadeIn(500).scrollTop(0)
 
 						if (typeof settings.success == 'function') {
 	            settings.success(data)
@@ -167,19 +197,69 @@
 				},
 				complete: function() {
 
-					$('body').on('click', '.sort-item span', function(e) {
+					$('body').on('input', '#control-search-input', function() {
 
+						var search_val = $(this).val().toUpperCase(),
+								results
+
+						if (search_val != '') {
+
+							$('.sidebar-item-title').each(function() {
+
+								console.log($(this).text().toUpperCase(), search_val, $(this).text().toUpperCase().indexOf(search_val))
+
+								if ($(this).text().toUpperCase().indexOf(search_val) === -1) {
+
+									$(this).closest('.sidebar-item').hide()
+
+								} else {
+
+									$(this).closest('.sidebar-item').show()
+
+								}
+
+							})
+
+							// results = $('.sidebar-item-header:contains("' + search_val + '")')
+							//
+							// console.log(results)
+
+						} else {
+
+							$('body').find('.sidebar-item').show()
+
+						}
+
+					})
+
+					$('body').on('click', '.sort-item', function(e) {
 
 						// sort by what
 
-						var sort_key = $(this).closest('.sort-item').attr('data-sort-key')
+						var sort_key = $(this).attr('data-sort-key')
 
 						// sort order
 
-						var sort_order = $(this).text()
+						var sort_order = $(this).attr('data-sort-order')
+
+						if ($(this).hasClass('selected')) {
+
+							// already selected, reverse order
+
+							sort_order = (sort_order == 'asc') ? 'desc' : 'asc'
+
+						} else {
+
+							// not selected
+
+							$('body').find('.sort-item').removeClass('selected').attr('data-sort-order', 'asc')
+							$(this).addClass('selected')
+
+						}
+
+						$(this).attr('data-sort-order', sort_order)
 
 						plugin_instance.sort_items(sort_key, sort_order)
-						console.log('click', sort_key, sort_order)
 
 					})
 
@@ -195,17 +275,29 @@
 
 			var result = $('body').find('.sidebar-item').sort(function (a, b) {
 
-			  var contentA = parseInt( $(a).attr('data-' + sort_key))
-			  var contentB = parseInt( $(b).attr('data-' + sort_key))
+				var item = $(a).attr('data-' + sort_key)
+				var compare = $(b).attr('data-' + sort_key)
+
+				// console.log($(a).attr('data-' + sort_key), $(b).attr('data-' + sort_key))
+
+				if (!isNaN($(a).attr('data-' + sort_key))) {
+
+				  item = parseFloat(item)
+				  compare = parseFloat(compare)
+
+				}
 
 				if (sort_order == 'asc') {
-					return (contentA < contentB) ? -1 : (contentA > contentB) ? 1 : 0
+					return (item < compare) ? -1 : (item > compare) ? 1 : 0
 				} else {
-					return (contentA > contentB) ? -1 : (contentA < contentB) ? 1 : 0
+					return (item > compare) ? -1 : (item < compare) ? 1 : 0
 				}
+
 			})
 
 			$('body').find('.sidebar-items').html(result)
+
+			console.log('sort', sort_key, sort_order)
 
 		},
 

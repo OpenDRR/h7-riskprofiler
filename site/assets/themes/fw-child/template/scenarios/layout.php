@@ -16,22 +16,159 @@
 		</nav>
 	</div>
 
-	<div id="retrofit" class="app-retrofit d-flex align-items-center px-2 border-bottom border-left">
-		<div id="retrofit-toggle" class="disabled"></div>
-		<h6 class="mb-0">Toggle Retrofit</h6>
+	<div id="chart-toggle" class="app-retrofit d-flex align-items-center px-2 border-bottom border-left">
+		<div id="chart-togglebox" class="checked disabled"></div>
+		<h6 class="mb-0">Charts</h6>
+	</div>
+
+	<div id="retrofit-toggle" class="app-retrofit d-flex align-items-center px-2 border-bottom border-left">
+		<div id="retrofit-togglebox" class="disabled"></div>
+		<h6 class="mb-0">Retrofit</h6>
 	</div>
 </div>
 
 <div class="app-container">
 	<div class="app-sidebar" data-width="">
 		<div class="app-sidebar-controls">
-			<div id="app-control-sort" class="app-sidebar-sort collapse"></div>
-			<div id="app-control-filter" class="app-sidebar-filter collapse"></div>
+			<div id="app-control-sort" class="app-sidebar-control app-sidebar-sort"></div>
+			<?php /*<div id="app-control-filter" class="app-sidebar-control app-sidebar-filter"></div>*/ ?>
 		</div>
 
 		<div class="app-sidebar-content">
 			<p class="m-2 alert alert-info">Loading scenarios…</p>
 		</div>
+	</div>
+
+	<div class="app-charts">
+
+		<div class="chart-section has-tabs">
+			<div class="sticky-top p-2 bg-white border-bottom d-flex justify-content-between">
+				<h5 class="mb-0">By Building Type</h5>
+
+				<ul class="nav nav-pills chart-tabs" id="tabs-building-type" role="tablist">
+				  <li class="nav-item" role="presentation">
+				    <a
+							href="#tab-E_BldgTypeG"
+							id="tab-link-E_BldgTypeG"
+							class="nav-link active"
+							data-toggle="pill"
+							role="tab"
+							aria-controls="tab-E_BldgTypeG"
+							aria-selected="true"
+						>General</a>
+				  </li>
+
+					<li class="nav-item" role="presentation">
+				    <a
+							href="#tab-E_BldgTypeS"
+							id="tab-link-E_BldgTypeS"
+							class="nav-link"
+							data-toggle="pill"
+							role="tab"
+							aria-controls="tab-E_BldgTypeS"
+							aria-selected="false"
+						>Specific</a>
+				  </li>
+				</ul>
+
+				<!-- <div>
+					<ul class="list-unstyled d-flex mb-0 chart-tabs" id="tabs-building-type" role="tablist">
+						<li class="ml-1 px-1 active" data-toggle="list" href="#tab-E_BldgTypeG" role="tab">General</li>
+						<li class="ml-1 px-1" data-toggle="list" href="#tab-E_BldgTypeS" role="tab">Specific</li>
+					</ul>
+				</div> -->
+			</div>
+
+			<div id="charts-building-type" class="chart-tab-content tab-content">
+
+				<div id="tab-E_BldgTypeG" class="chart-tab tab-pane fade show active" role="tabpanel" aria-labelledby="tab-link-E_BldgTypeG">
+					<div id="chart-E_BldgTypeG" class="chart-container"></div>
+					<div id="legend-E_BldgTypeG" class="chart-legend"></div>
+				</div>
+
+				<div id="tab-E_BldgTypeS" class="chart-tab tab-pane fade" role="tabpanel" aria-labelledby="tab-link-E_BldgTypeS">
+					<div id="chart-E_BldgTypeS" class="chart-container"></div>
+					<div id="legend-E_BldgTypeS" class="chart-legend"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="sticky-top p-2 bg-white border-bottom">
+			<h5 class="mb-0">By Design Level</h5>
+		</div>
+
+		<div id="charts-design-level" class="chart-tab-content">
+			<div id="chart-E_BldgDesLev" class="chart-container"></div>
+			<div id="legend-E_BldgDesLev" class="chart-legend"></div>
+		</div>
+
+		<div class="chart-section has-tabs">
+			<div class="sticky-top p-2 bg-white border-bottom d-flex justify-content-between">
+				<h5 class="mb-0">By Occupancy Class</h5>
+
+				<ul class="nav nav-pills chart-tabs" id="tabs-building-type" role="tablist">
+				  <li class="nav-item" role="presentation">
+				    <a
+							href="#tab-E_BldgOccG"
+							id="tab-link-E_BldgOccG"
+							class="nav-link active"
+							data-toggle="pill"
+							role="tab"
+							aria-controls="tab-E_BldgOccG"
+							aria-selected="true"
+						>General</a>
+				  </li>
+
+					<li class="nav-item" role="presentation">
+				    <a
+							href="#tab-E_BldgOccS1"
+							id="tab-link-E_BldgOccS1"
+							class="nav-link"
+							data-toggle="pill"
+							role="tab"
+							aria-controls="tab-E_BldgOccS1"
+							aria-selected="false"
+						>Specific</a>
+				  </li>
+				</ul>
+			</div>
+
+			<div id="charts-building-type" class="chart-tab-content tab-content">
+
+				<div id="tab-E_BldgOccG" class="chart-tab tab-pane fade show active" role="tabpanel" aria-labelledby="tab-link-E_BldgOccG">
+					<div id="chart-E_BldgOccG" class="chart-container"></div>
+					<div id="legend-E_BldgOccG" class="chart-legend"></div>
+				</div>
+
+				<div id="tab-E_BldgOccS1" class="chart-tab tab-pane fade" role="tabpanel" aria-labelledby="tab-link-E_BldgTypeS">
+					<div id="chart-E_BldgOccS1" class="chart-container"></div>
+					<div id="legend-E_BldgOccS1" class="chart-legend"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- <div class="sticky-top p-2 bg-white border-bottom d-flex justify-content-between">
+			<h5 class="mb-0">By Occupancy Class</h5>
+
+			<div>
+				<ul class="list-unstyled d-flex mb-0">
+					<li class="ml-1 px-1"><a href="#tab-chart-E_BldgOccG">General</a></li>
+					<li class="ml-1 px-1"><a href="#tab-chart-E_BldgOccS">Specific</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="charts-occupancy" class="chart-tab-content">
+			<div class="chart-tab">
+				<div id="chart-E_BldgOccG" class="chart-container"></div>
+				<div id="legend-E_BldgOccG" class="chart-legend"></div>
+			</div>
+
+			<div class="chart-tab">
+				<div id="chart-E_BldgOccS1" class="chart-container"></div>
+				<div id="legend-E_BldgOccS1" class="chart-legend"></div>
+			</div>
+		</div> -->
 	</div>
 
 	<div class="app-map">

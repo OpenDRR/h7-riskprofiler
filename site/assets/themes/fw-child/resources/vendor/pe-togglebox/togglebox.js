@@ -46,7 +46,7 @@
 
       var init_state = 'off';
 
-      if (plugin_item.is(':checked')) {
+      if (plugin_item.is(':checked') || plugin_item.hasClass('checked')) {
         init_state = 'on';
       }
 
@@ -165,7 +165,13 @@
 
       var settings = $.extend(true, defaults, fn_options);
 
-    }
+    },
+
+		get_state: function(fn_options) {
+
+			return plugin_item.attr('data-state')
+
+		}
 
   }
 

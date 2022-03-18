@@ -26,6 +26,7 @@
 	<div
 		class="sidebar-item scenario bg-white mb-2"
 		data-id="<?php echo get_the_ID(); ?>"
+		data-name="<?php the_title(); ?>"
 		data-magnitude="<?php the_field ( 'scenario_magnitude' ); ?>"
 		data-deaths="<?php the_field ( 'scenario_deaths' ); ?>"
 		data-damage="<?php the_field ( 'scenario_damage' ); ?>"
@@ -48,9 +49,9 @@
 		?>'
 	>
 		<div class="sidebar-item-header d-flex">
-			<h5 class="flex-grow-1 p-3 mb-0"><?php the_title(); ?></h5>
+			<h5 class="sidebar-item-title flex-grow-1 p-3 mb-0"><?php the_title(); ?></h5>
 
-			<h5 class="d-flex align-items-center mb-0 p-2 border-left">
+			<h5 class="sidebar-item-magnitude d-flex align-items-center mb-0 p-2 border-left">
 				<span class="rp-icon icon-chart text-primary mr-1"></span>
 				<span><?php echo number_format_i18n ( get_field ( 'scenario_magnitude' ), 1 ); ?></span>
 			</h5>

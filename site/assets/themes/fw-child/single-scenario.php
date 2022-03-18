@@ -10,21 +10,21 @@
 <div class="sidebar-detail scenario">
 	<div class="container-fluid py-5">
 		<div class="row justify-content-center mb-5">
-			<div class="col-8">
+			<div class="col-10">
 				<h4 class="text-white mb-0"><?php the_title(); ?></h4>
 			</div>
 		</div>
 
 		<div class="row justify-content-center">
-			<div class="col-8">
+			<div class="col-10">
 
 				<div class="card mx-n3">
 					<div class="card-header text-primary border-bottom"><?php _e ( 'Scenario', 'rp' ); ?></div>
 
 					<div class="card-body">
-						<div class="row row-cols-4 data-cols mb-3">
+						<div class="row row-cols-2 data-cols">
 
-							<div class="">
+							<div class="mb-3">
 								<h6><?php _e ( 'Magnitude', 'rp' ); ?></h6>
 
 								<p class="d-flex align-items-center">
@@ -37,7 +37,7 @@
 								</p>
 							</div>
 
-							<div>
+							<div class="mb-3">
 								<h6>Deaths</h6>
 								<p><?php
 
@@ -46,7 +46,7 @@
 								?></p>
 							</div>
 
-							<div>
+							<div class="mb-3">
 								<h6>Damage</h6>
 								<p><?php
 
@@ -57,7 +57,7 @@
 								?></p>
 							</div>
 
-							<div>
+							<div class="mb-3">
 								<h6>Dollars</h6>
 								<p><?php
 
@@ -78,13 +78,13 @@
 		</div>
 
 		<div class="row justify-content-center my-5">
-			<div class="col-8">
+			<div class="col-10">
 				<h6 class="text-white mb-0"><?php _e ( 'Indicators', 'rp' ); ?></h6>
 			</div>
 		</div>
 
 		<div class="row justify-content-center">
-			<div class="col-8 accordion" id="scenario-detail-indicators">
+			<div class="col-10 accordion" id="scenario-detail-indicators">
 
 				<div class="card mx-n3">
 					<div
@@ -121,9 +121,7 @@
 						aria-labelledby="detail-shake-head"
 					>
 						<div class="card-body">
-							<div class="">
-								<p>chart</p>
-							</div>
+
 						</div>
 					</div>
 				</div>
@@ -212,7 +210,7 @@
 
 								?>
 
-								<li class="indicator-item border-bottom px-3 py-1" data-indicator='{
+								<li class="indicator-item border-bottom" data-indicator='{
 									"key": "<?php the_field ( 'indicator_key' ); ?>",
 									"label": "<?php echo $indicator_title; ?>",
 									"retrofit": <?php
@@ -231,7 +229,10 @@
 										}
 									},
 									"legend": <?php echo json_encode ( get_field ( 'indicator_label' ) ); ?>
-								}'><?php the_title(); ?></li>
+								}'>
+									<span class="d-block px-3 py-1"><?php the_title(); ?></span>
+									<div id="<?php echo get_the_slug(); ?>-charts" class="indicator-charts"></div>
+								</li>
 
 								<?php
 
@@ -239,10 +240,6 @@
 
 								?>
 							</ul>
-
-							<div class="">
-								<p>chart</p>
-							</div>
 						</div>
 					</div>
 				</div>

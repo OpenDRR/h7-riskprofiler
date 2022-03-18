@@ -167,6 +167,54 @@ $app-transition: 0.25s;
 			display: flex;
 			flex-direction: column;
 		}
+
+		&[data-mode="scenario-detail"] {
+			.app-head {
+				.app-controls {
+					left: -25vw;
+					width: 0;
+				}
+
+				.app-head-back {
+					opacity: 1;
+					left: 0;
+					width: 3rem;
+				}
+			}
+
+			&.indicator-selected {
+				&.charts-on {
+					.app-charts {
+						left: 25%;
+						opacity: 1;
+						transition: left 0.25s ease 0s, opacity 0.1s ease 0s;
+					}
+
+					.leaflet-left {
+						left: 50%;
+					}
+
+					.legend .items {
+						width: 50vw;
+					}
+				}
+			}
+		}
+
+		&[data-mode="risk-detail"] {
+			.app-head {
+				.app-controls {
+					left: -25vw;
+					width: 0;
+				}
+
+				.app-head-back {
+					opacity: 1;
+					left: 0;
+					width: 3rem;
+				}
+			}
+		}
 	}
 
 	// container
@@ -181,31 +229,7 @@ $app-transition: 0.25s;
 	.app-head {
 		display: flex;
 
-		&[data-mode="scenario-detail"] {
-			.app-controls {
-				left: -25vw;
-				width: 0;
-			}
 
-			.app-head-back {
-				opacity: 1;
-				left: 0;
-				width: 3rem;
-			}
-		}
-
-		&[data-mode="risk-detail"] {
-			.app-controls {
-				left: -25vw;
-				width: 0;
-			}
-
-			.app-head-back {
-				opacity: 1;
-				left: 0;
-				width: 3rem;
-			}
-		}
 	}
 
 	// back button
@@ -252,11 +276,15 @@ $app-transition: 0.25s;
 		}
 
 		.control-toggle {
-			background-color: $gray-600;
+			background-color: $gray-700;
 			transition: $app-transition;
 
 			&:hover {
-				background-color: $gray-700;
+				background-color: lighten($gray-700, 5%);
+			}
+
+			&.open {
+				background-color: $gray-600;
 			}
 		}
 	}
@@ -264,16 +292,126 @@ $app-transition: 0.25s;
 	// sidebar
 
 	.app-sidebar {
+		display: flex;
+		flex-direction: column;
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 25%;
+		height: 100%;
+		background-color: transparentize($gray-500, 0.08);
+		box-shadow: 0.25rem 0 transparentize($gray-900, 0.9);
+		transition: $app-transition;
+		z-index: 10;
+	}
+
+	.app-sidebar-control {
+		display: none;
+		background-color: $gray-600;
+		color: $white;
+
+		.sort-item {
+			display: flex;
+			align-items: center;
+			padding-left: 0.625rem;
+			padding-right: 0.625rem;
+			transition: 0.25s;
+			cursor: pointer;
+
+			&[data-sort-order="desc"] {
+				i {
+					transform: rotate(180deg);
+				}
+			}
+
+			&:hover {
+				background-color: $gray-700;
+			}
+
+			&.selected {
+				background-color: $gray-200;
+				color: $body-color;
+
+				i {
+					opacity: 1;
+					color: $primary;
+				}
+			}
+
+			h6 {
+				font-size: 0.75rem;
+			}
+
+			i {
+				font-size: 0.875rem;
+				opacity: 0.25;
+				transition: 0.25s;
+			}
+		}
+	}
+
+	.app-sidebar-content {
+		flex-grow: 1;
+		overflow: auto;
+	}
+
+	// charts
+
+	.app-charts {
 		position: absolute;
 		left: 0;
 		top: 0;
 		width: 25%;
 		height: 100%;
 		overflow: auto;
-		background-color: transparentize($gray-500, 0.08);
+		background: transparentize($white, 0.08);
 		box-shadow: 0.25rem 0 transparentize($gray-900, 0.9);
-		transition: $app-transition;
-		z-index: 10;
+		opacity: 0;
+		transition: left 0.25s ease 0s, opacity 0.1s ease 0.15s;
+		z-index: 5;
+
+		.chart-tab-content {
+			padding: 0.75rem;
+		}
+
+		.chart-legend {
+			display: flex;
+			flex-wrap: wrap;
+			padding: 0.75rem;
+			background-color: $gray-100;
+			font-size: 0.75rem;
+		}
+
+		.legend-item {
+			display: flex;
+			align-items: center;
+			flex: 0 0 50%;
+
+			.symbol {
+				width: 10px;
+				height: 10px;
+				margin-right: 0.75rem;
+				border-radius: 50%;
+			}
+		}
+
+		.sticky-top {
+			box-shadow: 0 -1px $light;
+		}
+
+		.chart-tabs {
+			font-size: 0.75rem;
+			text-transform: uppercase;
+
+			a {
+				padding: 0.125rem 0.625rem;
+				color: $body-color;
+
+				&.active {
+					color: $white;
+				}
+			}
+		}
 	}
 
 	// breadcrumb
@@ -300,36 +438,35 @@ $app-transition: 0.25s;
 		}
 	}
 
-	// retrofit
+	// retrofit/chart toggles
 
-	#retrofit {
-		.togglebox {
-			margin-right: 0.75rem;
-			border-radius: 50px;
+	.togglebox {
+		margin-right: 0.75rem;
+		border-radius: 50px;
 
+		.switch {
+			box-shadow: none;
+			border-radius: 50%;
+			border: 3px solid $gray-100;
+		}
+
+		&[data-state=on] {
 			.switch {
-				box-shadow: none;
-				border-radius: 50%;
-				border: 3px solid $gray-100;
-			}
-
-			&[data-state=on] {
-				.switch {
-					background-color: $white;
-					border-color: $gray-500;
-				}
-			}
-
-			&.disabled {
-				opacity: 0.5;
-				cursor: not-allowed;
+				background-color: $white;
+				border-color: $gray-500;
 			}
 		}
 
-		h6 {
-			font-size: 0.625rem;
+		&.disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
 		}
 	}
+
+	h6 {
+		font-size: 0.625rem;
+	}
+
 
 	// map
 
@@ -441,7 +578,8 @@ $app-transition: 0.25s;
 
 		.items {
 			display: flex;
-			width: 50vw;
+			width: 75vw;
+			transition: 0.25s;
 		}
 
 		.legend-item {

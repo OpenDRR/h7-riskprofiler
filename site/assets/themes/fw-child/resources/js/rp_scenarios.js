@@ -2,7 +2,8 @@ const geoapi_url = 'https://geo-api.stage.riskprofiler.ca'
 const elastic_url = 'https://api.stage.riskprofiler.ca'
 
 // var feature_index = "opendrr_dsra_sim9p0_cascadiainterfacebestfault_indicators_s",
-var feature_index_prop = "sH_PGAXX",
+var charts_to_process = [],
+		feature_index_prop = "sH_PGAXX",
 		base_url = elastic_url + '/',
 		featureLimit = 10000,
 		markers = [],
@@ -67,10 +68,47 @@ var feature_index_prop = "sH_PGAXX",
 				},
 				markers: null,
 				selected_marker: null,
+				selected_feature: null,
 				geojsonLayer: null,
 				current_zoom: 4,
 				last_zoom: -1,
 				zoom_changed_agg: false
+			},
+			charts: {
+				enabled: true,
+				container: $('.app-charts'),
+				elements: [
+					{
+						name: 'Building Type (G)',
+						field: 'E_BldgTypeG',
+						size: 100,
+						object: null
+					},
+					{
+						name: 'Building Type (S)',
+						field: 'E_BldgTypeS',
+						size: 100,
+						object: null
+					},
+					{
+						name: 'Design Level',
+						field: 'E_BldgDesLev',
+						size: 6,
+						object: null
+					},
+					{
+						name: 'Occupancy Class (G)',
+						field: 'E_BldgOccG',
+						size: 29,
+						object: null
+					},
+					{
+						name: 'Occupancy Class (S1)',
+						field: 'E_BldgOccS1',
+						size: 29,
+						object: null
+					}
+				]
 			},
 			breadcrumbs: {
 				'init': [
@@ -388,7 +426,6 @@ var feature_index_prop = "sH_PGAXX",
 
 						return L.Util.template('<p>'
 							+ plugin_settings.indicator.legend.prepend
-							// + e.feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['decimals'] }) + ' '
 							+ e.feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['decimals'] }) + ' '
 							+ plugin_settings.indicator.legend.append
 							+ '</p>')
@@ -409,6 +446,15 @@ var feature_index_prop = "sH_PGAXX",
 							selection = e.target
 							selection.setStyle(plugin_instance._choro_selected_style())
 
+							plugin_settings.map.selected_feature = selection.feature
+
+							if (
+								plugin_settings.charts.enabled == true &&
+								plugin_settings.indicator.key !== 'sH_PGA'
+							) {
+								plugin_instance.get_charts()
+							}
+
 						},
 
 						popupclose: function(e) {
@@ -417,6 +463,15 @@ var feature_index_prop = "sH_PGAXX",
 
 							// reset the shape's style
 							selection.setStyle(plugin_instance._choro_style(e.target.feature))
+
+							plugin_settings.map.selected_feature = null
+
+							if (
+								plugin_settings.charts.enabled == true &&
+								plugin_settings.indicator.key !== 'sH_PGA'
+							) {
+								plugin_instance.get_charts()
+							}
 
 						}
 
@@ -433,9 +488,18 @@ var feature_index_prop = "sH_PGAXX",
 
 			// $('.app-controls .control-toggle').click(function() {})
 
+			// CHARTS
+
+			$('.app-main').addClass('charts-on')
+
+			$('#chart-togglebox').togglebox({
+				off: '',
+				on: ''
+			})
+
 			// RETROFIT
 
-			$('#retrofit-toggle').togglebox({
+			$('#retrofit-togglebox').togglebox({
 				off: '',
 				on: ''
 			})
@@ -550,6 +614,88 @@ var feature_index_prop = "sH_PGAXX",
 			})
 
 			//
+			// INITIALIZE CHARTS
+			//
+
+			Highcharts.setOptions({
+		    lang: {
+		      thousandsSep: ','
+		    }
+		  })
+
+			plugin_settings.charts.elements.forEach(function(request, i) {
+				// console.log(request.field, $('#chart-' + request.field))
+
+				request.object = Highcharts.chart('chart-' + request.field, {
+					tooltip: {
+						useHTML: true,
+						headerFormat: '',
+						formatter: function() {
+
+							return '<strong>' + this.series.name + ':</strong> '
+								+ plugin_settings.indicator.legend.prepend
+								+ this.y.toLocaleString(undefined, {
+									maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['decimals']
+								})
+								+ ' '
+								+ plugin_settings.indicator.legend.append
+
+						}
+					},
+					chart: {
+						type: 'column',
+				    height: 250,
+						marginLeft: 60,
+						styledMode: true
+					},
+					title: {
+						enabled: false,
+						text: null, //'By ' + request.name,
+						align: 'left',
+						x: 0
+					},
+					xAxis: {
+						labels: {
+							enabled: false
+						},
+						tickLength: 0
+					},
+					yAxis: {
+						min: 0,
+						title: { enabled: false },
+						labels: {
+							x: -5,
+						}
+					},
+					plotOptions: {
+						column: {
+							groupPadding: 0.02,
+							pointPadding: 0.2,
+							borderWidth: 0
+						}
+					},
+					series: [],
+					legend: {
+						enabled: false,
+						width: '100%',
+						maxHeight: 100,
+						margin: 10
+					}
+				}, function (chart) {
+
+
+		    })
+
+			})
+
+			// tabs
+
+			$('.chart-section.has-tabs li').on('click', function (e) {
+			  e.preventDefault()
+			  $(this).tab('show')
+			})
+
+			//
 			// EVENTS
 			//
 
@@ -622,8 +768,8 @@ var feature_index_prop = "sH_PGAXX",
 
     				// switch retrofit off
 
-    				if ($('#retrofit .togglebox').attr('data-state') == 'on') {
-    					$('#retrofit .togglebox').trigger('click')
+    				if ($('#retrofit-toggle .togglebox').attr('data-state') == 'on') {
+    					$('#retrofit-toggle .togglebox').trigger('click')
     				}
 
     				// set classes
@@ -685,7 +831,8 @@ var feature_index_prop = "sH_PGAXX",
 
 						// reset interface atts
 						$('body').attr('data-sidebar-width', '')
-						$('.app-head').attr('data-mode', '')
+						$('.app-main').attr('data-mode', '')
+						$('.app-main').removeClass('indicator-selected')
 
 						// reset the last_zoom flag
 						plugin_settings.map.last_zoom = -1
@@ -706,9 +853,35 @@ var feature_index_prop = "sH_PGAXX",
 
 			})
 
+			// click the chart toggle
+
+			$('#chart-toggle .togglebox').click(function() {
+
+				if (!$(this).hasClass('disabled')) {
+
+					if (plugin_settings.charts.enabled == true) {
+
+						plugin_settings.charts.enabled = false
+
+						$('.app-main').removeClass('charts-on')
+
+					} else {
+
+						plugin_settings.charts.enabled = true
+
+						$('.app-main').addClass('charts-on')
+
+						plugin_instance.get_charts()
+
+					}
+
+				}
+
+			})
+
 			// click the 'retrofit' toggle
 
-			$('#retrofit-toggle').click(function() {
+			$('#retrofit-toggle .togglebox').click(function() {
 				if (!$(this).hasClass('disabled')) {
 
 					if (plugin_settings.api.retrofit == 'b0') {
@@ -756,10 +929,10 @@ var feature_index_prop = "sH_PGAXX",
 
 			// console.log(indicator)
 
-			$('#retrofit-toggle').togglebox('enable')
+			$('#retrofit-togglebox').togglebox('enable')
 
 			if (indicator.retrofit == false) {
-				$('#retrofit-toggle').togglebox('disable')
+				$('#retrofit-togglebox').togglebox('disable')
 			}
 
 		},
@@ -859,6 +1032,15 @@ var feature_index_prop = "sH_PGAXX",
 
 			console.log('detail', plugin_settings.scenario.key)
 
+			// close the controls
+
+			$('body').find('.control-toggle').removeClass('open')
+			$('body').find('.app-sidebar-control').slideUp(200)
+
+			// reset the sort/filter
+			$('body').find('.controls-search input').val('')
+			$('body').find('.sort-item').removeClass('selected').attr('data-sort-order-', 'asc').first().addClass('selected')
+
 			// set param values for initial view
 
 			plugin_settings.api.limit = 100
@@ -871,8 +1053,8 @@ var feature_index_prop = "sH_PGAXX",
 				url: plugin_settings.scenario.url,
 				before: function() {
 
-					$('body').attr('data-sidebar-width', 'half')
-					$('.app-head').attr('data-mode', 'scenario-detail')
+					// $('body').attr('data-sidebar-width', 'half')
+					$('.app-main').attr('data-mode', 'scenario-detail')
 
 				},
 				success: function(data) {
@@ -925,8 +1107,6 @@ var feature_index_prop = "sH_PGAXX",
 					plugin_instance.do_breadcrumb('detail')
 
 					$('.app-breadcrumb .breadcrumb').find('#breadcrumb-scenario-name').text(plugin_settings.scenario.title)
-
-					// $('.app-sidebar').find('.accordion').on('click', '.')
 
 				}
 			})
@@ -1092,6 +1272,30 @@ var feature_index_prop = "sH_PGAXX",
 					// plugin_settings.map.panes.shakemap.style.display = 'none'
 
 
+
+
+				}
+
+				if (plugin_settings.indicator.key == 'sH_PGA') {
+
+					$('.app-main').removeClass('indicator-selected')
+
+					$('#chart-togglebox').togglebox('disable')
+
+				} else {
+
+					$('.app-main').addClass('indicator-selected')
+					$('#chart-togglebox').togglebox('enable')
+
+					// get charts
+
+					if (
+						plugin_settings.charts.enabled == true &&
+						plugin_settings.indicator.key !== 'sH_PGA'
+					) {
+						plugin_instance.get_charts()
+					}
+
 				}
 
 				plugin_instance.prep_for_api()
@@ -1250,9 +1454,81 @@ var feature_index_prop = "sH_PGAXX",
 
       if (fetch == true) {
         // run the geoapi call
-        plugin_instance.fetch_geoapi() // do legend
+        plugin_instance.fetch_geoapi()
+
+				// plugin_instance.get_tiles()
       }
 
+
+		},
+
+		get_tiles: function() {
+
+      var plugin_instance = this
+      var plugin_settings = plugin_instance.options
+
+			var map = plugin_settings.map.object
+
+			var vectorTileOptions = {
+        rendererFactory: L.canvas.tile,
+        interactive: true,
+        getFeatureId: function(feature) {
+          return feature.properties['csduid']
+        },
+        vectorTileLayerStyles: {
+          dsra_acm7p0_georgiastraitfault_indicators_s: function ( properties ) {
+            var r = properties.sCt_Res90_b0,
+                color = "#666666";
+
+            if ( r < 10  ) { fillColor = "#fff176"; }
+            else if ( r >= 10 && r < 50  ) { fillColor = "#ffba00"; }
+            else if ( r >= 50 && r < 100 ) { fillColor = "#ff9000"; }
+            else if ( r >= 100 && r < 300 ) { fillColor = "#ff6500"; }
+            else if ( r > 299 ) { fillColor = "#ff3b00"; }
+
+            return {
+              weight: 0.1,
+              color: color,
+              fillColor: fillColor,
+              fillOpacity: 0.6,
+              fill: true
+            }
+          }
+        }
+      }
+
+      var id = 0;
+
+      var vectorTileLayer = L.vectorGrid.protobuf( 'OpenDRR_dsra_' + plugin_settings.scenario.key.toLowerCase() + '_indicators_s/EPSG_900913/{z}/{x}/{y}.pbf', vectorTileOptions ).addTo( map );
+
+      vectorTileLayer.on( 'click', function ( e ) {
+
+        // if we have a selected feature reset the style
+        if ( id != 0 ) {
+            vectorTileLayer.resetFeatureStyle( id );
+        }
+
+        // set the selected feature id
+        id = e.layer.properties['Sauid'];
+
+        // set the selected feature style
+        setTimeout( function () {
+          vectorTileLayer.setFeatureStyle( id, {
+            fill: true,
+            fillColor: 'blue',
+            color: 'black',
+            weight: 1,
+            fillOpacity: 0.5
+          }, 100 );
+        });
+
+        // add a popup with desired property
+        L.popup().setContent( "<strong>Residents affected after 90 days: </strong>" + e.layer.properties.sCt_Res90_b0.toString() )
+          .setLatLng( e.latlng )
+          .openOn( map );
+
+        L.DomEvent.stop( e );
+      });
 
 		},
 
@@ -1271,21 +1547,6 @@ var feature_index_prop = "sH_PGAXX",
 
 			$('body').addClass('spinner-on')
 			$('#spinner-progress').text('Retrieving data')
-
-			// do we need to redo the legend?
-			// - anytime we're loading a new indicator
-			// - the zoom action changed the aggregation level
-
-			// if (
-			// 	( plugin_settings.api.data.length == 0 &&
-			// 		( plugin_settings.indicator.retrofit == false || plugin_settings.api.retrofit == 'b0' ) ) ||
-			// 	plugin_settings.map.zoom_changed_agg == true
-			// ) {
-			//
-			// 	console.log('do legend stuff')
-			//
-			// 	redo_legend = true
-			// }
 
 			$.getJSON(url, function (data) {
 
@@ -1340,6 +1601,7 @@ var feature_index_prop = "sH_PGAXX",
 
 				if (nxt_lnk) {
 
+					// recursive
  					// inherit do_legend setting
 					plugin_instance.fetch_geoapi(nxt_lnk, do_legend)
 
@@ -1482,8 +1744,6 @@ var feature_index_prop = "sH_PGAXX",
 
               // console.log(prop_key, feature.properties[prop_key])
 
-							// var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['rounding'])
-
               var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
 
 							plugin_settings.api.features[feature.id].setStyle({
@@ -1494,7 +1754,6 @@ var feature_index_prop = "sH_PGAXX",
 
 								return L.Util.template('<p>'
 									+ plugin_settings.indicator.legend.prepend
-									// + feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.api.aggregation]['decimals'] })
 									+ feature.properties[prop_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['decimals'] })
 									+ ' '
 									+ plugin_settings.indicator.legend.append
@@ -1555,7 +1814,7 @@ var feature_index_prop = "sH_PGAXX",
 
 			// update breadcrumb
 
-			$('.app-breadcrumb .breadcrumb').find('#breadcrumb-scenario-indicator').text(plugin_settings.indicator.title)
+			$('.app-breadcrumb').find('#breadcrumb-scenario-indicator').text(plugin_settings.indicator.label)
 
 			// remove progress
 			$('body').removeClass('spinner-on')
@@ -1846,7 +2105,7 @@ var feature_index_prop = "sH_PGAXX",
 
 						// update breadcrumb
 
-						$('.app-breadcrumb .breadcrumb').find('#breadcrumb-scenario-indicator').text(plugin_settings.indicator.title)
+						$('.app-breadcrumb .breadcrumb').find('#breadcrumb-scenario-indicator').text(plugin_settings.indicator.label)
 
 					},
 					fail: function(error) {
@@ -1959,7 +2218,7 @@ var feature_index_prop = "sH_PGAXX",
 
 						// update breadcrumb
 
-						$('.app-breadcrumb .breadcrumb').find('#breadcrumb-scenario-indicator').text(plugin_settings.indicator.title)
+						$('.app-breadcrumb .breadcrumb').find('#breadcrumb-scenario-indicator').text(plugin_settings.indicator.label)
 
 					},
 					fail: function(error) {
@@ -1998,8 +2257,191 @@ var feature_index_prop = "sH_PGAXX",
 				plugin_settings.map.layers.shake_choro.addData( features );
 
 				if ( callback ) {
-					callback();
+					callback()
 				}
+		},
+
+		get_charts: function(fn_options) {
+
+			var plugin_instance = this
+			var plugin_settings = plugin_instance.options
+
+			plugin_settings.charts.elements.forEach(function(request, i) {
+
+				// console.log('updating chart ' + request.field)
+
+				var request_data = {
+					"aggs": {
+						"0": {
+							"terms": {
+								"field": 'properties.' + request.field + '.keyword',
+								"order": {
+									"1": "desc"
+								},
+								"size": request.size
+							},
+							"aggs": {
+								"1": {
+									"sum": {
+										"field": "properties." + plugin_settings.indicator.key.replace('t_', '_') + '_' + plugin_settings.api.retrofit
+									}
+								}
+							}
+						}
+					},
+					"size": 0,
+					"fields": [],
+					"script_fields": {},
+					"stored_fields": [
+						"*"
+					],
+					"runtime_mappings": {},
+					"_source": {
+						"excludes": []
+					},
+					"query": {
+						"bool": {
+							"must": [],
+							"filter": [],
+							"should": [],
+							"must_not": []
+						}
+					}
+				}
+
+				if (plugin_settings.map.selected_feature != null) {
+
+					console.log('add shape ID to chart request', plugin_settings.map.selected_feature.properties.csduid)
+
+					request_data['query'] = {
+				    "bool": {
+				      "must": [],
+				      "filter": [
+				        {
+				          "bool": {
+				            "should": [
+				              {
+				                "match_phrase": {
+				                  "properties.csduid.keyword": plugin_settings.map.selected_feature.properties.csduid
+				                }
+				              }
+				            ],
+				            "minimum_should_match": 1
+				          }
+				        }
+				      ],
+				      "should": [],
+				      "must_not": []
+				    }
+				  }
+
+				}
+
+				if (plugin_settings.api.bbox != null) {
+
+					console.log('add bbox to chart request')
+
+					var b = plugin_settings.map.object.getBounds(),
+							b1 = {
+								"tllat": b.getNorthWest().lat > 90 ? 90 : b.getNorthWest().lat,
+								"tllon": b.getNorthWest().lng < -180 ? -180 : b.getNorthWest().lng,
+								"brlat": b.getSouthEast().lat < -90 ? -90 : b.getSouthEast().lat,
+								"brlon": b.getSouthEast().lng > 180 ? 180 : b.getSouthEast().lng
+							}
+
+					request_data.aggs['my_applicable_filters'] = {
+						"filter": {
+							"bool": {
+								"must": [
+									{
+										"geo_bounding_box": {
+											"coordinates": {
+												"top_left": b1.tllat + ',' + b1.tllon,
+												"bottom_right": b1.brlat + ',' + b1.brlon
+											}
+										}
+									}
+								]
+							}
+						}
+					}
+
+				}
+
+				$.ajax({
+					method: 'POST',
+					tryCount : 0,
+					retryLimit : 3,
+					crossDomain: true,
+					headers: { "content-type": "application/json" },
+					url: elastic_url + '/opendrr_dsra_' + plugin_settings.scenario.key.toLowerCase() + '_indicators_b/_search',
+					data: JSON.stringify(request_data),
+					success: function(data) {
+
+						// console.log('add ' + request.field + ' to #chart-' + request.field)
+
+						var series = []
+
+						data.aggregations[0].buckets.forEach(function(item) {
+
+							series.push({
+								name: item.key,
+								data: [ item[1]['value'] ]
+							})
+
+						})
+
+						if (request.field == 'E_BldgTypeG') {
+							console.log('request', request_data)
+							console.log('data', series)
+						}
+
+						if (request.object.series.length) {
+
+							series.forEach(function(col, i) {
+								request.object.series[i].setData(col['data'])
+							})
+
+						} else {
+
+							series.forEach(function(col) {
+								request.object.addSeries(col, false)
+							})
+
+							request.object.redraw()
+
+						}
+
+						// console.log(request.object.series)
+
+						$('#legend-' + request.field).empty()
+
+		        $.each(request.object.series, function (j, data) {
+
+	            $('#legend-' + request.field).append('<div class="legend-item"><div class="symbol highcharts-bg-' + data.colorIndex + '"></div><div class="column-name">' + data.name + '</div></div>');
+
+		        });
+
+		        $('#legend-' + request.field + ' .legend-item').click(function(){
+
+	            var inx = $(this).index(),
+	                point = request.object.series[inx]
+
+	            if (point.visible) {
+								$(this).addClass('opacity-50')
+								point.setVisible(false)
+	            } else {
+								$(this).removeClass('opacity-50')
+								point.setVisible(true)
+							}
+
+		        });
+					}
+				})
+
+
+			})
+
 		}
 
   }
