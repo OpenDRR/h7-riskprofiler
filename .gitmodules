@@ -1,3 +1,3 @@
 [submodule "fw-parent"]
 	path = site/assets/themes/fw-parent
-	url = https://github.com/phil-evans/framework
+	url = https://github.com/OpenDRR/h7-framework.git
