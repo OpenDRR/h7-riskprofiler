@@ -412,6 +412,10 @@ $app-transition: 0.25s;
 				}
 			}
 		}
+
+		.highcharts-container {
+			overflow: visible;
+		}
 	}
 
 	// breadcrumb

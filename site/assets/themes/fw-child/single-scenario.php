@@ -120,9 +120,6 @@
 						data-parent="#scenario-detail-indicators"
 						aria-labelledby="detail-shake-head"
 					>
-						<div class="card-body">
-
-						</div>
 					</div>
 				</div>
 

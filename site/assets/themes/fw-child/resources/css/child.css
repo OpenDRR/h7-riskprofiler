@@ -510,6 +510,9 @@ body.spinner-on #spinner-progress {
 .app-page .app-charts .chart-tabs a.active {
   color: #fff;
 }
+.app-page .app-charts .highcharts-container {
+  overflow: visible;
+}
 .app-page .app-breadcrumb {
   transition: 0.25s;
 }
@@ -665,9 +668,6 @@ body.spinner-on #spinner-progress {
 }
 .home #quick-links li {
   margin-bottom: 0.5rem;
-}
-.home #hero-nrcan img {
-  max-width: 150px;
 }
 .home main p {
   font-size: 1.25rem;

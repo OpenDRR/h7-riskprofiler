@@ -112,6 +112,10 @@ function child_theme_enqueue() {
 
 		wp_enqueue_script ( 'highcharts', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/highcharts.js',  null, null, true );
 
+		wp_enqueue_script ( 'highcharts-export', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/exporting.js',  null, null, true );
+
+		wp_enqueue_script ( 'highcharts-export-data', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/export-data.js',  null, null, true );
+
 		wp_enqueue_script ( 'togglebox' );
 		wp_enqueue_script ( 'rp-scenarios' );
 
