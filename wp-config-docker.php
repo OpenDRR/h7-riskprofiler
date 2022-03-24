@@ -108,6 +108,7 @@ $table_prefix = getenv_docker('WORDPRESS_TABLE_PREFIX', 'wp_');
  * @link https://wordpress.org/support/article/debugging-in-wordpress/
  */
 define( 'WP_DEBUG', !!getenv_docker('WORDPRESS_DEBUG', '') );
+define( 'WP_DEBUG_LOG', !!getenv_docker('WORDPRESS_DEBUG_LOG', '') );
 
 /* Add any custom values between this line and the "stop editing" line. */
 
@@ -121,6 +122,18 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strpos($_SERVER['HTTP_X_FORWARD
 if ($configExtra = getenv_docker('WORDPRESS_CONFIG_EXTRA', '')) {
 	eval($configExtra);
 }
+
+/* HabitatSeven customization for RiskProfiler.ca */
+
+$protocol = 'http';
+if ( stripos ( $_SERVER['SERVER_PROTOCOL'], 'https' ) === 0 ) $protocol .= 's';
+
+define ( 'WP_CONTENT_FOLDERNAME', 'assets' );
+define ( 'WP_CONTENT_DIR', ABSPATH . WP_CONTENT_FOLDERNAME );
+define ( 'WP_SITEURL', $protocol . '://' . $_SERVER['HTTP_HOST'] . '/site/' );
+define ( 'WP_CONTENT_URL', WP_SITEURL . WP_CONTENT_FOLDERNAME );
+
+define ( 'WP_DISABLE_FATAL_ERROR_HANDLER', true );
 
 /* That's all, stop editing! Happy publishing. */
 
