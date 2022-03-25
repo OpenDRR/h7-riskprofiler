@@ -1,3 +1,4 @@
 .ftpconfig
 site/assets/debug.log
 sandbox
+wp-config.php
