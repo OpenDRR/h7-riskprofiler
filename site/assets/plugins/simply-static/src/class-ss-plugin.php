@@ -14,7 +14,7 @@ class Plugin {
 	 * Plugin version
 	 * @var string
 	 */
-	const VERSION = '2.1.5.5';
+	const VERSION = '2.1.5.6';
 
 	/**
 	 * The slug of the plugin; used in actions, filters, i18n, table names, etc.
@@ -102,8 +102,9 @@ class Plugin {
 			// Filters
 			add_filter( 'admin_footer_text', array( self::$instance, 'filter_admin_footer_text' ), 15 );
 			add_filter( 'update_footer', array( self::$instance, 'filter_update_footer' ), 15 );
-			add_filter( 'http_request_args', array( self::$instance, 'wpbp_http_request_args' ), 10, 2 );
 			add_filter( 'simplystatic.archive_creation_job.task_list', array( self::$instance, 'filter_task_list' ), 10, 2 );
+
+			add_action( 'ss_before_static_export', array( self::$instance, 'add_http_filters' ) );
 
 			self::$instance->options = Options::instance();
 			self::$instance->view = new View();
@@ -824,6 +825,15 @@ class Plugin {
 	 */
 	public function debug_on() {
 		return $this->options->get( 'debugging_mode' ) === '1';
+	}
+
+	/**
+	 * Remove Basic Auth when Updraft backup is in process
+	 *
+	 * @return void
+	 */
+	public function add_http_filters() {
+		add_filter( 'http_request_args', array( self::$instance, 'wpbp_http_request_args' ), 10, 2 );
 	}
 
 	/**
