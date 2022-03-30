@@ -153,6 +153,7 @@ $app-transition: 0.25s;
 
 	main {
 		flex-grow: 1;
+		z-index: initial;
 	}
 
 	// section
@@ -197,6 +198,12 @@ $app-transition: 0.25s;
 					.legend .items {
 						width: 50vw;
 					}
+				}
+			}
+
+			.leaflet-control-container {
+				.leaflet-control-attribution {
+					opacity: 0;
 				}
 			}
 		}
@@ -406,15 +413,24 @@ $app-transition: 0.25s;
 			a {
 				padding: 0.125rem 0.625rem;
 				color: $body-color;
-
-				&.active {
-					color: $white;
-				}
+				transition: 0.25s;
 			}
 		}
 
 		.highcharts-container {
 			overflow: visible;
+		}
+	}
+
+	// chart modal
+
+	#data-modal {
+
+	}
+
+	#chart-data-placeholder {
+		caption {
+			display: none;
 		}
 	}
 
@@ -504,6 +520,7 @@ $app-transition: 0.25s;
 
 	.leaflet-control-container {
 		.leaflet-control-attribution {
+			font-size: 0.625rem;
 			opacity: 1;
 			transition: opacity 0.25s;
 		}
@@ -534,6 +551,11 @@ $app-transition: 0.25s;
 		}
 	}
 
+	.leaflet-tooltip {
+		padding: 0.25rem 0.375rem;
+		border-radius: 0;
+	}
+
 	// adjust for views
 
 	&[data-sidebar-width="half"] {
@@ -543,12 +565,6 @@ $app-transition: 0.25s;
 
 		.leaflet-left {
 			left: 50%;
-		}
-
-		.leaflet-control-container {
-			.leaflet-control-attribution {
-				opacity: 0;
-			}
 		}
 	}
 

@@ -24,6 +24,7 @@
 	?>
 
 	<div
+		id="<?php the_field ( 'scenario_key' ); ?>"
 		class="sidebar-item scenario bg-white mb-2"
 		data-id="<?php echo get_the_ID(); ?>"
 		data-name="<?php the_title(); ?>"

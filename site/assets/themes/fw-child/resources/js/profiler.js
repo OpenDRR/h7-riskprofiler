@@ -10,11 +10,10 @@
     // options
 
     var defaults = {
-      chart_dir: child_theme_dir + 'resources/js/charts/',
-      chart_options: null,
-      charts: {},
-      map_dir: child_theme_dir + 'resources/js/maps/',
-      generated_ID: 1,
+			history: {
+				title: null,
+				url: null
+			},
       debug: false
     };
 
@@ -42,6 +41,15 @@
       if (plugin_settings.debug == true) {
         console.log('profiler', 'initializing')
       }
+
+			// store the page title for history API stuff
+
+			plugin_settings.history.title = document.title
+			plugin_settings.history.url = window.location.href
+
+			if (plugin_settings.history.url.indexOf('#') !== -1) {
+				plugin_settings.history.url = plugin_settings.history.url.substr(0, plugin_settings.history.url.indexOf('#'))
+			}
 
 			$('<div id="spinner-overlay">').insertBefore('#spinner')
 			$('<div id="spinner-progress">').insertAfter('#spinner')
@@ -327,12 +335,46 @@
 
 		},
 
-		//
-    // _eval: function(fn_code) {
-		//
-    //   return Function('return ' + fn_code)();
-		//
-    // }
+		do_history: function(hash) {
+
+			var plugin_instance = this
+			var plugin_settings = plugin_instance.options
+
+			var new_title = plugin_settings.history.title,
+					new_url = plugin_settings.history.url
+
+			if (hash) {
+
+				new_title = $('body').find(hash).find('.sidebar-item-title').text() + ' — ' + new_title
+
+				new_url = new_url + hash
+
+			}
+
+			// update page title
+
+			$('title').text(new_title)
+
+			// replace history state
+
+			history.replaceState({}, new_title, new_url)
+
+			// scroll to sidebar item
+
+			setTimeout(function() {
+
+				if (hash) {
+
+					$('.app-sidebar-content').animate({
+						scrollTop: $('body').find(hash).position().top + $('.app-sidebar-content').scrollTop() - 12
+					}, 500)
+				}
+
+			}, 1000)
+
+			console.log('history', new_url, new_title)
+
+		}
 
   }
 

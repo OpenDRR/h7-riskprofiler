@@ -177,7 +177,15 @@ var charts_to_process = [],
         console.log('initializing')
       }
 
+			//
+			// SETUP UX STUFF
+			//
+
 			$('#spinner-progress').text('Initializing map')
+
+			$('#data-modal').modal({
+				show: false
+			})
 
 			//
 			// MAP
@@ -556,6 +564,10 @@ var charts_to_process = [],
 										}
 
 									})
+									.bindTooltip('<div>' + feature.properties.title +'</div>', {
+										direction: 'top',
+										offset: [0, -10]
+									})
 									.on('mouseout', function() {
 
 										// if already selected, do nothing
@@ -606,6 +618,20 @@ var charts_to_process = [],
 
 					plugin_settings.map.object.addLayer(plugin_settings.map.clusters)
 
+					if (window.location.hash) {
+
+						var init_id = window.location.hash,
+								init_item = $('body').find(init_id)
+
+						console.log(window.location.hash, $('body').find(init_id))
+
+						// trigger click the item
+
+						init_item.trigger('click')
+
+
+					}
+
 				},
         complete: function() {
           $('body').removeClass('spinner-on')
@@ -620,7 +646,10 @@ var charts_to_process = [],
 			Highcharts.setOptions({
 		    lang: {
 		      thousandsSep: ','
-		    }
+		    },
+				credits: {
+					enabled: false
+				}
 		  })
 
 			plugin_settings.charts.elements.forEach(function(request, i) {
@@ -645,6 +674,7 @@ var charts_to_process = [],
 					chart: {
 						type: 'column',
 				    height: 250,
+						marginTop: 30,
 						marginLeft: 60,
 						styledMode: true
 					},
@@ -680,6 +710,34 @@ var charts_to_process = [],
 						width: '100%',
 						maxHeight: 100,
 						margin: 10
+					},
+					navigation: {
+						buttonOptions: {
+							y: -10
+						}
+					},
+					exporting: {
+						menuItemDefinitions: {
+							dataModal: {
+								onclick: function() {
+
+									$('#chart-data-placeholder').html(this.getTable())
+
+									$('#chart-data-placeholder').find('table').addClass('table table-responsive')
+
+									$('#data-modal .modal-title').html(plugin_settings.indicator.label + ' by ' + request.name)
+
+									$('#data-modal').modal('show')
+
+								},
+								text: 'View data table'
+							}
+						},
+						buttons: {
+							contextButton: {
+								menuItems: [ 'downloadPNG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'dataModal' ]
+							}
+						}
 					}
 				}, function (chart) {
 
@@ -840,6 +898,9 @@ var charts_to_process = [],
 						// empty the current scenario object
 						plugin_settings.scenario = {}
 
+						// reset the history state
+						$(document).profiler('do_history')
+
 					},
 					success: function() {
 
@@ -901,6 +962,27 @@ var charts_to_process = [],
 				}
 			})
 
+			//
+			//
+			//
+
+			// check for hash
+
+
+			// if (window.location.hash) {
+			//
+			// 	setTimeout(function() {
+			//
+			// 		var init_id = window.location.hash
+			//
+			// 		console.log(window.location.hash, $('body').find(init_id))
+			//
+			// 		$('body').find(init_id).trigger('click')
+			//
+			// 	}, 1000)
+			//
+			// }
+
     },
 
 		set_scenario: function(fn_options) {
@@ -960,6 +1042,8 @@ var charts_to_process = [],
       var settings = $.extend(true, defaults, fn_options)
 
 			console.log('select', settings)
+
+			$(document).profiler('do_history', '#' + settings.scenario.key)
 
 			// selected polygon = clicked ID or null
 			plugin_settings.map.selected_marker = settings.scenario.id

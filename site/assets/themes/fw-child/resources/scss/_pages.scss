@@ -246,3 +246,47 @@
 		font-size: 1.25rem;
 	}
 }
+
+//
+// DOWLOADS
+//
+
+#download-table-head {
+	position: sticky;
+	top: 0;
+	z-index: 1020;
+}
+
+.admin-bar {
+	#download-table-head {
+		top: 32px;
+	}
+}
+
+.post-preview.type-download {
+	font-size: 0.75rem;
+
+	p {
+		margin-bottom: 0.25rem;
+		font-size: 0.875rem;
+		font-family: $headings-font-family;
+		font-weight: 500;
+	}
+
+	.btn {
+		line-height: 1;
+
+		i {
+			transition: $btn-transition;
+		}
+
+		&:hover {
+			color: $white;
+
+			i {
+				color: $white;
+			}
+		}
+	}
+
+}
