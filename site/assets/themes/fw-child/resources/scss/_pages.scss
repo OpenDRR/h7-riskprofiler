@@ -42,6 +42,19 @@
 			font-size: 1.25rem;
 		}
 	}
+
+	.block-type-animation {
+		.animation {
+			position: static;
+			left: auto;
+			top: auto;
+			transform: none;
+
+			svg {
+				width: 100% !important;
+			}
+		}
+	}
 }
 
 #home-features {

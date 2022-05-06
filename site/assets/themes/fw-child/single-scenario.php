@@ -4,10 +4,12 @@
 		while ( have_posts() ) {
 			the_post();
 
+			$scenario_key = get_field ( 'scenario_key' );
 
 ?>
 
 <div class="sidebar-detail scenario">
+
 	<div class="container-fluid py-5">
 		<div class="row justify-content-center mb-5">
 			<div class="col-10">
@@ -38,7 +40,7 @@
 							</div>
 
 							<div class="mb-3">
-								<h6>Deaths</h6>
+								<h6><?php _e ( 'Deaths', 'rp' ); ?></h6>
 								<p><?php
 
 									echo number_format ( get_field ( 'scenario_deaths' ), 0 );
@@ -47,7 +49,7 @@
 							</div>
 
 							<div class="mb-3">
-								<h6>Damage</h6>
+								<h6><?php _e ( 'Damage', 'rp' ); ?></h6>
 								<p><?php
 
 									echo number_format ( get_field ( 'scenario_damage' ), 0 ) . ' ';
@@ -58,7 +60,7 @@
 							</div>
 
 							<div class="mb-3">
-								<h6>Dollars</h6>
+								<h6><?php _e ( 'Dollars', 'rp' ); ?></h6>
 								<p><?php
 
 									echo '$' . number_format ( get_field ( 'scenario_dollars' ), 0 );
@@ -99,6 +101,7 @@
 							"label": "Peak Ground Acceleration, in units of g",
 							"retrofit": false,
 							"aggregation": {
+								"1km": { "rounding": 0, "decimals": 6 },
 								"5km": { "rounding": 0, "decimals": 6 },
 								"10km": { "rounding": 0, "decimals": 6 },
 								"25km": { "rounding": 0, "decimals": 6 },
@@ -106,7 +109,8 @@
 							},
 							"legend": {
 								"prepend": "",
-								"append": ""
+								"append": "%g",
+								"values": [ 0, 0.17, 1.4, 3.9, 9.2, 18, 24, 65, 124 ]
 							}
 						}'
 					>
@@ -225,7 +229,43 @@
 											"decimals": <?php echo $agg_settings['s']['decimals']; ?>
 										}
 									},
-									"legend": <?php echo json_encode ( get_field ( 'indicator_label' ) ); ?>
+									"legend": <?php
+
+										$legend_fields = get_field ( 'indicator_label' );
+
+										$legend_fields['values'] = array();
+
+										// max val
+
+										// find the row in 'indicator_max' with this scenario's key and use its value
+
+										$maxes = get_field ( 'indicator_max' );
+										$legend_max = 100;
+
+										if ( is_array ( $maxes ) && !empty ( $maxes ) ) {
+											foreach ( $maxes as $max ) {
+												if ( $max['scenario'] == $scenario_key ) {
+													$legend_max = $max['value'];
+													break;
+												}
+											}
+										}
+
+										// steps
+
+										$legend_steps = 9;
+
+										$legend_step = $legend_max / $legend_steps;
+
+										for ($i = $legend_steps; $i > 0; $i -= 1) {
+
+											$legend_fields['values'][] = $legend_max - ( $legend_step * $i);
+
+										}
+
+										echo json_encode ( $legend_fields );
+
+									?>
 								}'>
 									<span class="d-block px-3 py-1"><?php the_title(); ?></span>
 									<div id="<?php echo get_the_slug(); ?>-charts" class="indicator-charts"></div>

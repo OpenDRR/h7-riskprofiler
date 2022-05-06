@@ -2,9 +2,9 @@
 Contributors: patrickposner
 Tags: HTML, static website generator, static site, secure, fast
 Requires at least: 5.4
-Tested up to: 5.8
+Tested up to: 5.9
 Requires PHP: 7.4
-Stable tag: 2.1.5.5
+Stable tag: 2.1.5.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,22 @@ Develop your site locally and only push the static exported website on a server.
 * [lando](https://docs.lando.dev/)
 
 I highly recommend not to use another tool for local development if you are not a programmer as in most cases manual package installation is required.
+
+
+== Simply Static Hosting ==
+
+Do you need an all-in-one solution to export and deploy your static website with Simply Static?
+
+[Simply Static Hosting](https://simplystatic.io) covers the entire process from securing your WordPress website and making it only accessible to logged-in users
+to deploying your static website to a powerful CDN for maximum security and performance. It also handles RSS-Feeds, Comments, Forms, Search, Caching, and more for you.
+
+The installations are completely configured for you, and you can also request a migration of your current website free of charge.
+
+This solution is mainly dedicated to non-technical users that like to get the benefits of running WordPress static, but don't have the time or knowledge to configure everything by themself.
+
+If you like to go the self-hosted way and you can configure deployment and your server, I would recommend going with [Simply Static Pro](https://patrickposner.dev/plugins/simply-static)
+to enhance Simply Static with solutions to handle deployment via GitHub or CDN, forms, search, and CORS for you.
+
 
 == Simply Static Pro ==
 
@@ -174,6 +190,22 @@ Simply Static creates a static copy of your WordPress site that is intended to b
 3. Diagnostics
 
 == Changelog ==
+
+= 2.1.5.7 =
+
+* http_request_args filter added for better performance with Basic Authentication
+* Windows compatibility fix for path conversion
+* reverted delete local directory for local dir exports (original merge request)
+* added filter for options getter
+* cleaned up WP Cron conditional
+
+= 2.1.5.6 =
+
+* fixed non-valid HTML character error
+* UI improvement for running static exports
+* better http_request_args filter usage
+* ss_before_static_export action added
+* udpdated dependencies
 
 = 2.1.5.5 =
 

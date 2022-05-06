@@ -302,6 +302,70 @@
                     ]
                 }
             ]
+        },
+        {
+            "key": "field_62727ec97148d",
+            "label": "Max Choropleth Value",
+            "name": "indicator_max",
+            "type": "repeater",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "collapsed": "",
+            "min": 0,
+            "max": 0,
+            "layout": "block",
+            "button_label": "Add Value",
+            "wpml_cf_preferences": 1,
+            "sub_fields": [
+                {
+                    "key": "field_6273e963c5600",
+                    "label": "Scenario",
+                    "name": "scenario",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "wpml_cf_preferences": 1,
+                    "default_value": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "maxlength": ""
+                },
+                {
+                    "key": "field_6273e975c5601",
+                    "label": "Value",
+                    "name": "value",
+                    "type": "number",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "min": "",
+                    "max": "",
+                    "step": "",
+                    "wpml_cf_preferences": 1
+                }
+            ]
         }
     ],
     "location": [
@@ -321,5 +385,6 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1643814230
+    "show_in_rest": 0,
+    "modified": 1651763596
 }

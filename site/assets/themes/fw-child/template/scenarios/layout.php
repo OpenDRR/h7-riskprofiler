@@ -3,7 +3,11 @@
 
 	<div class="app-controls">
 		<div class="app-controls-content">
-			<div class="alert alert-info">Loading controls…</div>
+			<?php
+
+				include ( locate_template ( 'template/scenarios/control-bar.php' ) );
+
+			?>
 		</div>
 	</div>
 
@@ -18,24 +22,29 @@
 
 	<div id="chart-toggle" class="app-retrofit d-flex align-items-center px-2 border-bottom border-left">
 		<div id="chart-togglebox" class="checked disabled"></div>
-		<h6 class="mb-0">Charts</h6>
+		<h6 class="mb-0"><?php _e ( 'Charts', 'rp' ); ?></h6>
 	</div>
 
 	<div id="retrofit-toggle" class="app-retrofit d-flex align-items-center px-2 border-bottom border-left">
 		<div id="retrofit-togglebox" class="disabled"></div>
-		<h6 class="mb-0">Retrofit</h6>
+		<h6 class="mb-0"><?php _e ( 'Retrofit', 'rp' ); ?></h6>
 	</div>
 </div>
 
 <div class="app-container">
 	<div class="app-sidebar" data-width="">
 		<div class="app-sidebar-controls">
-			<div id="app-control-sort" class="app-sidebar-control app-sidebar-sort"></div>
+
+			<div id="app-control-sort" class="app-sidebar-control app-sidebar-sort"><?php
+
+				include ( locate_template ( 'template/scenarios/control-sort.php' ) );
+
+			?></div>
 			<?php /*<div id="app-control-filter" class="app-sidebar-control app-sidebar-filter"></div>*/ ?>
 		</div>
 
 		<div class="app-sidebar-content">
-			<p class="m-2 alert alert-info">Loading scenarios…</p>
+			<p class="m-2 alert alert-info"><?php _e ( 'Loading scenarios', 'rp' ); ?>…</p>
 		</div>
 	</div>
 
@@ -43,7 +52,7 @@
 
 		<div class="chart-section has-tabs">
 			<div class="sticky-top p-2 bg-white border-bottom d-flex justify-content-between">
-				<h5 class="mb-0">By Building Type</h5>
+				<h5 class="mb-0"><?php _e ( 'By Building Type', 'rp' ); ?></h5>
 
 				<ul class="nav nav-pills chart-tabs" id="tabs-building-type" role="tablist">
 				  <li class="nav-item" role="presentation">
@@ -55,7 +64,7 @@
 							role="tab"
 							aria-controls="tab-E_BldgTypeG"
 							aria-selected="true"
-						>General</a>
+						><?php _e ( 'General', 'rp' ); ?></a>
 				  </li>
 
 					<li class="nav-item" role="presentation">
@@ -67,16 +76,9 @@
 							role="tab"
 							aria-controls="tab-E_BldgTypeS"
 							aria-selected="false"
-						>Specific</a>
+						><?php _e ( 'Specific', 'rp' ); ?></a>
 				  </li>
 				</ul>
-
-				<!-- <div>
-					<ul class="list-unstyled d-flex mb-0 chart-tabs" id="tabs-building-type" role="tablist">
-						<li class="ml-1 px-1 active" data-toggle="list" href="#tab-E_BldgTypeG" role="tab">General</li>
-						<li class="ml-1 px-1" data-toggle="list" href="#tab-E_BldgTypeS" role="tab">Specific</li>
-					</ul>
-				</div> -->
 			</div>
 
 			<div id="charts-building-type" class="chart-tab-content tab-content">
@@ -94,7 +96,7 @@
 		</div>
 
 		<div class="sticky-top p-2 bg-white border-bottom">
-			<h5 class="mb-0">By Design Level</h5>
+			<h5 class="mb-0"><?php _e ( 'By Design Level', 'rp' ); ?></h5>
 		</div>
 
 		<div id="charts-design-level" class="chart-tab-content">
@@ -104,7 +106,7 @@
 
 		<div class="chart-section has-tabs">
 			<div class="sticky-top p-2 bg-white border-bottom d-flex justify-content-between">
-				<h5 class="mb-0">By Occupancy Class</h5>
+				<h5 class="mb-0"><?php _e ( 'By Occupancy Class', 'rp' ); ?></h5>
 
 				<ul class="nav nav-pills chart-tabs" id="tabs-building-type" role="tablist">
 				  <li class="nav-item" role="presentation">
@@ -116,7 +118,7 @@
 							role="tab"
 							aria-controls="tab-E_BldgOccG"
 							aria-selected="true"
-						>General</a>
+						><?php _e ( 'General', 'rp' ); ?></a>
 				  </li>
 
 					<li class="nav-item" role="presentation">
@@ -128,7 +130,7 @@
 							role="tab"
 							aria-controls="tab-E_BldgOccS1"
 							aria-selected="false"
-						>Specific</a>
+						><?php _e ( 'Specific', 'rp' ); ?></a>
 				  </li>
 				</ul>
 			</div>
@@ -146,29 +148,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- <div class="sticky-top p-2 bg-white border-bottom d-flex justify-content-between">
-			<h5 class="mb-0">By Occupancy Class</h5>
-
-			<div>
-				<ul class="list-unstyled d-flex mb-0">
-					<li class="ml-1 px-1"><a href="#tab-chart-E_BldgOccG">General</a></li>
-					<li class="ml-1 px-1"><a href="#tab-chart-E_BldgOccS">Specific</a></li>
-				</ul>
-			</div>
-		</div>
-
-		<div id="charts-occupancy" class="chart-tab-content">
-			<div class="chart-tab">
-				<div id="chart-E_BldgOccG" class="chart-container"></div>
-				<div id="legend-E_BldgOccG" class="chart-legend"></div>
-			</div>
-
-			<div class="chart-tab">
-				<div id="chart-E_BldgOccS1" class="chart-container"></div>
-				<div id="legend-E_BldgOccS1" class="chart-legend"></div>
-			</div>
-		</div> -->
 	</div>
 
 	<div class="app-map">
@@ -176,12 +155,11 @@
 	</div>
 </div>
 
-
 <div id="data-modal" class="modal" tabindex="-1" style="display: none;">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
+        <h5 class="modal-title"></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
