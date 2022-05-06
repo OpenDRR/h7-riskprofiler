@@ -37,7 +37,7 @@ interface DomParserInterface
      *
      * @param string $selector
      *
-     * @return static
+     * @return mixed
      */
     public function findOne(string $selector);
 
@@ -53,11 +53,10 @@ interface DomParserInterface
     /**
      * @param string $content
      * @param bool   $multiDecodeNewHtmlEntity
-     * @param bool   $putBrokenReplacedBack
      *
      * @return string
      */
-    public function fixHtmlOutput(string $content, bool $multiDecodeNewHtmlEntity = false, bool $putBrokenReplacedBack = true): string;
+    public function fixHtmlOutput(string $content, bool $multiDecodeNewHtmlEntity = false): string;
 
     /**
      * @return \DOMDocument
@@ -115,21 +114,19 @@ interface DomParserInterface
      * Get dom node's outer html.
      *
      * @param bool $multiDecodeNewHtmlEntity
-     * @param bool $putBrokenReplacedBack
      *
      * @return string
      */
-    public function html(bool $multiDecodeNewHtmlEntity = false, bool $putBrokenReplacedBack = true): string;
+    public function html(bool $multiDecodeNewHtmlEntity = false): string;
 
     /**
      * Get dom node's inner html.
      *
      * @param bool $multiDecodeNewHtmlEntity
-     * @param bool $putBrokenReplacedBack
      *
      * @return string
      */
-    public function innerHtml(bool $multiDecodeNewHtmlEntity = false, bool $putBrokenReplacedBack = true): string;
+    public function innerHtml(bool $multiDecodeNewHtmlEntity = false): string;
 
     /**
      * Get dom node's inner xml.

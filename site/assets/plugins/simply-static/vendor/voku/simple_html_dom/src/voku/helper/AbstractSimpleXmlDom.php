@@ -58,7 +58,7 @@ abstract class AbstractSimpleXmlDom
             case 'plaintext':
                 return $this->text();
             case 'tag':
-                return $this->node->nodeName ?? '';
+                return $this->node ? $this->node->nodeName : '';
             case 'attr':
                 return $this->getAllAttributes();
             default:
@@ -96,7 +96,6 @@ abstract class AbstractSimpleXmlDom
             case 'outerhtml':
             case 'innertext':
             case 'innerhtml':
-            case 'innerhtmlkeep':
             case 'plaintext':
             case 'text':
             case 'tag':
@@ -128,8 +127,6 @@ abstract class AbstractSimpleXmlDom
             case 'innertext':
             case 'innerhtml':
                 return $this->replaceChildWithString($value);
-            case 'innerhtmlkeep':
-                return $this->replaceChildWithString($value, false);
             case 'plaintext':
                 return $this->replaceTextWithString($value);
             default:
@@ -191,7 +188,7 @@ abstract class AbstractSimpleXmlDom
 
     abstract public function removeAttribute(string $name): SimpleXmlDomInterface;
 
-    abstract protected function replaceChildWithString(string $string, bool $putBrokenReplacedBack = true): SimpleXmlDomInterface;
+    abstract protected function replaceChildWithString(string $string): SimpleXmlDomInterface;
 
     abstract protected function replaceNodeWithString(string $string): SimpleXmlDomInterface;
 

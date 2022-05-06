@@ -11,8 +11,6 @@ namespace voku\helper;
  *                            <p>Get dom node's inner html (alias for "innerHtml").</p>
  * @property string      $innerhtml
  *                            <p>Get dom node's inner html.</p>
- * @property string      $innerhtmlKeep
- *                            <p>Get dom node's inner html + keep fix for broken html.</p>
  * @property string      $plaintext
  *                            <p>Get dom node's plain text.</p>
  * @property string      $class
@@ -89,13 +87,6 @@ interface SimpleHtmlDomInterface extends \IteratorAggregate
      * @return string
      */
     public function __toString();
-
-    /**
-     * Return the tag of node
-     *
-     * @return string
-     */
-    public function getTag():string;
 
     /**
      * Returns children of node.
@@ -269,11 +260,10 @@ interface SimpleHtmlDomInterface extends \IteratorAggregate
      * Get dom node's inner html.
      *
      * @param bool $multiDecodeNewHtmlEntity
-     * @param bool $putBrokenReplacedBack
      *
      * @return string
      */
-    public function innerHtml(bool $multiDecodeNewHtmlEntity = false, bool $putBrokenReplacedBack = true): string;
+    public function innerHtml(bool $multiDecodeNewHtmlEntity = false): string;
 
     /**
      * Get dom node's inner html.
@@ -359,13 +349,6 @@ interface SimpleHtmlDomInterface extends \IteratorAggregate
     public function setAttribute(string $name, $value = null, bool $strictEmptyValueCheck = false): self;
 
     /**
-     * Remove all attributes
-     *
-     * @return SimpleHtmlDomInterface
-     */
-    public function removeAttributes(): self;
-
-    /**
      * Get dom node's plain text.
      *
      * @return string
@@ -381,11 +364,4 @@ interface SimpleHtmlDomInterface extends \IteratorAggregate
      * @return string|string[]|null
      */
     public function val($value = null);
-
-    /**
-     * Delete
-     *
-     * @return mixed
-     */
-    public function delete();
 }

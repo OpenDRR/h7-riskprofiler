@@ -82,13 +82,11 @@ class SimpleXmlDomNode extends AbstractSimpleXmlDomNode implements SimpleXmlDomN
      *
      * @param string $selector
      *
-     * @return SimpleXmlDomNodeInterface<SimpleXmlDomInterface>
+     * @return SimpleXmlDomNodeInterface<SimpleXmlDomInterface>|null
      */
     public function findOne(string $selector)
     {
-        $return = $this->find($selector, 0);
-
-        return $return ?? new SimpleXmlDomNodeBlank();
+        return $this->find($selector, 0);
     }
 
     /**
@@ -102,7 +100,12 @@ class SimpleXmlDomNode extends AbstractSimpleXmlDomNode implements SimpleXmlDomN
     {
         $return = $this->find($selector, 0);
 
-        return $return ?? false;
+        /** @noinspection NullCoalescingOperatorCanBeUsedInspection */
+        if ($return === null) {
+            return false;
+        }
+
+        return $return;
     }
 
     /**

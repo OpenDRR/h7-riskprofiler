@@ -120,6 +120,8 @@ class TokenStream
     /**
      * Returns next identifier token.
      *
+     * @return string
+     *
      * @throws SyntaxErrorException If next token is not an identifier
      */
     public function getNextIdentifier(): string
@@ -135,6 +137,8 @@ class TokenStream
 
     /**
      * Returns next identifier or null if star delimiter token is found.
+     *
+     * @return string|null
      *
      * @throws SyntaxErrorException If next token is not an identifier or a star delimiter
      */

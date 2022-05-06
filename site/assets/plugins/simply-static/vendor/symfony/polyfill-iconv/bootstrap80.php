@@ -25,56 +25,56 @@ if (!defined('ICONV_MIME_DECODE_CONTINUE_ON_ERROR')) {
 }
 
 if (!function_exists('iconv')) {
-    function iconv( $from_encoding, $to_encoding, $string) { return p\Iconv::iconv((string) $from_encoding, (string) $to_encoding, (string) $string); }
+    function iconv(?string $from_encoding, ?string $to_encoding, ?string $string): string { return p\Iconv::iconv((string) $from_encoding, (string) $to_encoding, (string) $string); }
 }
 if (!function_exists('iconv_get_encoding')) {
-    function iconv_get_encoding( $type = 'all'){ return p\Iconv::iconv_get_encoding((string) $type); }
+    function iconv_get_encoding(?string $type = 'all'): array { return p\Iconv::iconv_get_encoding((string) $type); }
 }
 if (!function_exists('iconv_set_encoding')) {
-    function iconv_set_encoding( $type, $encoding) { return p\Iconv::iconv_set_encoding((string) $type, (string) $encoding); }
+    function iconv_set_encoding(?string $type, ?string $encoding): bool { return p\Iconv::iconv_set_encoding((string) $type, (string) $encoding); }
 }
 if (!function_exists('iconv_mime_encode')) {
-    function iconv_mime_encode( $field_name, $field_value, $options = []) { return p\Iconv::iconv_mime_encode((string) $field_name, (string) $field_value, (array) $options); }
+    function iconv_mime_encode(?string $field_name, ?string $field_value, ?array $options = []): string { return p\Iconv::iconv_mime_encode((string) $field_name, (string) $field_value, (array) $options); }
 }
 if (!function_exists('iconv_mime_decode_headers')) {
-    function iconv_mime_decode_headers( $headers, $mode = 0, $encoding = null) { return p\Iconv::iconv_mime_decode_headers((string) $headers, (int) $mode, $encoding); }
+    function iconv_mime_decode_headers(?string $headers, ?int $mode = 0, ?string $encoding = null): array { return p\Iconv::iconv_mime_decode_headers((string) $headers, (int) $mode, $encoding); }
 }
 
 if (extension_loaded('mbstring')) {
     if (!function_exists('iconv_strlen')) {
-        function iconv_strlen( $string, $encoding = null) { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_strlen((string) $string, $encoding); }
+        function iconv_strlen(?string $string, ?string $encoding = null): int { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_strlen((string) $string, $encoding); }
     }
     if (!function_exists('iconv_strpos')) {
-        function iconv_strpos( $haystack, $needle, $offset = 0, $encoding = null) { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_strpos((string) $haystack, (string) $needle, (int) $offset, $encoding); }
+        function iconv_strpos(?string $haystack, ?string $needle, ?int $offset = 0, ?string $encoding = null): int { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_strpos((string) $haystack, (string) $needle, (int) $offset, $encoding); }
     }
     if (!function_exists('iconv_strrpos')) {
-        function iconv_strrpos( $haystack, $needle, $encoding = null) { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_strrpos((string) $haystack, (string) $needle, 0, $encoding); }
+        function iconv_strrpos(?string $haystack, ?string $needle, ?string $encoding = null): int { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_strrpos((string) $haystack, (string) $needle, 0, $encoding); }
     }
     if (!function_exists('iconv_substr')) {
-        function iconv_substr( $string, $offset, $length = null, $encoding = null) { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_substr((string) $string, (int) $offset, $length, $encoding); }
+        function iconv_substr(?string $string, ?int $offset, ?int $length = null, ?string $encoding = null): string { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_substr((string) $string, (int) $offset, $length, $encoding); }
     }
     if (!function_exists('iconv_mime_decode')) {
-        function iconv_mime_decode($string, $mode = 0, $encoding = null) { $currentMbEncoding = mb_internal_encoding(); null === $encoding && $encoding = p\Iconv::$internalEncoding; mb_internal_encoding($encoding); $decoded = mb_decode_mimeheader($string); mb_internal_encoding($currentMbEncoding); return $decoded; }
+        function iconv_mime_decode($string, $mode = 0, $encoding = null) { null === $encoding && $encoding = p\Iconv::$internalEncoding; return mb_decode_mimeheader($string, $mode, $encoding); }
     }
 } else {
     if (!function_exists('iconv_strlen')) {
         if (extension_loaded('xml')) {
-            function iconv_strlen( $string, $encoding = null) { return p\Iconv::strlen1((string) $string, $encoding); }
+            function iconv_strlen(?string $string, ?string $encoding = null): int { return p\Iconv::strlen1((string) $string, $encoding); }
         } else {
-            function iconv_strlen( $string, $encoding = null) { return p\Iconv::strlen2((string) $string, $encoding); }
+            function iconv_strlen(?string $string, ?string $encoding = null): int { return p\Iconv::strlen2((string) $string, $encoding); }
         }
     }
 
     if (!function_exists('iconv_strpos')) {
-        function iconv_strpos( $haystack, $needle, $offset = 0, $encoding = null) { return p\Iconv::iconv_strpos((string) $haystack, (string) $needle, (int) $offset, $encoding); }
+        function iconv_strpos(?string $haystack, ?string $needle, ?int $offset = 0, ?string $encoding = null): int { return p\Iconv::iconv_strpos((string) $haystack, (string) $needle, (int) $offset, $encoding); }
     }
     if (!function_exists('iconv_strrpos')) {
-        function iconv_strrpos( $haystack, $needle, $encoding = null) { return p\Iconv::iconv_strrpos((string) $haystack, (string) $needle, $encoding); }
+        function iconv_strrpos(?string $haystack, ?string $needle, ?string $encoding = null): int { return p\Iconv::iconv_strrpos((string) $haystack, (string) $needle, $encoding); }
     }
     if (!function_exists('iconv_substr')) {
-        function iconv_substr( $string, $offset, $length = null, $encoding = null) { return p\Iconv::iconv_substr((string) $string, (string) $offset, $length, $encoding); }
+        function iconv_substr(?string $string, ?int $offset, ?int $length = null, ?string $encoding = null): string { return p\Iconv::iconv_substr((string) $string, (string) $offset, $length, $encoding); }
     }
     if (!function_exists('iconv_mime_decode')) {
-        function iconv_mime_decode( $string, $mode = 0, $encoding = null) { return p\Iconv::iconv_mime_decode((string) $string, (int) $mode, $encoding); }
+        function iconv_mime_decode(?string $string, ?int $mode = 0, ?string $encoding = null): string { return p\Iconv::iconv_mime_decode((string) $string, (int) $mode, $encoding); }
     }
 }

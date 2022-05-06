@@ -49,11 +49,11 @@ class SimpleXmlDomNodeBlank extends AbstractSimpleXmlDomNode implements SimpleXm
      *
      * @param string $selector
      *
-     * @return SimpleXmlDomInterface
+     * @return null
      */
     public function findOne(string $selector)
     {
-        return new SimpleXmlDomBlank();
+        return null;
     }
 
     /**

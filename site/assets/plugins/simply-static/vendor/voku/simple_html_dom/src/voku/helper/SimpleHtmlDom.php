@@ -53,11 +53,6 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
         return $this->getHtmlDomParser()->find($selector, $idx);
     }
 
-    public function getTag(): string
-    {
-        return $this->tag;
-    }
-
     /**
      * Returns an array of attributes.
      *
@@ -139,13 +134,12 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
      * Get dom node's inner html.
      *
      * @param bool $multiDecodeNewHtmlEntity
-     * @param bool $putBrokenReplacedBack
      *
      * @return string
      */
-    public function innerHtml(bool $multiDecodeNewHtmlEntity = false, bool $putBrokenReplacedBack = true): string
+    public function innerHtml(bool $multiDecodeNewHtmlEntity = false): string
     {
-        return $this->getHtmlDomParser()->innerHtml($multiDecodeNewHtmlEntity, $putBrokenReplacedBack);
+        return $this->getHtmlDomParser()->innerHtml($multiDecodeNewHtmlEntity);
     }
 
     /**
@@ -165,36 +159,19 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
     }
 
     /**
-     * Remove all attributes
-     *
-     * @return SimpleHtmlDomInterface
-     */
-    public function removeAttributes(): SimpleHtmlDomInterface
-    {
-        if ($this->hasAttributes()) {
-            foreach (array_keys((array)$this->getAllAttributes()) as $attribute) {
-                $this->removeAttribute($attribute);
-            }
-        }
-        return $this;
-    }
-
-    /**
      * Replace child node.
      *
      * @param string $string
-     * @param bool   $putBrokenReplacedBack
      *
      * @return SimpleHtmlDomInterface
      */
-    protected function replaceChildWithString(string $string, bool $putBrokenReplacedBack = true): SimpleHtmlDomInterface
+    protected function replaceChildWithString(string $string): SimpleHtmlDomInterface
     {
         if (!empty($string)) {
             $newDocument = new HtmlDomParser($string);
 
-            $tmpDomString = $this->normalizeStringForComparison($newDocument);
-            $tmpStr = $this->normalizeStringForComparison($string);
-
+            $tmpDomString = $this->normalizeStringForComparision($newDocument);
+            $tmpStr = $this->normalizeStringForComparision($string);
             if ($tmpDomString !== $tmpStr) {
                 throw new \RuntimeException(
                     'Not valid HTML fragment!' . "\n" .
@@ -253,9 +230,8 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
 
         $newDocument = new HtmlDomParser($string);
 
-        $tmpDomOuterTextString = $this->normalizeStringForComparison($newDocument);
-        $tmpStr = $this->normalizeStringForComparison($string);
-
+        $tmpDomOuterTextString = $this->normalizeStringForComparision($newDocument);
+        $tmpStr = $this->normalizeStringForComparision($string);
         if ($tmpDomOuterTextString !== $tmpStr) {
             throw new \RuntimeException(
                 'Not valid HTML fragment!' . "\n"
@@ -384,7 +360,7 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
      *
      * @return \DOMElement|false
      *                          <p>DOMElement a new instance of class DOMElement or false
-     *                          if an error occurred.</p>
+     *                          if an error occured.</p>
      */
     protected function changeElementName(\DOMNode $node, string $name)
     {
@@ -953,16 +929,16 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
     }
 
     /**
-     * Normalize the given input for comparison.
+     * Normalize the given input for comparision.
      *
      * @param HtmlDomParser|string $input
      *
      * @return string
      */
-    private function normalizeStringForComparison($input): string
+    private function normalizeStringForComparision($input): string
     {
         if ($input instanceof HtmlDomParser) {
-            $string = $input->html(false, false);
+            $string = $input->outerText();
 
             if ($input->getIsDOMDocumentCreatedWithoutHeadWrapper()) {
                 /** @noinspection HtmlRequiredTitleElement */
@@ -994,15 +970,5 @@ class SimpleHtmlDom extends AbstractSimpleHtmlDom implements \IteratorAggregate,
                     )
                 )
             );
-    }
-
-    /**
-     * Delete
-     *
-     * @return void
-     */
-    public function delete()
-    {
-        $this->outertext = '';
     }
 }

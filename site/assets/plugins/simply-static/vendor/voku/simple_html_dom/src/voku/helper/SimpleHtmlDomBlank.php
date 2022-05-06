@@ -45,11 +45,6 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
         return new SimpleHtmlDomNodeBlank();
     }
 
-    public function getTag(): string
-    {
-        return '';
-    }
-
     /**
      * Returns an array of attributes.
      *
@@ -108,11 +103,10 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
      * Get dom node's inner html.
      *
      * @param bool $multiDecodeNewHtmlEntity
-     * @param bool $putBrokenReplacedBack
      *
      * @return string
      */
-    public function innerHtml(bool $multiDecodeNewHtmlEntity = false, bool $putBrokenReplacedBack = true): string
+    public function innerHtml(bool $multiDecodeNewHtmlEntity = false): string
     {
         return '';
     }
@@ -130,22 +124,11 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
     }
 
     /**
-     * Remove all attributes
-     *
-     * @return SimpleHtmlDomBlank
-     */
-    public function removeAttributes(): SimpleHtmlDomInterface
-    {
-        return $this;
-    }
-
-    /**
      * @param string $string
-     * @param bool   $putBrokenReplacedBack
      *
      * @return SimpleHtmlDomInterface
      */
-    protected function replaceChildWithString(string $string, bool $putBrokenReplacedBack = true): SimpleHtmlDomInterface
+    protected function replaceChildWithString(string $string): SimpleHtmlDomInterface
     {
         return new static();
     }
@@ -458,15 +441,5 @@ class SimpleHtmlDomBlank extends AbstractSimpleHtmlDom implements \IteratorAggre
     public function innerXml(bool $multiDecodeNewHtmlEntity = false): string
     {
         return '';
-    }
-
-    /**
-     * Delete
-     *
-     * @return void
-     */
-    public function delete()
-    {
-        $this->outertext='';
     }
 }
