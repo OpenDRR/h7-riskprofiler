@@ -288,7 +288,7 @@ var charts_to_process = [],
 
 			plugin_settings.map.legend.onAdd = function () {
 
-				// console.log(plugin_settings.legend)
+				console.log(plugin_settings.indicator.key, plugin_settings.api.retrofit, plugin_settings.legend.grades)
 
 				var div = L.DomUtil.create('div', 'info legend'),
 						legend = plugin_settings.indicator.legend
@@ -719,7 +719,9 @@ var charts_to_process = [],
 
           plugin_settings.aggregation.previous = plugin_settings.aggregation.current.agg
 
-					plugin_instance.prep_for_api()
+					plugin_instance.prep_for_api({
+						event: 'zoomend'
+					})
 
 					plugin_settings.map.last_zoom = plugin_settings.map.current_zoom
 
@@ -778,9 +780,9 @@ var charts_to_process = [],
 
   				// switch retrofit off
 
-  				if ($('#retrofit-toggle .togglebox').attr('data-state') == 'on') {
-  					$('#retrofit-toggle .togglebox').trigger('click')
-  				}
+  				// if ($('#retrofit-toggle .togglebox').attr('data-state') == 'on') {
+  				// 	$('#retrofit-toggle .togglebox').trigger('click')
+  				// }
 
   				// set classes
 
@@ -1229,7 +1231,8 @@ var charts_to_process = [],
       var plugin_settings = plugin_instance.options
 
       var settings = $.extend(true, {
-				scenario: null
+				scenario: null,
+				legend: true
 			}, fn_options)
 
 			if (plugin_settings.scenario == null) {
@@ -1250,24 +1253,7 @@ var charts_to_process = [],
 				$('body').addClass('spinner-on')
 				$('#spinner-progress').text('Retrieving data')
 
-				// reset the legend's max value so it can be regenerated
-				// while looping through the new data
-				plugin_settings.legend.max = 0
-
-				// empty the API data array
-				// plugin_settings.api.data = []
-
-				// LAYER TYPE:
-				// if shakemap, run the elasticsearch function,
-				// if anything else, run the geoAPI function
-
-				// plugin_settings.map.panes.data.style.display = ''
-
-				// if (plugin_settings.map.object.hasLayer(plugin_settings.map.layers.tiles)) {
-				// 	plugin_settings.map.object.removeLayer(plugin_settings.map.layers.tiles)
-				// }
-
-				// console.log(plugin_settings.map.layers.tiles)
+				// LAYER TYPE
 
 				if (plugin_settings.indicator.key == 'sH_PGA') {
 
@@ -1340,10 +1326,14 @@ var charts_to_process = [],
 
 		},
 
-		prep_for_api: function(url = null) {
+		prep_for_api: function(fn_options) {
 
       var plugin_instance = this
       var plugin_settings = plugin_instance.options
+
+      var settings = $.extend(true, {
+				event: null
+			}, fn_options)
 
 			// console.log('prep', plugin_settings.indicator.key)
 
@@ -1383,13 +1373,6 @@ var charts_to_process = [],
 
             // agg settings doesn't match the plugin's current aggregation
 
-            // plugin_settings.api.aggregation = i.agg
-            // plugin_settings.api.agg_prop = i.prop
-
-            //
-            // // run the geoapi call
-            // fetch = true
-
             plugin_settings.aggregation.current = i
 
           }
@@ -1403,26 +1386,8 @@ var charts_to_process = [],
       // 2. previous aggregation is empty - initial load of scenario
       // 3. current aggregation uses bbox
 
-			// if (
-      //   plugin_settings.aggregation.previous !== null &&
-      //   plugin_settings.aggregation.current.agg !== plugin_settings.aggregation.previous
-      // ) {
-			// 	console.log('fetch - changed agg')
-			// }
-			//
-			// if (
-			// 	plugin_settings.aggregation.previous == null
-      // ) {
-			// 	console.log('fetch - first load')
-			// }
-			//
-			// if (
-      //   plugin_settings.aggregation.current.bbox == true
-      // ) {
-			// 	console.log('fetch - bbox')
-			// }
-
       if (
+				settings.event == null ||
         (
           plugin_settings.aggregation.previous !== null &&
           plugin_settings.aggregation.current.agg !== plugin_settings.aggregation.previous
