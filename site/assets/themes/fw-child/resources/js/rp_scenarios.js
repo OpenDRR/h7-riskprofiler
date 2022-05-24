@@ -847,6 +847,8 @@ const api_url = 'https://api.riskprofiler.ca';
 					plugin_settings.map.object.hasLayer(plugin_settings.map.layers.tiles)
 				) {
 
+					var feature_deselected = false
+
 					// if there's a selected feature
 
 					if (plugin_settings.map.selected_feature != null) {
@@ -857,6 +859,10 @@ const api_url = 'https://api.riskprofiler.ca';
 
 						plugin_settings.map.selected_feature = null
 
+						$('.app-main').removeClass('feature-selected')
+
+						feature_deselected = true
+
 	        }
 
 					setTimeout(function() {
@@ -865,7 +871,7 @@ const api_url = 'https://api.riskprofiler.ca';
 						// update the charts
 
 						if (
-							plugin_settings.map.selected_feature == null &&
+							feature_deselected == true &&
 							plugin_settings.charts.enabled == true &&
 							plugin_settings.indicator.key !== 'sH_PGA'
 						) {
@@ -2006,6 +2012,32 @@ const api_url = 'https://api.riskprofiler.ca';
 
 				$('.app-breadcrumb').find('#breadcrumb-scenario-indicator').text(plugin_settings.indicator.label)
 
+			}).on('mouseover', function(e) {
+
+				if (!$('.app-main').hasClass('feature-selected')) {
+
+					// set the popup content
+	        plugin_settings.map.popup.setContent(function() {
+
+						return '<p>'
+							+ plugin_settings.indicator.legend.prepend
+							+ e.layer.properties[indicator_key].toLocaleString(undefined, { maximumFractionDigits: plugin_settings.indicator.aggregation[aggregation.agg]['decimals'] })
+							+ ' '
+							+ plugin_settings.indicator.legend.append
+							+ '</p>'
+
+					})
+	        .setLatLng(e.latlng)
+	        .openOn(map)
+
+				}
+
+			}).on('mouseout', function(e) {
+
+				if (!$('.app-main').hasClass('feature-selected')) {
+					map.closePopup()
+				}
+
 			}).on('click', function (e) {
 
 				L.DomEvent.stop(e)
@@ -2014,6 +2046,8 @@ const api_url = 'https://api.riskprofiler.ca';
         if (plugin_settings.map.selected_feature != null) {
           plugin_settings.map.layers.tiles.resetFeatureStyle(plugin_settings.map.selected_feature)
         }
+
+				$('.app-main').addClass('feature-selected')
 
         // set the selected feature id
         plugin_settings.map.selected_feature = e.layer.properties[feature_ID_key]
