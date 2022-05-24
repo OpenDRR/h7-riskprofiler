@@ -2366,6 +2366,14 @@ const api_url = 'https://api.riskprofiler.ca';
 						data: JSON.stringify(request_data),
 						success: function(data) {
 
+							// if (request.field == 'E_BldgDesLev') {
+							// 	console.log(data)
+							// }
+
+							request.columns.forEach(function(column) {
+								column.value = [0]
+							})
+
 							// map the data to its column in the charts object
 
 							data.aggregations[0].buckets.forEach(function(item) {
