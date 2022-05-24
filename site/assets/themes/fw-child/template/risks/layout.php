@@ -11,7 +11,7 @@
 		<nav aria-label="breadcrumb">
 		  <ol class="breadcrumb border-bottom">
 		    <li class="breadcrumb-item persistent"><?php _e ( 'Probabilistic Risks', 'rp' ); ?></li>
-				<li class="breadcrumb-item tip">Fatalities</li>
+				<li id="eC_Fatality" class="breadcrumb-item tip">Fatalities</li>
 		  </ol>
 		</nav>
 	</div>

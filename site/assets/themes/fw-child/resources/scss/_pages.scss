@@ -211,6 +211,60 @@
 	}
 }
 
+#chart-E_BldgDesLev {
+	.highcharts-color-0 {
+		fill: $black;
+		stroke: $black;
+	}
+
+	.highcharts-color-1 {
+		fill: $primary;
+		stroke: $primary;
+	}
+
+	.highcharts-color-2 {
+		fill: #f05a23;
+		stroke: #f05a23;
+	}
+
+	.highcharts-color-3 {
+		fill: #afc899;
+		stroke: #afc899;
+	}
+}
+
+#legend-E_BldgDesLev {
+	.highcharts-bg-0 {
+		background-color: $black;
+	}
+
+	.highcharts-bg-1 {
+		background-color: $primary;
+	}
+
+	.highcharts-bg-2 {
+		background-color: #f05a23;
+	}
+
+	.highcharts-bg-3 {
+		background-color: #afc899;
+	}
+}
+
+.chart-tip {
+	.tooltip-inner {
+		background-color: $dark;
+		color: $white;
+		font-size: 0.75rem;
+	}
+
+	.arrow {
+		&:before {
+			border-top-color: $dark;
+		}
+	}
+}
+
 //
 // RISKS
 //
@@ -260,8 +314,42 @@
 	}
 }
 
+.map-search {
+	width: calc(25vw - 1rem);
+	position: relative;
+}
+
+#map-search-clear {
+	display: none;
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0.75rem;
+	cursor: pointer;
+}
+
+#map-search-menu {
+	display: none;
+	position: relative;
+	max-height: 210px;
+	background-color: $white;
+	overflow: auto;
+	pointer-events: all !important;
+
+	.list-group-item {
+		padding: 0.5rem 0.75rem;
+	}
+}
+
+#map-search-spinner {
+	margin: 0.75rem;
+	// position: absolute;
+	// top: 0.75rem;
+	// left: 0.75rem;
+}
+
 //
-// DOWLOADS
+// DOWNLOADS
 //
 
 #download-table-head {

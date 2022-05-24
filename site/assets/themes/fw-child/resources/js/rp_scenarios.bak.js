@@ -1,5 +1,5 @@
 const geoapi_url = 'https://geo-api.stage.riskprofiler.ca'
-const elastic_url = 'https://api.stage.riskprofiler.ca'
+const elastic_url = 'https://api.riskprofiler.ca'
 
 // var feature_index = "opendrr_dsra_sim9p0_cascadiainterfacebestfault_indicators_s",
 var charts_to_process = [],
@@ -22,6 +22,7 @@ var charts_to_process = [],
 
     var defaults = {
 			api: {
+				version: '1.4.0',
 				base_URL: geoapi_url + '/collections/opendrr_dsra_',
 				retrofit: 'b0', // or r1
 				aggregation: 'csd', // or s
@@ -2474,7 +2475,7 @@ var charts_to_process = [],
 					retryLimit : 3,
 					crossDomain: true,
 					headers: { "content-type": "application/json" },
-					url: elastic_url + '/opendrr_dsra_' + plugin_settings.scenario.key.toLowerCase() + '_indicators_b/_search',
+					url: elastic_url + '/opendrr_dsra_' + plugin_settings.scenario.key.toLowerCase() + '_indicators_b_v' + plugin_settings.api.version + '/_search',
 					data: JSON.stringify(request_data),
 					success: function(data) {
 

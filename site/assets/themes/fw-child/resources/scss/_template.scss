@@ -10,7 +10,7 @@
 	background-color: $gray-100;
 	font-family: $headings-font-family;
 	font-weight: 500;
-	z-index: 100;
+	z-index: 1050;
 
 	a {
 		color: $body-color;
@@ -131,6 +131,21 @@
 	.image-wrap {
 		align-items: center;
 	}
+}
+
+//
+// OVERLAYS
+//
+
+#risks-text {
+	.block-text {
+		width: 66.666667%;
+		margin-left: 16.666667%;
+	}
+}
+
+#psra {
+	display: none;
 }
 
 //
@@ -410,8 +425,8 @@ $app-transition: 0.25s;
 		}
 
 		.chart-legend {
-			display: flex;
-			flex-wrap: wrap;
+			// display: flex;
+			// flex-wrap: wrap;
 			padding: 0.75rem;
 			background-color: $gray-100;
 			font-size: 0.75rem;
@@ -527,22 +542,34 @@ $app-transition: 0.25s;
 		@include full-size;
 	}
 
+	.leaflet-top {
+		.leaflet-control {
+			margin-top: 0.75rem;
+		}
+	}
+
 	.leaflet-left {
 		left: 25%;
 		transition: 0.25s;
 
 		.leaflet-control {
-			margin-left: 1rem;
+			margin-left: 0.75rem;
 		}
 	}
 
 	.leaflet-bottom {
 		.leaflet-control-zoom {
-			margin-bottom: 1rem;
+			margin-bottom: 0.75rem;
 		}
 
 		&.leaflet-left {
 			z-index: 1001;
+		}
+	}
+
+	.leaflet-right {
+		.leaflet-control {
+			margin-right: 0.75rem;
 		}
 	}
 

@@ -131,7 +131,7 @@
 
 					$query_cats = array (
 						array (
-							'title' => __( 'Fatalities', 'rp' ),
+							'title' => __( 'Injuries', 'rp' ),
 							'key' => 'death'
 						),
 						array (
