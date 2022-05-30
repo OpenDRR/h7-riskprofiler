@@ -1710,29 +1710,39 @@ const api_url = 'https://api.riskprofiler.ca';
 
 				plugin_settings.map.panes.bbox.style.display = ''
 
-				var bounds = [
-					[settings.scenario.bounds.ne_lat, settings.scenario.bounds.ne_lng],
-					[settings.scenario.bounds.sw_lat, settings.scenario.bounds.sw_lng]
-				]
-
 				// remove existing
 
 				if (plugin_settings.map.layers.bbox) {
 					plugin_settings.map.object.removeLayer(plugin_settings.map.layers.bbox)
 				}
 
-				// create an orange rectangle
+				$.ajax({
+					url: 'https://geo-api.riskprofiler.ca/collections/opendrr_shakemap_scenario_extents_v1.4.0/items/' + settings.scenario.key,
+					data: {
+						f: 'json'
+					},
+					dataType: 'json',
+					success: function(bounds) {
 
-				plugin_settings.map.layers.bbox = L.rectangle(bounds, {
-					color: "#f05a23",
-					weight: 1,
-					pane: 'bbox'
-				}).addTo(plugin_settings.map.object)
+						plugin_settings.map.layers.bbox = L.geoJSON(bounds, {
+							style: {
+								fillColor: '#d90429',
+								fillOpacity: 0.2,
+								weight: 0
+							},
+							pane: 'bbox'
+						})
 
-				// zoom the map to the rectangle bounds
+						plugin_settings.map.object
+							.addLayer(plugin_settings.map.layers.bbox)
+							.fitBounds(
+								plugin_settings.map.layers.bbox.getBounds(),
+								{
+									paddingTopLeft: [$(window).outerWidth() / 4, 0]
+								}
+							)
 
-				plugin_settings.map.object.fitBounds(bounds, {
-					paddingTopLeft: [$(window).outerWidth() / 4, 0]
+					}
 				})
 
 				// spinner
