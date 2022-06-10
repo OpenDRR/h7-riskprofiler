@@ -264,6 +264,12 @@ $app-transition: 0.25s;
 					width: 3rem;
 				}
 			}
+
+			.app-map,
+			.leaflet-data-pane,
+			.leaflet-data-pane * {
+				// pointer-events: none;
+			}
 		}
 	}
 
@@ -403,6 +409,36 @@ $app-transition: 0.25s;
 	.app-sidebar-content {
 		flex-grow: 1;
 		overflow: auto;
+	}
+
+	.sidebar-detail {
+		.score-chart {
+			position: relative;
+			padding-top: 1.5rem;
+		}
+
+		.range {
+			height: 0.5rem;
+			background: rgb(175,200,153);
+			background: linear-gradient(90deg, rgba(175,200,153,1) 0%, rgba(248,195,136,1) 55%, rgba(240,90,35,1) 70%, rgba(217,4,41,1) 85%, rgba(139,7,7,1) 100%);
+		}
+
+		.marker {
+			position: absolute;
+			top: 0;
+			width: 1px;
+			height: 100%;
+			background-color: $body-color;
+		}
+
+		.label {
+			display: none;
+			position: absolute;
+			top: 0;
+			padding: 0 0.5rem;
+			line-height: 1;
+		}
+
 	}
 
 	// charts
@@ -625,6 +661,26 @@ $app-transition: 0.25s;
 		.leaflet-left {
 			left: 50%;
 		}
+	}
+
+	&[data-sidebar-width="none"] {
+
+		.app-sidebar {
+			width: 25%;
+			left: -25%;
+			opacity: 0;
+		}
+
+		.leaflet-left {
+			left: 0;
+		}
+
+		.legend {
+			.items {
+				width: 100vw;
+			}
+		}
+
 	}
 
 	// adjust for admin bar

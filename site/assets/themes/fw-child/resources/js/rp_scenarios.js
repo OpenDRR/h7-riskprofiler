@@ -36,9 +36,6 @@ const api_url = 'https://api.riskprofiler.ca';
           ]
         }
       },
-			elastic: {
-				merc: null
-			},
 			map: {
 				object: null,
 				legend: null,
@@ -916,8 +913,6 @@ const api_url = 'https://api.riskprofiler.ca';
 			//
 
 			// GET SCENARIO LIST
-
-			console.log(plugin_settings.lang_prepend + '/scenario')
 
 			$(document).profiler('get_sidebar', {
 				url: plugin_settings.lang_prepend + '/scenario',

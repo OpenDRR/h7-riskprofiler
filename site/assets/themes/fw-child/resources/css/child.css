@@ -500,6 +500,29 @@ body.spinner-on #spinner-progress {
   flex-grow: 1;
   overflow: auto;
 }
+.app-page .sidebar-detail .score-chart {
+  position: relative;
+  padding-top: 1.5rem;
+}
+.app-page .sidebar-detail .range {
+  height: 0.5rem;
+  background: #afc899;
+  background: linear-gradient(90deg, #afc899 0%, #f8c388 55%, #f05a23 70%, #d90429 85%, #8b0707 100%);
+}
+.app-page .sidebar-detail .marker {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: #2b2c42;
+}
+.app-page .sidebar-detail .label {
+  display: none;
+  position: absolute;
+  top: 0;
+  padding: 0 0.5rem;
+  line-height: 1;
+}
 .app-page .app-charts {
   position: absolute;
   left: 0;
@@ -661,6 +684,17 @@ body.spinner-on #spinner-progress {
 }
 .app-page[data-sidebar-width=half] .leaflet-left {
   left: 50%;
+}
+.app-page[data-sidebar-width=none] .app-sidebar {
+  width: 25%;
+  left: -25%;
+  opacity: 0;
+}
+.app-page[data-sidebar-width=none] .leaflet-left {
+  left: 0;
+}
+.app-page[data-sidebar-width=none] .legend .items {
+  width: 100vw;
 }
 .app-page.admin-bar {
   height: calc(100vh - 32px);
@@ -825,23 +859,23 @@ body.spinner-on #spinner-progress {
   transition: all 0.25s ease 0.15s;
 }
 
-.sidebar-detail.scenario .card-header {
+.sidebar-detail .card-header {
   font-family: "RPTitle", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 1.125rem;
 }
-.sidebar-detail.scenario .indicator-item {
+.sidebar-detail .indicator-item {
   cursor: pointer;
 }
-.sidebar-detail.scenario .indicator-item.selected {
+.sidebar-detail .indicator-item.selected {
   color: #d90429;
 }
-.sidebar-detail.scenario li.indicator-item {
+.sidebar-detail li.indicator-item {
   transition: 0.25s;
 }
-.sidebar-detail.scenario li.indicator-item:hover {
+.sidebar-detail li.indicator-item:hover {
   background-color: #dde0e7;
 }
-.sidebar-detail.scenario li.indicator-item.selected {
+.sidebar-detail li.indicator-item.selected {
   background-color: #dee2e6;
 }
 
@@ -882,6 +916,22 @@ body.spinner-on #spinner-progress {
 }
 .chart-tip .arrow:before {
   border-top-color: #343a40;
+}
+
+#breadcrumb-indicator a {
+  transition: 0.25s;
+  color: #2b2c42;
+}
+#breadcrumb-indicator a i {
+  transition: 0.25s;
+}
+#breadcrumb-indicator a:hover i {
+  color: #d90429;
+}
+
+#page-risks .leaflet-control-container .leaflet-control-attribution {
+  margin-bottom: 0.75rem;
+  margin-right: 0;
 }
 
 .sidebar-item.city {

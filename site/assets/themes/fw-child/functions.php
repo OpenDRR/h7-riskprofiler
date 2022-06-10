@@ -108,6 +108,10 @@ function child_theme_enqueue() {
 
 		wp_enqueue_script ( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', null, '1.7.1', true );
 
+		wp_enqueue_script ( 'leaflet-vector', 'https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js', array ( 'leaflet' ), null, true );
+
+		wp_enqueue_script ( 'togglebox' );
+
   }
 
 	if ( is_page ( 'scenarios' ) ) {
@@ -130,7 +134,6 @@ function child_theme_enqueue() {
 
 		wp_enqueue_script ( 'highcharts-export-data', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/export-data.js',  null, null, true );
 
-		wp_enqueue_script ( 'togglebox' );
 		wp_enqueue_script ( 'rp-scenarios' );
 
   } elseif ( is_page ( 'risks' ) ) {
@@ -339,8 +342,14 @@ function alter_query($query) {
 
 	if ( is_post_type_archive ( 'scenario' ) ) {
 
-		$query-> set('orderby', 'title');
-		$query-> set('order', 'asc');
+		$query->set( 'orderby', 'title' );
+		$query->set( 'order', 'asc' );
+
+	} elseif ( is_post_type_archive ( 'community' ) ) {
+
+		$query->set( 'orderby', 'title' );
+		$query->set( 'order', 'asc' );
+		$query->set( 'posts_per_page', -1 );
 
 	}
 

@@ -1,9 +1,13 @@
-const geoapi_url = 'https://geo-api.riskprofiler.ca';
+const geoapi_url = 'https://geo-api.riskprofiler.ca'
+const pbf_url = 'https://riskprofiler.ca'
+
+var click_flag = false
+var bounds
 
 // risk profiler
 // v1.0
 
-(function ($) {
+;(function ($) {
 
   // custom select class
 
@@ -14,10 +18,19 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
     var defaults = {
 			map: {
 				object: null,
+				panes: [],
 				offset: $('.app-sidebar').outerWidth(),
 				geojson: null,
 				choropleth: null,
-				selected_polygon: null,
+				current_zoom: 3,
+				last_zoom: -1,
+				last_click: null,
+				selected_feature: null,
+				tiles: null,
+				defaults: {
+					coords: [60, -110],
+					zoom: 3
+				}
 			},
 			api: {
 				base_URL: geoapi_url + '/collections/opendrr_psra_indicators_',
@@ -33,14 +46,37 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 				data: [],
 				features: []
 			},
-			variable: {
+      aggregation: {
+        'current': {},
+        'previous': null,
+        'settings': {
+          'default': [
+            { min: 11, max: 15, agg: 's', prop: 'Sauid', bbox: true },
+            { min: 1, max: 10, agg: 'csd', prop: 'csduid', bbox: false }
+          ]
+        }
+      },
+			indicator: {
 				key: 'eC_Fatality',
 				retrofit: 'b0'
 			},
 			legend: {
 				max: 0,
-        grades: []
+        grades: [],
+				colors: [
+					'#ffffcc',
+					'#ffeda0',
+					'#fed976',
+					'#feb24c',
+					'#fd8d3c',
+					'#fc4e2a',
+					'#e31a1c',
+					'#bd0026',
+					'#800026'
+				]
 			},
+			popup: null,
+			community: null,
 			search: {
 				input: null
 			},
@@ -51,9 +87,16 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 			},
 			sidebar: {
 				list: null,
-				item: null
+				items: [],
+				markup: '<div class="sidebar-item city list-group-item list-group-item-action p-0"><div class="d-flex pt-1"><h5 class="sidebar-item-value d-flex align-items-center justify-content-center px-3 mb-0 border-right font-weight-normal text-center text-gray-500"></h5><div class="px-3 py-1"><p class="sidebar-item-header mb-0 text-body"></p><p class="sidebar-item-province mb-0"></p></div></div></div>',
+				item: null,
+				max: {
+					eqri_abs_score: 0,
+					eqri_norm_score: 11
+				},
+				features: []
 			},
-			lang: 'en',
+			lang_prepend: '',
 			logging: {
 				feature_count: 0,
 				update_count: 0
@@ -87,18 +130,20 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
       }
 
 			if ($('body').hasClass('lang-fr')) {
-				plugin_settings.lang = 'fr'
+				plugin_settings.lang_prepend = '/fr'
 			}
 
 			//
 			// MAP
 			//
 
-			// create object
+			// OBJECT
 
 	    plugin_settings.map.object = L.map('map', {
-				zoomControl: false
-			}).setView([55,-105], 4);
+				zoomControl: false,
+				maxZoom: 15,
+				crs: L.CRS.EPSG900913,
+			}).setView(plugin_settings.map.defaults.coords, plugin_settings.map.defaults.zoom)
 
 			var map = plugin_settings.map.object
 
@@ -106,104 +151,108 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 				position: 'topright'
 			}).addTo(map);
 
-			// basemaps
+			plugin_settings.map.legend = L.control( { position: 'bottomleft' } )
+
+			plugin_settings.map.legend.onAdd = function () {
+
+				// console.log(plugin_settings.indicator.key, plugin_settings.api.retrofit, plugin_settings.legend.grades)
+
+				var div = L.DomUtil.create('div', 'info legend'),
+						current_agg = plugin_settings.aggregation.current.agg,
+						aggregation = plugin_settings.indicator.aggregation[current_agg],
+						legend = plugin_settings.indicator.legend,
+						prepend = legend.prepend,
+						append = legend.append,
+						grades = aggregation.legend
+
+				// switch (aggregation[current_agg]['rounding']) {
+				// 	case -9 :
+				// 		append = 'billion ' + append
+				// 		break
+				// 	case -6 :
+				// 		append = 'million ' + append
+				// 		break
+				// 	case -3 :
+				// 		append = 'thousand ' + append
+				// 		break
+				// }
+
+				legend_markup = '<h6>' + plugin_settings.indicator.title + '</h6>'
+
+				// console.log(current_agg, aggregation, grades)
+
+				// loop through our density intervals and generate a label with a colored square for each interval
+
+				legend_markup += '<div class="items">'
+
+				for (var i = 1; i <= grades.length; i++) {
+
+					var row_markup = '<div class="legend-item" data-toggle="tooltip" data-placement="top" style="background-color: '
+            + plugin_settings.legend.colors[i - 1] + ';"'
+						+ ' title="'
+						+ prepend
+						+ grades[i - 1].toLocaleString(undefined, {
+								maximumFractionDigits: aggregation['decimals']
+							})
+
+					if (grades[i]) {
+
+						row_markup += ' – '
+							+ prepend
+							+ grades[i].toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
+							+ ' '
+							+ append
+
+					} else {
+
+						row_markup += '+ ' + append
+
+					}
+
+					row_markup += '"></div>'
+
+					legend_markup += row_markup
+
+				}
+
+				legend_markup	+= '</div>'
+
+				div.innerHTML = legend_markup
+
+				return div
+
+			}
+
+			// BASEMAP
 
 			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			}).addTo(map)
 
-			// GEOJSON
+			// PANES
 
-			// layer for choropleth
+			// data - for tile layer
+			plugin_settings.map.panes.data = plugin_settings.map.object.createPane('data')
+			plugin_settings.map.panes.data.style.zIndex = 560
+			plugin_settings.map.panes.data.style.pointerEvents = 'all'
 
-			plugin_settings.map.choropleth = L.geoJSON([], {
-		    style: {
-					color: plugin_settings.colors.shape,
-					fillColor: plugin_settings.colors.shape,
-					weight: 0.7
-				},
-				onEachFeature: function (feature, layer) {
+			// PBF
 
-					var prop_key = plugin_settings.variable.key + '_' + plugin_settings.api.retrofit
+			bounds = L.latLngBounds(L.latLng(
+				41.6755,
+				-141.003
+			), L.latLng(
+				83.1139,
+				-52.6174
+			))
 
-					plugin_settings.api.features[feature.id] = layer
+			// POPUP
 
-					// console.log(plugin_instance._choro_color(feature.properties[prop_key]))
+			plugin_settings.map.popup = L.popup({
+				pane: 'data',
+				className: 'risk-popup'
+			})
 
-					if (typeof feature !== 'undefined') {
-
-						layer.setStyle(plugin_instance._choro_style(feature))
-
-						layer
-							.bindPopup(function(e) {
-
-								console.log(e.feature.properties[plugin_settings.variable.key + '_' + plugin_settings.api.retrofit])
-
-								var popup_markup = '<div class="d-flex align-items-center">'
-
-									popup_markup += '<h5 class="risk-popup-city flex-grow-1 mb-0 p-2">' + e.feature.properties.csdname + '</h5>'
-									popup_markup += '<div class="risk-popup-rank border-left py-2 px-3 font-size-lg text-primary">' + 'X' + '</div>'
-
-								popup_markup += '</div>'
-
-								popup_markup += '<div class="risk-popup-details bg-light p-2">'
-
-									popup_markup += '<span class="risk-detail-link btn btn-outline-primary" data-id="' + e.feature.properties.csduid + '">View Details</span>'
-
-								popup_markup += '</div>'
-
-								return L.Util.template(popup_markup)
-
-							}, {
-								className: 'risk-popup'
-							})
-							.on('mouseover', function () {
-
-								// if the shape isn't already selected
-
-								if (plugin_settings.map.selected_polygon != feature.properties.csduid) {
-
-									this.setStyle({
-										'color': plugin_settings.colors.shape_hover,
-										'fillColor': plugin_settings.colors.shape_hover
-									})
-
-									// $('.sidebar-item').removeClass('hover')
-									//
-									// $('.sidebar-item[data-id="' + feature.properties.csduid + '"]').addClass('hover')
-
-								}
-
-	            })
-							.on('mouseout', function () {
-
-								// if already selected, do nothing
-								// if another layer is selected, reset this one
-
-								// $('.sidebar-item').removeClass('hover')
-								//
-
-								if (plugin_settings.map.selected_polygon != feature.properties.csduid) {
-
-									this.setStyle(plugin_instance._choro_style(this.feature))
-
-								}
-
-	            })
-							.on('click', function() {
-
-								plugin_instance.item_select({
-									item_id: feature.properties.csduid,
-									polygon: this
-								})
-
-							})
-
-					}
-
-				}
-
-			}).addTo(map)
 
 			// CONTROLS
 
@@ -279,7 +328,7 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 					plugin_settings.search.clear.show()
 
 					$.ajax({
-						url: 'http://geogratis.gc.ca/services/geolocation/' + plugin_settings.lang + '/locate?q=*' + term + '*',
+						url: 'http://geogratis.gc.ca/services/geolocation/' + plugin_settings.lang_prepend + '/locate?q=*' + term + '*',
 						success: function(data) {
 
 							if (data.length) {
@@ -292,7 +341,9 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 
 										new_result.attr('data-bounds', JSON.stringify(i.bbox))
 
-									} else if (i.geometry.coordinates) {
+									}
+
+									if (i.geometry.coordinates) {
 
 										new_result.attr('data-coords', '[' + i.geometry.coordinates[1] + ',' + i.geometry.coordinates[0] + ']')
 
@@ -324,24 +375,52 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 				L.DomEvent.stop(e)
 				e.stopPropagation()
 
-				if ($(this).attr('data-bounds')) {
+				if ($(this).attr('data-coords')) {
 
-					var bounds = JSON.parse($(this).attr('data-bounds'))
+					var this_coords = JSON.parse($(this).attr('data-coords'))
 
-					map.fitBounds([
-						[bounds[1], bounds[0]],
-						[bounds[3], bounds[2]]
-					], {
-						paddingTopLeft: [$(window).outerWidth() / 4, 0]
-					})
+					var results = []
+					// var results = leafletPip.pointInLayer([this_coords[1], this_coords[0]], plugin_settings.map.choropleth)
 
-				} else if ($(this).attr('data-coords')) {
+					if (results.length) {
+						results = results[0]
 
-					$('body').profiler('center_map', {
-						map: map,
-						coords: JSON.parse($(this).attr('data-coords')),
-						offset: $(window).outerWidth() / 4
-					})
+						map.fitBounds(results.getBounds(), {
+							paddingTopLeft: [$(window).outerWidth() / 4, 0]
+						})
+
+					} else {
+
+						$(document).profiler('center_map', {
+							map: map,
+							coords: JSON.parse($(this).attr('data-coords')),
+							offset: $(window).outerWidth() / 4
+						})
+
+					}
+
+				} else {
+
+					// if ($(this).attr('data-bounds')) {
+					//
+					// 	var bounds = JSON.parse($(this).attr('data-bounds'))
+					//
+					// 	map.fitBounds([
+					// 		[bounds[1], bounds[0]],
+					// 		[bounds[3], bounds[2]]
+					// 	], {
+					// 		paddingTopLeft: [$(window).outerWidth() / 4, 0]
+					// 	})
+					//
+					// } else if ($(this).attr('data-coords')) {
+					//
+					// 	$('body').profiler('center_map', {
+					// 		map: map,
+					// 		coords: JSON.parse($(this).attr('data-coords')),
+					// 		offset: $(window).outerWidth() / 4
+					// 	})
+					//
+					// }
 
 				}
 
@@ -357,202 +436,286 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 				plugin_settings.search.spinner.hide()
 			})
 
-			$('body').on('click', '.risk-var', function() {
+			// RETROFIT
 
-				console.log('click var')
+			$('#retrofit-togglebox').togglebox({
+				off: '',
+				on: ''
+			})
 
-				var this_var = JSON.parse($(this).attr('data-indicator'))
+			//
+			// EVENTS
+			//
 
-				console.log(this_var)
+			plugin_settings.aggregation.settings['default'].forEach(function (i) {
 
-				plugin_settings.variable.key = this_var.key
+        // console.log('checking ' + plugin_settings.map.current_zoom + ' vs ' + i.min + ', ' + i.max )
 
-				// reset the history state
-				$(document).profiler('do_history', '#' + plugin_settings.variable.key)
+        if (
+          plugin_settings.map.current_zoom >= i.min &&
+          plugin_settings.map.current_zoom <= i.max
+        ) {
 
-        // reset legend max
-        plugin_settings.legend.max = 0
+          // found the agg settings that match the zoom level
 
-				$(document).overlay('hide')
+          if (plugin_settings.aggregation.current.agg != i.agg) {
 
-				plugin_instance.fetch_geoapi()
+            // agg settings doesn't match the plugin's current aggregation
+
+            plugin_settings.aggregation.current = i
+
+          }
+
+        }
+
+      })
+
+			// adjust aggregation on zoom
+			plugin_settings.map.object.on('zoomend dragend', function (e) {
+
+				// console.log('zoom drag', plugin_settings.map.object.getZoom())
+
+				plugin_settings.map.current_zoom = e.target.getZoom()
+
+				plugin_settings.aggregation.previous = plugin_settings.aggregation.current.agg
+
+				if (plugin_settings.current_view != 'detail') {
+
+					if (plugin_settings.map.current_zoom > 5) {
+
+						$('body').attr('data-sidebar-width', 'none')
+
+					} else {
+
+						$('body').attr('data-sidebar-width', '')
+
+					}
+
+				}
+
+				plugin_settings.map.last_zoom = plugin_settings.map.current_zoom
 
 			})
 
-			// EVENTS
+			// close popup
 
 			map.on('popupclose', function(e) {
 
-				plugin_instance.item_select({
-					event: 'popupclose'
-				})
+				if (map.hasLayer(plugin_settings.map.tiles)) {
+
+					var feature_deselected = false
+
+					setTimeout(function() {
+
+						// console.log('close', plugin_settings.map.selected_feature)
+
+						// if there's a selected feature
+
+						if (plugin_settings.map.selected_feature == null) {
+
+							// reset it
+
+		          plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.selected_feature)
+
+							plugin_settings.map.selected_feature = null
+
+							$('.app-main').removeClass('feature-selected')
+
+							feature_deselected = true
+
+		        }
+
+					}, 500)
+
+				}
 
 			});
-
-			//
-			// FILTER
-			//
-
-			$(document).profiler('get_controls', 'risks')
 
 			//
 			// SIDEBAR
 			//
 
+			plugin_settings.sidebar.items = JSON.parse($('.app-sidebar-content').attr('data-items'))
+
+			console.log(plugin_settings.sidebar.items)
+
 			$(document).profiler('get_sidebar', {
-				url: 'risks/items.php',
+				url: plugin_settings.lang_prepend + '/community',
+				success: function(data) {
+
+				},
 				complete: function() {
 
-					plugin_settings.sidebar.list = $('body').find('.sidebar-items .list-group')
+					plugin_settings.sidebar.list = $('body').find('.sidebar-items')
 
-					plugin_settings.sidebar.item = plugin_settings.sidebar.list.find('.sidebar-item')[0]
+					plugin_instance.sort_sidebar()
 
-					$('body').addClass('spinner-on')
-					$('#spinner-progress').text('Loading items')
+					plugin_instance.update_map()
+
+					// $('body').addClass('spinner-on')
+					// $('#spinner-progress').text('Loading items')
 
 				}
 			})
 
 			$('body').on('mouseover', '.sidebar-item.city', function() {
 
-				// if this item is not already selected
 
-				if (!$(this).hasClass('selected')) {
-
-					// this shape is not selected
-
-					var this_id = parseInt($(this).attr('data-id'))
-
-					// reset the choropleth, then go through all the shapes and re-evaluate
-
-					plugin_settings.map.choropleth.resetStyle().eachLayer(function(layer) {
-
-						if (layer.feature.properties.csduid == plugin_settings.map.selected_polygon) {
-
-							// if the shape is selected
-
-							layer.setStyle({
-								'color': plugin_settings.colors.shape_select,
-								'fillColor': plugin_settings.colors.shape_select
-							})
-
-						} else if (this_id == layer.feature.properties.csduid) {
-
-							// if the shape matches the hovered sidebar item
-
-							layer.setStyle({
-								'color': plugin_settings.colors.shape_hover,
-								'fillColor': plugin_settings.colors.shape_hover
-							})
-
-						}
-
-					})
-
-				}
 
 			}).on('mouseleave', '.sidebar-item.city', function() {
 
-				// if this item is not already selected
 
-				if (!$(this).hasClass('selected')) {
-
-					// this shape is not selected
-
-					var this_id = parseInt($(this).attr('data-id'))
-
-					// reset the choropleth, then find the selected polygon and set its colors
-
-					plugin_settings.map.choropleth.resetStyle().eachLayer(function(layer) {
-
-						layer.setStyle(plugin_instance._choro_style(layer.feature))
-
-						// if (layer.feature.properties.csduid == plugin_settings.map.selected_polygon) {
-						//
-						//
-						//
-						// 	layer.setStyle({
-						// 		'color': plugin_settings.colors.shape_select,
-						// 		'fillColor': plugin_settings.colors.shape_select
-						// 	})
-						//
-						// }
-
-					})
-
-				}
 
 			}).on('click', '.sidebar-item.city', function() {
 
-				if (!$(this).hasClass('selected')) {
+				$.ajax({
+					url: plugin_settings.api.base_URL + plugin_settings.aggregation.current.agg + '_v' + plugin_settings.api.version + '/items/' + $(this).attr('data-feature'),
+					dataType: 'json',
+					success: function(data) {
 
-					var this_id = parseInt($(this).attr('data-id'))
+						var path = new L.GeoJSON(data)
 
-					plugin_settings.map.choropleth.resetStyle().eachLayer(function(layer) {
-
-						if (this_id == layer.feature.properties.csduid) {
-
-							plugin_instance.item_select({
-								item_id: layer.feature.properties.csduid,
-								polygon: layer
-							})
-
-							layer.openPopup()
-
-						}
-
-					})
-
-				}
-
-			})
-
-			// LOAD
-
-			if (window.location.hash) {
-
-				console.log('hash exists')
-
-				var init_id = window.location.hash.substring(1),
-						init_item = $('body').find('#risk-var-' + init_id)
-
-				console.log(window.location.hash, init_item)
-
-				// trigger click the item
-
-				init_item.trigger('click')
-
-			} else {
-
-				plugin_instance.fetch_geoapi()
-
-			}
-
-			//
-			// DUMMY CLICKS
-			//
-
-			$('body').on('click', '.risk-detail-link', function() {
-				map.closePopup()
-
-				plugin_instance.item_detail($(this).attr('data-id'))
-			})
-
-			$('body').on('click', '.app-head-back', function(e) {
-
-				$(document).profiler('get_sidebar', {
-					url: 'risks/items.php',
-					before: function() {
-
-						$('.app-sidebar').attr('data-width', '')
-						$('.app-head').attr('data-mode', '')
-
-					},
-					success: function() {
+						plugin_settings.map.object.fitBounds(path.getBounds(), {
+							paddingTopLeft: [($(window).outerWidth() / 2) + 50, 50],
+							paddingBottomRight: [50, 50]
+						})
 
 					}
 				})
 
+				// if (!$(this).hasClass('selected')) {
+				//
+				// 	var this_id = parseInt($(this).attr('data-id'))
+				//
+				// 	plugin_settings.map.choropleth.resetStyle().eachLayer(function(layer) {
+				//
+				// 		if (this_id == layer.feature.properties.csduid) {
+				//
+				// 			plugin_instance.item_select({
+				// 				layer: layer
+				// 			})
+				//
+				// 			layer.openPopup()
+				//
+				// 		}
+				//
+				// 	})
+				//
+				// }
+
+			})
+
+			//
+			// CLICK EVENTS
+			//
+
+			// click an indicator item
+
+			$('body').on('click', '.risk-var', function() {
+
+				plugin_instance.set_indicator(JSON.parse($(this).attr('data-indicator')))
+
+				plugin_instance.sort_sidebar()
+				plugin_instance.update_map()
+
+			})
+
+			$(document).on('overlay_show', function() {
+
+				if ($('.app-main').attr('data-mode') == 'risk-detail') {
+
+					$('.app-head-back').trigger('click')
+
+				}
+			})
+
+			// click the indicator breadcrumb
+
+			$('#breadcrumb-indicator').click(function() {
+
+				$('.app-head-back').trigger('click')
+
+			})
+
+			// click the 'view details' button in a feature popup
+
+			$('body').on('click', '.risk-detail-link', function() {
+				map.closePopup()
+
+				// plugin_instance.set_community()
+				plugin_instance.item_detail($(this).attr('data-id'))
+			})
+
+			// click the 'back' button to close the detail view
+
+			$('body').on('click', '.app-head-back', function(e) {
+
+				plugin_settings.current_view = 'init'
+
+				plugin_settings.community = null
+
+				plugin_settings.map.object.getPane('data').style.pointerEvents = 'all'
+
+				// reset the map view
+				plugin_settings.map.object.setView(
+					plugin_settings.map.defaults.coords,
+					plugin_settings.map.defaults.zoom
+				)
+
+				if (plugin_settings.map.current_zoom > 5) {
+					$('.app-page').attr('data-sidebar-width', 'none')
+				} else {
+					$('.app-page').attr('data-sidebar-width', '')
+				}
+
+				$('.app-main').attr('data-mode', '')
+
+				plugin_instance.sort_sidebar()
+
+				// $(document).profiler('get_sidebar', {
+				// 	url: plugin_settings.lang_prepend + '/community',
+				// 	before: function() {
+				//
+				// 		if (plugin_settings.map.current_zoom > 5) {
+				// 			$('.app-page').attr('data-sidebar-width', 'none')
+				// 		} else {
+				// 			$('.app-page').attr('data-sidebar-width', '')
+				// 		}
+				//
+				// 		$('.app-main').attr('data-mode', '')
+				//
+				// 	},
+				// 	success: function() {
+				//
+				// 	},
+				// 	complete: function() {
+				//
+				// 		// plugin_settings.sidebar.list.empty()
+				// 		plugin_instance.sort_sidebar()
+				//
+	      //     $('body').removeClass('spinner-on')
+				// 		$('#spinner-progress').text('')
+				// 	}
+				// })
+
+			})
+
+			// click the 'retrofit' toggle
+
+			$('#retrofit-toggle .togglebox').click(function() {
+				if (!$(this).hasClass('disabled')) {
+
+					if (plugin_settings.api.retrofit == 'b0') {
+						plugin_settings.api.retrofit = 'r1'
+					} else {
+						plugin_settings.api.retrofit = 'b0'
+					}
+
+					plugin_settings.map.object.closePopup()
+
+					plugin_instance.update_map()
+
+				}
 			})
 
 			//
@@ -563,161 +726,313 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 				plugin_settings.map.offset = $('.app-sidebar').outerWidth()
 			})
 
+			// LOAD
+
+			if (window.location.hash) {
+
+				var init_id = window.location.hash.substring(1),
+						init_item = $('body').find('#risk-var-' + init_id)
+
+				// console.log(window.location.hash, init_item)
+
+				plugin_instance.set_indicator(JSON.parse(init_item.attr('data-indicator')))
+
+			} else {
+
+				// plugin_instance.fetch_geoapi()
+
+			}
+
     },
 
-		update_api_url: function() {
+		set_indicator: function(indicator) {
 
-      var plugin_instance = this
-      var plugin_settings = plugin_instance.options
+			var plugin_instance = this
+			var plugin_settings = plugin_instance.options
 
-			url = plugin_settings.api.base_URL
-					+ plugin_settings.api.aggregation
-					+ '_v' + plugin_settings.api.version
-					+ '/items?'
-					+ 'lang=' + plugin_settings.api.lang
-					+ '&f=json'
-					+ '&limit=' + plugin_settings.api.limit
-					+ '&startindex=4300'
+			plugin_settings.indicator = indicator
 
-			if (plugin_settings.variable.key !== '') {
+			// reset the history state
+			$(document).profiler('do_history', '#' + plugin_settings.indicator.key)
 
-				url += '&properties=csdname,' + plugin_settings.api.agg_prop
-						+ ','
-					 	+ plugin_settings.variable.key
-  					+ '_'
-						+ plugin_settings.api.retrofit
-      }
+			// reset legend max
+			plugin_settings.legend.max = 0
 
-      if (plugin_settings.api.bbox !== null) {
-        url += '&bbox=' + plugin_settings.api.bbox
-      }
+			if ($('body').hasClass('overlay-open')) {
+				$(document).overlay('hide')
+			}
 
-			plugin_settings.api.geojson_URL = url
+			// update the breadcrumb
 
-			console.log('update_api_url', url)
+			$('.app-breadcrumb .indicator-title').last().html(plugin_settings.indicator.title)
 
-			return url
+			// update the sidebar
+
+
 
 		},
 
-		fetch_geoapi: function(url = null, do_legend = true) {
+		sort_sidebar: function() {
+
+			var plugin_instance = this
+			var plugin_settings = plugin_instance.options
+
+			console.log('sort', plugin_settings.indicator.ranking)
+
+			$('.app-sidebar-content').html(plugin_settings.sidebar.list)
+
+			plugin_settings.sidebar.list.empty()
+
+			if (plugin_settings.indicator.ranking.length) {
+
+				plugin_settings.indicator.ranking.forEach(function(item_id, i) {
+
+					var result = plugin_settings.sidebar.items.filter(obj => {
+					  return obj.post_id === parseInt(item_id)
+					})
+
+					if (result.length) {
+
+						var result_data = result[0]
+
+						var new_item = $(plugin_settings.sidebar.markup)
+							.appendTo(plugin_settings.sidebar.list)
+							.attr('id', result_data.slug)
+							.attr('data-id', result_data.post_id)
+							.attr('data-name', result_data.name)
+							.attr('data-feature', result_data.feature)
+
+						new_item.find('.sidebar-item-value').html(i + 1)
+
+						new_item.find('.sidebar-item-header').html(result_data.name)
+
+						new_item.find('.sidebar-item-province').html(result_data.province)
+
+					}
+
+				})
+
+			} else {
+
+				plugin_settings.sidebar.items.forEach(function(result) {
+
+					var new_item = $(plugin_settings.sidebar.markup)
+						.appendTo(plugin_settings.sidebar.list)
+						.attr('id', result.slug)
+						.attr('data-id', result.post_id)
+						.attr('data-name', result.name)
+						.attr('data-feature', result.feature)
+
+					// new_item.find('.sidebar-item-value').html(i + 1)
+
+					new_item.find('.sidebar-item-header').html(result.name)
+
+					new_item.find('.sidebar-item-province').html(result.province)
+
+				})
+
+			}
+
+		},
+
+		set_community: function(fn_options) {
+
+			var plugin_instance = this
+			var plugin_settings = plugin_instance.options
+
+			// plugin_settings.community = {
+			// 	title: '',
+			// 	id: '',
+			// }
+
+		},
+
+		update_map: function(fn_options) {
+
+			var plugin_instance = this
+			var plugin_settings = plugin_instance.options
+
+			var map = plugin_settings.map.object
+
+			var indicator_key = plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit
+
+			$(document).profiler('get_tiles', {
+				map: map,
+				indicator: plugin_settings.indicator,
+				aggregation: plugin_settings.aggregation,
+				tiles: plugin_settings.map.tiles,
+				bounds: bounds,
+				options: {
+					pane: 'data',
+		      getFeatureId: function(feature) {
+
+						// if (feature.properties['eqri_norm_score_' + plugin_settings.api.retrofit] > 15) {
+						// 	console.log(feature.properties.csdname, feature.properties['eqri_norm_score_' + plugin_settings.api.retrofit])
+						// }
+
+						if (feature.properties['eqri_abs_score_' + plugin_settings.api.retrofit] > plugin_settings.sidebar.max.eqri_abs_score) {
+							plugin_settings.sidebar.max.eqri_abs_score = feature.properties['eqri_abs_score_' + plugin_settings.api.retrofit]
+						}
+
+						return feature.properties['csduid']
+		      },
+					bounds: bounds,
+		      vectorTileLayerStyles: plugin_instance.set_choro_style('psra_indicators_' + plugin_settings.aggregation.current.agg, indicator_key)
+				},
+				functions: {
+					add: function(e) {
+
+						// set the tile var to the new layer that was created
+						plugin_settings.map.tiles = e.target
+
+						//
+
+						// console.log(plugin_settings.indicator)
+
+						plugin_settings.legend.grades = plugin_settings.indicator.aggregation.csd.legend
+
+						plugin_settings.map.legend.addTo(map)
+
+						$('body').find('.legend-item').tooltip()
+
+					},
+					mouseover: function(e) {
+
+						var this_ID = parseInt(e.layer.properties['csduid'])
+
+						$('.app-sidebar').find('.sidebar-item').removeClass('hover')
+
+						$('.app-sidebar').find('[data-feature="' + this_ID + '"]').addClass('hover')
+
+					},
+					click: function(e) {
+
+						// if we have a selected feature, reset the style
+		        if (plugin_settings.map.selected_feature != null) {
+		          plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.selected_feature)
+		        }
+
+						$('.app-main').addClass('feature-selected')
+
+		        // set the selected feature id
+		        plugin_settings.map.selected_feature = e.layer.properties['csduid']
+
+						plugin_settings.community = e.layer.properties
+
+						// set the selected feature style
+		        plugin_settings.map.tiles.setFeatureStyle(plugin_settings.map.selected_feature, {
+		          fill: true,
+							fillColor: '#9595a0',
+							color: '#2b2c42',
+		          weight: 0.8,
+		          fillOpacity: 0.5
+		        })
+
+						// set the popup content
+		        plugin_settings.map.popup.setContent(function() {
+
+							return plugin_instance.popup_content(e.layer.properties)
+
+						})
+		        .setLatLng(e.latlng)
+		        .openOn(map)
+
+
+
+					}
+				}
+			})
+		},
+
+		set_choro_style: function(pbf_key, indicator_key) {
+
+			var plugin_instance = this
+			var plugin_settings = plugin_instance.options
+
+			var layer_style = {},
+					fillColor,
+					weight = 0.1
+
+			// console.log(pbf_key, indicator_key)
+
+			layer_style[pbf_key] = function(properties) {
+
+				var rounded_color = properties[indicator_key] // * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
+
+				// console.log('val: ' + properties[indicator_key], 'rounding: ' +  plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'], 'rounded: ' + rounded_color)
+
+				fillColor = plugin_instance._choro_color(rounded_color)
+
+				return {
+					fillColor: fillColor,
+					weight: weight,
+					fillOpacity: 0.8,
+					color: '#000000',
+					opacity: 0.6,
+					fill: true
+				}
+			}
+
+			return layer_style
+		},
+
+		_choro_color: function(d) {
 
       var plugin_instance = this
       var plugin_settings = plugin_instance.options
 
-			var nxt_lnk
+			var current_agg = plugin_settings.aggregation.current.agg
 
-			$('body').addClass('spinner-on')
-			$('#spinner-progress').text('Retrieving data')
+			var grades = [].concat(plugin_settings.indicator.aggregation[current_agg].legend).reverse()
 
-			if ( url == null ) {
-				url = plugin_instance.update_api_url()
-			}
+			var rounding = plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding']
 
-			$.ajax({
-				url: url,
-				success: function(data) {
+			return d >= grades[0] * Math.pow(10, rounding) ? '#800026' :
+				d >= grades[1] * Math.pow(10, rounding) ? '#bd0026' :
+				d >= grades[2] * Math.pow(10, rounding) ? '#e31a1c' :
+				d >= grades[3] * Math.pow(10, rounding) ? '#fc4e2a' :
+				d >= grades[4] * Math.pow(10, rounding) ? '#fd8d3c' :
+				d >= grades[5] * Math.pow(10, rounding) ? '#feb24c' :
+				d >= grades[6] * Math.pow(10, rounding) ? '#fed976' :
+				d >= grades[7] * Math.pow(10, rounding) ? '#ffeda0' :
+        '#ffffcc'
 
-					console.log(data)
+		},
 
-					if (typeof data.features !== 'undefined') {
+		popup_content: function(properties) {
 
-						data.features.forEach(function(feature) {
+      var plugin_instance = this
+      var plugin_settings = plugin_instance.options
 
-							var feature_val_key = plugin_settings.variable.key + '_' + plugin_settings.api.retrofit
+			// console.log(properties)
 
-							// check/update max value
+			var popup_markup = '<div class="d-flex align-items-center">'
 
-							if (feature.properties[feature_val_key] > plugin_settings.legend.max) {
-								plugin_settings.legend.max = feature.properties[feature_val_key]
-							}
+				popup_markup += '<h5 class="risk-popup-city flex-grow-1 mb-0 p-2">' + properties.csdname + '</h5>'
 
-						})
+				var this_val = properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit]
 
-						plugin_settings.api.data.push(data)
+				var current_agg = plugin_settings.aggregation.current.agg
 
-					}
+				var aggregation = plugin_settings.indicator.aggregation[current_agg]
 
-					for (var l in data.links) {
-						lnk = data.links[l]
+				popup_markup += '<div class="risk-popup-rank border-left py-2 px-3 font-size-lg text-primary">'
+					+ plugin_settings.indicator.legend.prepend
+					+ plugin_instance._round(this_val, aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
+					+ ' ' + plugin_settings.indicator.legend.append
+					+ '</div>'
 
-						if (lnk.rel == 'next') {
-							nxt_lnk = lnk.href
-							break
-						}
-					}
+			popup_markup += '</div>'
 
-					// if a 'next' link exists, continue loading data
+			popup_markup += '<div class="risk-popup-details bg-light p-2">'
 
-					// if (nxt_lnk) {
-					//
-					// 	// recursive
-	 				// 	// inherit do_legend setting
-					// 	plugin_instance.fetch_geoapi(nxt_lnk, do_legend)
-					//
-					// } else {
-					//
-					// 	console.log('max', plugin_settings.legend.max)
-					//
-					// 	plugin_instance.process_geoapi()
-					//
-					// }
+				popup_markup += '<p>real: ' + properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit] + '</p>'
 
-					// if (do_legend == true) {
+				popup_markup += '<span class="risk-detail-link btn btn-outline-primary" data-id="' + properties.csduid + '">View Details</span>'
 
-						// console.log('process new legend')
+			popup_markup += '</div>'
 
-						// determine legend grades
-
-            var max_step = plugin_settings.legend.max
-
-            // var max_step = plugin_settings.legend.max * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
-
-            var pow = 0,
-                legend_steps = 9,
-								legend_step = 0
-
-						plugin_settings.legend.grades = []
-
-						console.log('max ' + max_step)
-
-						if (max_step >= 1) {
-
-							while (max_step > 100) {
-								pow += 1
-								max_step = plugin_settings.legend.max / Math.pow(10, pow)
-							}
-
-							// create an array of breaks for the legend values
-
-							legend_step = max_step / legend_steps
-
-							// console.log('step', legend_step)
-
-              for (i = 1; i <= legend_steps; i += 1) {
-                plugin_settings.legend.grades.push((max_step - (legend_step * i)) * Math.pow(10, pow))
-              }
-
-						} else {
-
-							legend_step = max_step / legend_steps
-
-							// console.log('step', legend_step)
-
-              for (i = 1; i <= legend_steps; i += 1) {
-                plugin_settings.legend.grades.push(max_step - (legend_step * i))
-              }
-
-						}
-
-						// console.log('legend', plugin_settings.legend.grades)
-
-					// }
-
-					plugin_instance.process_geoapi()
-
-				}
-			})
+			return popup_markup
 
 		},
 
@@ -734,7 +1049,7 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 
 				collection.features.forEach(function(feature, z) {
 
-					var prop_key = plugin_settings.variable.key + '_' + plugin_settings.api.retrofit
+					var prop_key = plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit
 
 					// console.log(feature.id, feature.properties.csdname)
 
@@ -852,20 +1167,13 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 
       // options
 
-			var defaults = {
-				item_id: null,
+      var settings = $.extend(true, {
+				layer: null,
 				polygon: null,
 				event: null
-			}
+			}, fn_options)
 
-			if (typeof fn_options == 'number') {
-				defaults.item_id = fn_options
-				fn_options = {}
-			}
-
-      var settings = $.extend(true, defaults, fn_options)
-
-			console.log('risks', 'select', settings)
+			// console.log('select', settings)
 
 			var timeout = 250
 
@@ -878,41 +1186,43 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 
 			}
 
-			setTimeout(function() {
+			if (click_flag == true) {
 
-				// selected polygon = clicked ID or null
-				plugin_settings.map.selected_polygon = settings.item_id
+				click_flag = false
 
-				// reset choropleth
-				// plugin_settings.map.choropleth.resetStyle()
+				var layer = settings.layer,
+						item_id = layer.id
 
-				// reset sidebar
-				$('.sidebar-item').removeClass('selected')
+				setTimeout(function() {
 
-				if (settings.item_id != null) {
+					// selected polygon = clicked ID or null
+					plugin_settings.map.selected_polygon = layer
 
-					// select the polygon
+					// console.log(plugin_settings.map.selected_polygon)
 
-					settings.polygon.setStyle({
-						color: plugin_settings.colors.shape_select,
-						fillColor: plugin_settings.colors.shape_select
-					})
+					// reset choropleth
+					// plugin_settings.map.choropleth.resetStyle()
 
-					// center the map on the clicked polygon
+					// reset sidebar
+					$('.sidebar-item').removeClass('selected')
 
-					$('body').profiler('center_map', {
-						map: plugin_settings.map.object,
-						coords: settings.polygon.getCenter(),
-						offset: plugin_settings.map.offset
-					})
+					if (item_id) {
 
-					// select the sidebar item
+						// select the polygon
 
-					$('.sidebar-item[data-id="' + settings.item_id + '"]').addClass('selected')
+						settings.polygon.setStyle({
+							color: plugin_settings.colors.shape_select,
+							fillColor: plugin_settings.colors.shape_select
+						})
 
-				}
+						// select the sidebar item
 
-			}, timeout)
+						$('.sidebar-item[data-id="' + item_id + '"]').addClass('selected')
+
+					}
+
+				}, timeout)
+			}
 
     },
 
@@ -936,24 +1246,98 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 
       var settings = $.extend(true, defaults, fn_options)
 
-			console.log('risks', 'detail', settings.item_id)
+			// $('body').attr('data-sidebar')
 
-			var detail_html
+			// plugin_settings.map.object.getPane('data').style.pointerEvents = 'none'
+
+			console.log('risks', 'detail', plugin_settings.community)
 
 			$(document).profiler('get_sidebar', {
 				url: 'risks/detail.php',
-				data: {
-					id: settings.item_id
-				},
 				before: function() {
 
-					$('.app-sidebar').attr('data-width', 'half')
-					$('.app-head').attr('data-mode', 'risk-detail')
+					$('.app-page').attr('data-sidebar-width', 'half')
+					$('.app-main').attr('data-mode', 'risk-detail')
 
 				},
 				success: function(data) {
 
-					console.log('risks', 'detail', 'success')
+					plugin_settings.current_view = 'detail'
+
+					var detail_content = $('body').find('.sidebar-detail')
+
+					if (plugin_settings.community.csdname) {
+						detail_content.find('.city-name').html(plugin_settings.community.csdname)
+					}
+
+					// console.log(plugin_settings.community)
+					// console.log(plugin_settings.api.retrofit)
+
+					// populate indicator values
+
+					detail_content.find('[data-indicator').each(function() {
+
+						var this_key = $(this).attr('data-indicator'),
+								this_val = plugin_settings.community[this_key + '_' + plugin_settings.api.retrofit]
+
+						if (typeof $(this).attr('data-decimals') != 'undefined') {
+
+							this_val = this_val.toFixed(parseInt($(this).attr('data-decimals')))
+
+						}
+
+						$(this).html(this_val)
+
+					})
+
+					// score chart
+
+					setTimeout(function() {
+
+						detail_content.find('.score-chart').each(function() {
+
+							var score_chart = $(this),
+									score_key = $(this).find('[data-indicator]').attr('data-indicator')
+									score_label = $(this).find('.label'),
+									score_marker = $(this).find('.marker')
+
+							// treated score value
+							var score = parseFloat(plugin_settings.community[score_key + '_' + plugin_settings.api.retrofit])
+
+							// score as percentage of max
+							var score_percent = score / plugin_settings.sidebar.max[score_key]
+
+							if (score_percent > 1) {
+								score_percent = 1
+							}
+
+							var css_prop = 'left',
+									css_val = (score_percent * 100) + '%'
+
+							if (score_percent > 0.7) {
+								css_prop = 'right'
+								css_val = (100 - (score_percent * 100)) + '%'
+							}
+
+							score_label.css(css_prop, css_val)
+
+							// animate marker
+							score_marker.animate({
+								left: (score_percent * 100) + '%'
+							}, {
+								duration: 1000,
+								easing: 'swing',
+								complete: function() {
+									$('body').find('.score-chart .label').fadeIn(150)
+								}
+							})
+
+
+
+						})
+
+					}, 1000)
+
 
 				},
 				complete: function() {
@@ -970,28 +1354,31 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 
 					})
 
+					// fetch the feature from geoapi, use its geometry to zoom to the vector tile feature
+
+					$.ajax({
+						url: plugin_settings.api.base_URL + plugin_settings.aggregation.current.agg + '_v' + plugin_settings.api.version + '/items/' + plugin_settings.community.csduid,
+						dataType: 'json',
+						success: function(data) {
+
+							var path = new L.GeoJSON(data)
+
+							plugin_settings.map.object.fitBounds(path.getBounds(), {
+								paddingTopLeft: [($(window).outerWidth() / 2) + 50, 50],
+								paddingBottomRight: [50, 50]
+							})
+
+						}
+					})
+
+          $('body').removeClass('spinner-on')
+					$('#spinner-progress').text('')
+
 				}
 			})
 
 
     },
-
-		_choro_color: function(d) {
-
-      var plugin_instance = this
-      var plugin_settings = plugin_instance.options
-
-			return d >= plugin_settings.legend.grades[0] ? '#800026' :
-				d >= plugin_settings.legend.grades[1] ? '#bd0026' :
-				d >= plugin_settings.legend.grades[2] ? '#e31a1c' :
-				d >= plugin_settings.legend.grades[3] ? '#fc4e2a' :
-				d >= plugin_settings.legend.grades[4] ? '#fd8d3c' :
-				d >= plugin_settings.legend.grades[5] ? '#feb24c' :
-				d >= plugin_settings.legend.grades[6] ? '#fed976' :
-				d >= plugin_settings.legend.grades[7] ? '#ffeda0' :
-        '#ffffcc'
-
-		},
 
 		_choro_style: function(feature) {
 
@@ -1004,7 +1391,7 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 
       var stroke = 0.4
 
-			var prop_key = plugin_settings.variable.key + '_' + plugin_settings.api.retrofit
+			var prop_key = plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit
 
 			// var rounded_color = feature.properties[prop_key] * Math.pow(10, plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
 
@@ -1015,6 +1402,10 @@ const geoapi_url = 'https://geo-api.riskprofiler.ca';
 				color: '#4b4d4d',
 				opacity: 1
 			}
+		},
+
+		_round: function(num, power) {
+			return num * Math.pow(10, power)
 		},
 
   }

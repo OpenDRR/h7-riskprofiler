@@ -175,3 +175,62 @@ function posttype_indicator() {
 
 }
 add_action( 'init', 'posttype_indicator', 0 );
+
+//
+// COMMUNITY
+//
+
+add_action( 'init', function() {
+
+	$labels = array(
+		'name'                  => _x( 'Communities', 'Post Type General Name', 'rp' ),
+		'singular_name'         => _x( 'Community', 'Post Type Singular Name', 'rp' ),
+		'menu_name'             => __( 'Communities', 'rp' ),
+		'name_admin_bar'        => __( 'Community', 'rp' ),
+		'archives'              => __( 'Community Archives', 'rp' ),
+		'attributes'            => __( 'Community Attributes', 'rp' ),
+		'parent_item_colon'     => __( 'Parent Community:', 'rp' ),
+		'all_items'             => __( 'All Communities', 'rp' ),
+		'add_new_item'          => __( 'Add New Community', 'rp' ),
+		'add_new'               => __( 'Add New', 'rp' ),
+		'new_item'              => __( 'New Community', 'rp' ),
+		'edit_item'             => __( 'Edit Community', 'rp' ),
+		'update_item'           => __( 'Update Community', 'rp' ),
+		'view_item'             => __( 'View Community', 'rp' ),
+		'view_items'            => __( 'View Communities', 'rp' ),
+		'search_items'          => __( 'Search Community', 'rp' ),
+		'not_found'             => __( 'Not found', 'rp' ),
+		'not_found_in_trash'    => __( 'Not found in Trash', 'rp' ),
+		'featured_image'        => __( 'Featured Image', 'rp' ),
+		'set_featured_image'    => __( 'Set featured image', 'rp' ),
+		'remove_featured_image' => __( 'Remove featured image', 'rp' ),
+		'use_featured_image'    => __( 'Use as featured image', 'rp' ),
+		'insert_into_item'      => __( 'Insert into item', 'rp' ),
+		'uploaded_to_this_item' => __( 'Uploaded to this item', 'rp' ),
+		'items_list'            => __( 'Items list', 'rp' ),
+		'items_list_navigation' => __( 'Items list navigation', 'rp' ),
+		'filter_items_list'     => __( 'Filter items list', 'rp' ),
+	);
+	$args = array(
+		'label'                 => __( 'Community', 'rp' ),
+		'description'           => __( 'Post Type Description', 'rp' ),
+		'labels'                => $labels,
+		'supports'              => array( 'title' ),
+		'hierarchical'          => false,
+		'public'                => true,
+		'show_ui'               => true,
+		'show_in_menu'          => true,
+		'menu_position'         => 22,
+		'menu_icon'             => 'dashicons-location',
+		'show_in_admin_bar'     => true,
+		'show_in_nav_menus'     => true,
+		'can_export'            => true,
+		'has_archive'           => true,
+		'exclude_from_search'   => false,
+		'publicly_queryable'    => true,
+		'capability_type'       => 'page',
+	);
+
+	register_post_type( 'community', $args );
+
+}, 0 );
