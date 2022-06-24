@@ -74,7 +74,13 @@
 				<h6><?php _e ( 'Dollars', 'rp' ); ?></h6>
 				<p>$<?php
 
-					echo number_format_i18n ( get_field ( 'scenario_dollars' ), 0 );
+					$dollars = (int) get_field ( 'scenario_dollars' );
+
+					$dollars = $dollars * pow ( 10, -9 );
+
+					printf ( __ ( '%s billion', 'rp' ), number_format ( $dollars, 1 ) );
+
+					// echo number_format_i18n ( get_field ( 'scenario_dollars' ), 0 );
 
 				?></p>
 			</div>

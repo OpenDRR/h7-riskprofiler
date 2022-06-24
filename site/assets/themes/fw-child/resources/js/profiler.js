@@ -119,7 +119,7 @@
       var settings = $.extend(true, defaults, fn_options)
 
 			$('body').addClass('spinner-on')
-			$('#spinner-progress').text('Initializing')
+			// $('#spinner-progress').text('Initializing')
 
 			if (typeof settings.before == 'function') {
 				settings.before()
@@ -133,7 +133,7 @@
 				ajax_url = '/site/assets/themes/fw-child/template/' + settings.url
 			}
 
-			console.log('get ' + ajax_url)
+			// console.log('get ' + ajax_url)
 
 			$('.app-sidebar-content').fadeOut(125, function() {
 
@@ -310,8 +310,9 @@
 
 			var defaults = {
 				url: {
+					collection: 'psra_indicators',
+					aggregation: 'csd',
 					version: '1.4.0',
-					collection: 'psra_indicators_csd',
 					projection: 'EPSG_900913'
 				},
 				map: null,
@@ -326,7 +327,8 @@
 					add: null,
 					mouseover: null,
 					mouseout: null,
-					click: null
+					click: null,
+					complete: null
 				}
 			}
 
@@ -342,7 +344,15 @@
 				settings.map.removeLayer(settings.tiles)
 			}
 
-			proto_URL = pbf_url + '/' + settings.url.collection /*+ '_v' + settings.url.version */ + '/' + settings.url.projection + '/{z}/{x}/{y}.pbf'
+			if (settings.aggregation !== null) {
+
+				settings.url.aggregation = settings.aggregation.current.agg
+
+			}
+
+			proto_URL = pbf_url + '/' + settings.url.collection + '_' + settings.url.aggregation /*+ '_v' + settings.url.version */ + '/' + settings.url.projection + '/{z}/{x}/{y}.pbf'
+
+			// console.log('pbf url', proto_URL)
 
 			// load the tiles
       var tiles = L.vectorGrid.protobuf(
@@ -383,6 +393,10 @@
 			})
 
 			tiles.addTo(settings.map)
+
+			if (typeof settings.functions.complete == 'function') {
+				settings.functions.complete()
+			}
 
 			$('body').removeClass('spinner-on')
 

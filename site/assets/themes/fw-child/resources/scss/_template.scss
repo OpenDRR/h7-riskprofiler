@@ -120,6 +120,10 @@
 #main-footer {
 	background-color: $gray-100;
 	font-size: 0.75rem;
+
+	p {
+		margin-bottom: 0;
+	}
 }
 
 #footer-logo {
@@ -146,6 +150,27 @@
 
 #psra {
 	display: none;
+
+	.query-item {
+		cursor: pointer;
+	}
+}
+
+#psra-items-filter {
+	.item {
+		background-color: $white;
+		cursor: pointer;
+		transition: 0.25s;
+
+		&:hover {
+			background-color: $beige-200;
+		}
+
+		&.selected {
+			background-color: $primary;
+			color: $white;
+		}
+	}
 }
 
 //

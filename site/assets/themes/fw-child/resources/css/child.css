@@ -295,6 +295,9 @@ body.spinner-on #spinner-progress {
   background-color: #ecf1f4;
   font-size: 0.75rem;
 }
+#main-footer p {
+  margin-bottom: 0;
+}
 
 #footer-logo img {
   width: 100%;
@@ -311,6 +314,22 @@ body.spinner-on #spinner-progress {
 
 #psra {
   display: none;
+}
+#psra .query-item {
+  cursor: pointer;
+}
+
+#psra-items-filter .item {
+  background-color: #fff;
+  cursor: pointer;
+  transition: 0.25s;
+}
+#psra-items-filter .item:hover {
+  background-color: #eee9e3;
+}
+#psra-items-filter .item.selected {
+  background-color: #d90429;
+  color: #fff;
 }
 
 .app-page {

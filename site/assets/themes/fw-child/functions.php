@@ -84,9 +84,9 @@ function child_theme_enqueue() {
 
 	wp_localize_script ( 'rp-scenarios', 'rp', $scenarios_translations );
 
-	wp_register_script ( 'rp-risks', $child_js_dir . 'rp_risks.js', array ( 'profiler' ), NULL, true );
+	wp_register_script ( 'rp-risks', $child_js_dir . 'rp_risks.js', array ( 'profiler', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
 
-  wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions' ), NULL, true );
+  wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
 
   // localize admin url
 
@@ -112,6 +112,12 @@ function child_theme_enqueue() {
 
 		wp_enqueue_script ( 'togglebox' );
 
+		wp_enqueue_script ( 'highcharts', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/highcharts.js',  null, null, true );
+
+		wp_enqueue_script ( 'highcharts-export', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/exporting.js',  null, null, true );
+
+		wp_enqueue_script ( 'highcharts-export-data', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/export-data.js',  null, null, true );
+
   }
 
 	if ( is_page ( 'scenarios' ) ) {
@@ -127,12 +133,6 @@ function child_theme_enqueue() {
 		wp_enqueue_script ( 'leaflet-geopackage', 'https://unpkg.com/@ngageoint/leaflet-geopackage@3.0.3/dist/leaflet-geopackage.min.js', array ( 'leaflet' ), null, true );
 
 		wp_enqueue_script ( 'leaflet-vector', 'https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js', array ( 'leaflet' ), null, true );
-
-		wp_enqueue_script ( 'highcharts', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/highcharts.js',  null, null, true );
-
-		wp_enqueue_script ( 'highcharts-export', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/exporting.js',  null, null, true );
-
-		wp_enqueue_script ( 'highcharts-export-data', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/export-data.js',  null, null, true );
 
 		wp_enqueue_script ( 'rp-scenarios' );
 

@@ -138,6 +138,7 @@
 				<div class="card mx-n3">
 
 					<div class="card-body p-0">
+						<div id="risk-detail-chart" class="chart bg-white" style="height: 300px;"></div>
 						<img src="<?php echo get_stylesheet_directory_uri(); ?>/resources/img/CanadaWide.png">
 					</div>
 				</div>

@@ -13,6 +13,7 @@
 <div
 	id="risk-var-<?php echo get_field ( 'indicator_key', $item['id'] ); ?>"
 	class="risk-var"
+	data-type="<?php echo _e ( get_field ( 'indicator_type', $item['id'] ), 'rp' ); ?>"
 	data-indicator='{
 		"key": "<?php echo get_field ( 'indicator_key', $item['id'] ); ?>",
 		"title": "<?php echo $item['title']; ?>",

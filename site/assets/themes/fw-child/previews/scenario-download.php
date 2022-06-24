@@ -35,13 +35,13 @@
 		</div>
 
 		<div class="col-2-of-10">
-			<p>Census Subdivision</p>
-			<a href="<?php echo $dl_URL . $scenario_key; ?>_indicators_csd.zip"><i class="fas fa-file-archive"></i> Geopackage</a>
+			<p>Settlement Area</p>
+			<a href="<?php echo $dl_URL . $scenario_key; ?>_indicators_s.zip"><i class="fas fa-file-archive"></i> Geopackage</a>
 		</div>
 
 		<div class="col-2-of-10">
-			<p>Settlement Area</p>
-			<a href="<?php echo $dl_URL . $scenario_key; ?>_indicators_s.zip"><i class="fas fa-file-archive"></i> Geopackage</a>
+			<p>Census Subdivision</p>
+			<a href="<?php echo $dl_URL . $scenario_key; ?>_indicators_csd.zip"><i class="fas fa-file-archive"></i> Geopackage</a>
 		</div>
 
 	</div>
