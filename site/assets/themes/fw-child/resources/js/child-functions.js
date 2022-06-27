@@ -13,6 +13,26 @@ var child_logging = true
 
     $(document).data('child_theme_dir', child_theme_dir)
 
+		//
+		// HEADER
+		//
+
+		$('#menu-icon i').click(function() {
+
+			if ($('body').hasClass('nav-open')) {
+				$('body').removeClass('nav-open')
+				$(this).removeClass('fa-times').addClass('fa-bars')
+			} else {
+				$('body').addClass('nav-open')
+				$(this).removeClass('fa-bars').addClass('fa-times')
+			}
+
+		})
+
+		$(document).on('overlay_show', function() {
+			$('body').removeClass('nav-open')
+		})
+
     //
     // APP
     //

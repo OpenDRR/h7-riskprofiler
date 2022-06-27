@@ -666,6 +666,7 @@ var csd_temp, s_temp
 				zoomControl: false,
 				maxZoom: 15,
 				crs: L.CRS.EPSG900913,
+				dragging: !L.Browser.mobile
 			}).setView(plugin_settings.map.defaults.coords, plugin_settings.map.defaults.zoom)
 
 			// plugin_settings.map.object.on('fullscreenchange', function () {

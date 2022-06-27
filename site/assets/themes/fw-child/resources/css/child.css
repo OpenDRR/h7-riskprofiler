@@ -210,16 +210,50 @@ body.spinner-on #spinner-progress {
   position: absolute;
   left: 0;
   width: 100%;
-  background-color: #ecf1f4;
+  background-color: rgba(236, 241, 244, 0);
   font-family: "RPSans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: 500;
   z-index: 1050;
+  transition: background-color 0.25s ease 0s;
+}
+@media (min-width: 576px) {
+  #main-header {
+    left: 0;
+    opacity: 1;
+    background-color: #ecf1f4;
+  }
 }
 #main-header a {
   color: #2b2c42;
   transition: 0.25s;
 }
 
+body.nav-open {
+  overflow: hidden;
+}
+body.nav-open #main-header {
+  position: fixed;
+  height: 100%;
+  background-color: #ecf1f4;
+  transition: background-color 0.25s ease 0.1s;
+}
+body.nav-open #header-primary {
+  left: 0;
+  opacity: 1;
+  transform: translateY(0%);
+  transition: left 0s ease 0s, opacity 0.25s ease 0s, transform 0.5s ease 0s;
+}
+body.nav-open #header-secondary {
+  left: 0;
+  opacity: 1;
+  transition: left 0s ease 0s, opacity 0.5s ease 0.25s;
+}
+
+@media screen and (max-width: 782px) {
+  .admin-bar #main-header {
+    top: auto;
+  }
+}
 #header-logo img {
   max-width: 60px;
   margin: auto;
@@ -234,6 +268,17 @@ body.spinner-on #spinner-progress {
 
 #header-primary {
   font-size: 1.125rem;
+}
+@media (max-width: 767.98px) {
+  #header-primary {
+    position: fixed;
+    bottom: 50%;
+    left: -9999px;
+    opacity: 0;
+    transform: translateY(20%);
+    transition: left 0s ease 0.25s, opacity 0.25s ease 0s, transform 0.25s ease 0s;
+    text-align: center;
+  }
 }
 #header-primary .current-nav-item a {
   background-color: #fff;
@@ -263,7 +308,21 @@ body.spinner-on #spinner-progress {
 }
 
 #header-secondary {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
+}
+@media (min-width: 768px) {
+  #header-secondary {
+    font-size: 0.6875rem;
+  }
+}
+@media (max-width: 767.98px) {
+  #header-secondary {
+    position: fixed;
+    left: -9999px;
+    bottom: 2rem;
+    opacity: 0;
+    transition: left 0s ease 0.25s, opacity 0.25s ease 0s;
+  }
 }
 
 #header-menu-secondary {
@@ -289,6 +348,13 @@ body.spinner-on #spinner-progress {
 }
 #header-menu-lang .menu-item.wpml-ls-current-language {
   background-color: #fff;
+}
+
+#menu-icon {
+  font-size: 1.25rem;
+}
+#menu-icon i {
+  cursor: pointer;
 }
 
 #main-footer {
@@ -332,11 +398,13 @@ body.spinner-on #spinner-progress {
   color: #fff;
 }
 
-.app-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+@media (min-width: 768px) {
+  .app-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
 }
 .app-page #main-header {
   position: relative;
@@ -366,22 +434,28 @@ body.spinner-on #spinner-progress {
   z-index: initial;
 }
 .app-page .app-main {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background-color: #ecf1f4;
   font-size: 0.875rem;
 }
-.app-page .app-main .section-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+@media (min-width: 768px) {
+  .app-page .app-main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+@media (min-width: 768px) {
+  .app-page .app-main .section-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 }
 .app-page .app-main[data-mode=scenario-detail] .app-head .app-controls {
   left: -25vw;
@@ -416,11 +490,19 @@ body.spinner-on #spinner-progress {
   width: 3rem;
 }
 .app-page .app-container {
+  display: flex;
+  flex-direction: column;
   position: relative;
   flex-grow: 1;
 }
+@media (min-width: 768px) {
+  .app-page .app-container {
+    display: block;
+  }
+}
 .app-page .app-head {
   display: flex;
+  justify-content: space-between;
 }
 .app-page .app-head-back {
   position: relative;
@@ -441,12 +523,18 @@ body.spinner-on #spinner-progress {
   background-color: #8b0707;
 }
 .app-page .app-controls {
+  display: none;
   position: relative;
   left: 0;
   width: 25vw;
   transition: 0.25s;
   background-color: #8d99ae;
   color: #fff;
+}
+@media (min-width: 768px) {
+  .app-page .app-controls {
+    display: block;
+  }
 }
 .app-page .app-controls .app-controls-content {
   display: flex;
@@ -470,15 +558,20 @@ body.spinner-on #spinner-progress {
 .app-page .app-sidebar {
   display: flex;
   flex-direction: column;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 25%;
-  height: 100%;
+  order: 2;
   background-color: rgba(141, 153, 174, 0.92);
   box-shadow: 0.25rem 0 rgba(43, 44, 66, 0.1);
   transition: 0.25s;
   z-index: 10;
+}
+@media (min-width: 768px) {
+  .app-page .app-sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 25%;
+    height: 100%;
+  }
 }
 .app-page .app-sidebar-control {
   display: none;
@@ -593,7 +686,13 @@ body.spinner-on #spinner-progress {
   display: none;
 }
 .app-page .app-breadcrumb {
+  display: none;
   transition: 0.25s;
+}
+@media (min-width: 768px) {
+  .app-page .app-breadcrumb {
+    display: block;
+  }
 }
 .app-page .app-breadcrumb .breadcrumb {
   height: 3rem;
@@ -607,6 +706,11 @@ body.spinner-on #spinner-progress {
   content: "";
   border: 5px solid transparent;
   border-left-color: #9595a0;
+}
+@media (max-width: 767.98px) {
+  .app-page #chart-toggle {
+    display: none !important;
+  }
 }
 .app-page .togglebox {
   margin-right: 0.75rem;
@@ -629,12 +733,19 @@ body.spinner-on #spinner-progress {
   font-size: 0.625rem;
 }
 .app-page .app-map {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: relative;
+  height: 40vh;
+  order: 1;
   z-index: 1;
+}
+@media (min-width: 768px) {
+  .app-page .app-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 }
 .app-page #map {
   position: absolute;
@@ -647,8 +758,12 @@ body.spinner-on #spinner-progress {
   margin-top: 0.75rem;
 }
 .app-page .leaflet-left {
-  left: 25%;
   transition: 0.25s;
+}
+@media (min-width: 768px) {
+  .app-page .leaflet-left {
+    left: 25%;
+  }
 }
 .app-page .leaflet-left .leaflet-control {
   margin-left: 0.75rem;
@@ -733,8 +848,13 @@ body.spinner-on #spinner-progress {
 }
 .app-page .legend .items {
   display: flex;
-  width: 75vw;
+  width: 100vw;
   transition: 0.25s;
+}
+@media (min-width: 768px) {
+  .app-page .legend .items {
+    width: 75vw;
+  }
 }
 .app-page .legend .legend-item {
   flex-grow: 1;
@@ -755,11 +875,20 @@ body.spinner-on #spinner-progress {
   background-color: rgba(255, 255, 255, 0.2);
 }
 .home #hero h1 {
-  font-size: 3.75rem;
+  font-size: 3.25rem;
 }
 @media (max-width: 1200px) {
   .home #hero h1 {
-    font-size: calc(1.5rem + 3vw);
+    font-size: calc(1.45rem + 2.4vw);
+  }
+}
+.home #hero .section-wrap {
+  position: static;
+}
+@media (min-width: 768px) {
+  .home #hero-container-1 {
+    position: absolute;
+    height: 100%;
   }
 }
 .home #quick-links {

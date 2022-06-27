@@ -7,14 +7,53 @@
 	// top: 0;
 	left: 0;
 	width: 100%;
-	background-color: $gray-100;
+	background-color: transparentize($gray-100, 1);
 	font-family: $headings-font-family;
 	font-weight: 500;
 	z-index: 1050;
+	transition: background-color 0.25s ease 0s;
+
+	@include media-breakpoint-up(sm) {
+		left: 0;
+		opacity: 1;
+		background-color: $gray-100;
+	}
 
 	a {
 		color: $body-color;
 		transition: 0.25s;
+	}
+}
+
+body.nav-open {
+	overflow: hidden;
+
+	#main-header {
+		position: fixed;
+		height: 100%;
+		background-color: $gray-100;
+		transition: background-color 0.25s ease 0.1s;
+	}
+
+	#header-primary {
+		left: 0;
+		opacity: 1;
+		transform: translateY(0%);
+		transition: left 0s ease 0s, opacity 0.25s ease 0s, transform 0.5s ease 0s;
+	}
+
+	#header-secondary {
+		left: 0;
+		opacity: 1;
+		transition: left 0s ease 0s, opacity 0.5s ease 0.25s;
+	}
+}
+
+@media screen and (max-width: 782px) {
+	.admin-bar {
+		#main-header {
+			top: auto;
+		}
 	}
 }
 
@@ -37,6 +76,16 @@
 
 #header-primary {
 	font-size: 1.125rem;
+
+	@include media-breakpoint-down(sm) {
+		position: fixed;
+		bottom: 50%;
+		left: -9999px;
+		opacity: 0;
+		transform: translateY(20%);
+		transition: left 0s ease 0.25s, opacity 0.25s ease 0s, transform 0.25s ease 0s;
+		text-align: center;
+	}
 
 	.current-nav-item {
 		a {
@@ -80,7 +129,19 @@
 }
 
 #header-secondary {
-	font-size: 0.6875rem;
+	font-size: 0.75rem;
+
+	@include media-breakpoint-up(md) {
+		font-size: 0.6875rem;
+	}
+
+	@include media-breakpoint-down(sm) {
+		position: fixed;
+		left: -9999px;
+		bottom: 2rem;
+		opacity: 0;
+		transition: left 0s ease 0.25s, opacity 0.25s ease 0s;
+	}
 }
 
 #header-menu-secondary {
@@ -110,6 +171,14 @@
 		&.wpml-ls-current-language {
 			background-color: $white;
 		}
+	}
+}
+
+#menu-icon {
+	font-size: 1.25rem;
+
+	i {
+		cursor: pointer;
 	}
 }
 
@@ -181,15 +250,19 @@ $app-head-height: 3rem;
 $app-transition: 0.25s;
 
 .app-page {
-	display: flex;
-	flex-direction: column;
-	height: 100vh;
-	overflow: hidden;
+	@include media-breakpoint-up(md) {
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+		overflow: hidden;
+	}
 
 	// template
 
 	#main-header {
-		position: relative;
+		// @include media-breakpoint-up(sm) {
+			position: relative;
+		// }
 
 		a {
 			&:after {
@@ -227,14 +300,19 @@ $app-transition: 0.25s;
 	// section
 
 	.app-main {
-		@include full-size;
+		@include media-breakpoint-up(md) {
+			@include full-size;
+		}
+
 		background-color: $light;
 		font-size: 0.875rem;
 
 		.section-wrap {
-			@include full-size;
-			display: flex;
-			flex-direction: column;
+			@include media-breakpoint-up(md) {
+				@include full-size;
+				display: flex;
+				flex-direction: column;
+			}
 		}
 
 		&[data-mode="scenario-detail"] {
@@ -301,16 +379,21 @@ $app-transition: 0.25s;
 	// container
 
 	.app-container {
+		display: flex;
+		flex-direction: column;
 		position: relative;
 		flex-grow: 1;
+
+		@include media-breakpoint-up(md) {
+			display: block;
+		}
 	}
 
 	// head
 
 	.app-head {
 		display: flex;
-
-
+		justify-content: space-between;
 	}
 
 	// back button
@@ -338,12 +421,17 @@ $app-transition: 0.25s;
 	// filter
 
 	.app-controls {
+		display: none;
 		position: relative;
 		left: 0;
 		width: 25vw;
 		transition: $app-transition;
 		background-color: $gray-500;
 		color: $white;
+
+		@include media-breakpoint-up(md) {
+			display: block;
+		}
 
 		.app-controls-content {
 			display: flex;
@@ -375,15 +463,19 @@ $app-transition: 0.25s;
 	.app-sidebar {
 		display: flex;
 		flex-direction: column;
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 25%;
-		height: 100%;
+		order: 2;
 		background-color: transparentize($gray-500, 0.08);
 		box-shadow: 0.25rem 0 transparentize($gray-900, 0.9);
 		transition: $app-transition;
 		z-index: 10;
+
+		@include media-breakpoint-up(md) {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 25%;
+			height: 100%;
+		}
 	}
 
 	.app-sidebar-control {
@@ -541,7 +633,12 @@ $app-transition: 0.25s;
 	// breadcrumb
 
 	.app-breadcrumb {
+		display: none;
 		transition: $app-transition;
+
+		@include media-breakpoint-up(md) {
+			display: block;
+		}
 
 		.breadcrumb {
 			height: $app-head-height;
@@ -563,6 +660,12 @@ $app-transition: 0.25s;
 	}
 
 	// retrofit/chart toggles
+
+	#chart-toggle {
+		@include media-breakpoint-down(sm) {
+			display: none !important;
+		}
+	}
 
 	.togglebox {
 		margin-right: 0.75rem;
@@ -595,7 +698,14 @@ $app-transition: 0.25s;
 	// map
 
 	.app-map {
-		@include full-size;
+		position: relative;
+		height: 40vh;
+		order: 1;
+
+		@include media-breakpoint-up(md) {
+			@include full-size;
+		}
+
 		z-index: 1;
 	}
 
@@ -610,8 +720,11 @@ $app-transition: 0.25s;
 	}
 
 	.leaflet-left {
-		left: 25%;
 		transition: 0.25s;
+
+		@include media-breakpoint-up(md) {
+			left: 25%;
+		}
 
 		.leaflet-control {
 			margin-left: 0.75rem;
@@ -738,8 +851,12 @@ $app-transition: 0.25s;
 
 		.items {
 			display: flex;
-			width: 75vw;
+			width: 100vw;
 			transition: 0.25s;
+
+			@include media-breakpoint-up(md) {
+				width: 75vw;
+			}
 		}
 
 		.legend-item {

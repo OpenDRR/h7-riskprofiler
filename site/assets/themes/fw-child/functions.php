@@ -70,7 +70,7 @@ function child_theme_enqueue() {
 
 	wp_register_script ( 'profiler', $child_js_dir . 'profiler.js', array ( 'leaflet' ), NULL, true );
 
-	wp_register_script ( 'rp-scenarios', $child_js_dir . 'rp_scenarios.js', array ( 'profiler' ), NULL, true );
+	wp_register_script ( 'rp-scenarios', $child_js_dir . 'rp_scenarios.js', array ( 'profiler', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
 
 	$scenarios_translations = array (
     'by' => __( 'by', 'rp' ),
@@ -86,7 +86,7 @@ function child_theme_enqueue() {
 
 	wp_register_script ( 'rp-risks', $child_js_dir . 'rp_risks.js', array ( 'profiler', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
 
-  wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
+  wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions' ), NULL, true );
 
   // localize admin url
 
