@@ -561,6 +561,7 @@ $app-transition: 0.25s;
 	// charts
 
 	.app-charts {
+		display: none;
 		position: absolute;
 		left: 0;
 		top: 0;
@@ -572,6 +573,10 @@ $app-transition: 0.25s;
 		opacity: 0;
 		transition: left 0.25s ease 0s, opacity 0.1s ease 0.15s;
 		z-index: 5;
+
+		@include media-breakpoint-up(md) {
+			display: block;
+		}
 
 		.chart-tab-content {
 			padding: 0.75rem;

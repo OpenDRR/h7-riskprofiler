@@ -636,6 +636,7 @@ body.nav-open #header-secondary {
   line-height: 1;
 }
 .app-page .app-charts {
+  display: none;
   position: absolute;
   left: 0;
   top: 0;
@@ -647,6 +648,11 @@ body.nav-open #header-secondary {
   opacity: 0;
   transition: left 0.25s ease 0s, opacity 0.1s ease 0.15s;
   z-index: 5;
+}
+@media (min-width: 768px) {
+  .app-page .app-charts {
+    display: block;
+  }
 }
 .app-page .app-charts .chart-tab-content {
   padding: 0.75rem;
