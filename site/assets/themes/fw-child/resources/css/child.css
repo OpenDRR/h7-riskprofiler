@@ -474,8 +474,10 @@ body.nav-open #header-secondary {
 .app-page .app-main[data-mode=scenario-detail].indicator-selected.charts-on .leaflet-left {
   left: 50%;
 }
-.app-page .app-main[data-mode=scenario-detail].indicator-selected.charts-on .legend .items {
-  width: 50vw;
+@media (min-width: 768px) {
+  .app-page .app-main[data-mode=scenario-detail].indicator-selected.charts-on .legend .items {
+    width: 50vw;
+  }
 }
 .app-page .app-main[data-mode=scenario-detail] .leaflet-control-container .leaflet-control-attribution {
   opacity: 0;
@@ -825,6 +827,11 @@ body.nav-open #header-secondary {
 .app-page[data-sidebar-width=half] .leaflet-left {
   left: 50%;
 }
+@media (min-width: 768px) {
+  .app-page[data-sidebar-width=half] .legend .items {
+    width: 50vw;
+  }
+}
 .app-page[data-sidebar-width=none] .app-sidebar {
   width: 25%;
   left: -25%;
@@ -865,7 +872,6 @@ body.nav-open #header-secondary {
 .app-page .legend .legend-item {
   flex-grow: 1;
   height: 0.75rem;
-  opacity: 0.8;
 }
 .app-page .leaflet-pulsing-icon {
   box-shadow: none;
@@ -1087,6 +1093,17 @@ body.nav-open #header-secondary {
   margin-bottom: 0.75rem;
   margin-right: 0;
 }
+#page-risks .highcharts-yaxis .highcharts-axis-line {
+  stroke-width: 1;
+}
+#page-risks .highcharts-color-0 {
+  fill: #afc899;
+  stroke: #afc899;
+}
+#page-risks .highcharts-color-2 {
+  fill: #d90429;
+  stroke: #d90429;
+}
 
 .sidebar-item.city {
   padding-top: 0.5rem;
@@ -1115,8 +1132,10 @@ body.nav-open #header-secondary {
   color: #d90429;
 }
 .risk-popup .leaflet-popup-content {
-  min-width: 25vw;
   margin: 0;
+}
+.risk-popup .leaflet-popup-content .popup-detail {
+  width: 300px;
 }
 .risk-popup .risk-popup-city {
   font-size: 1.25rem;

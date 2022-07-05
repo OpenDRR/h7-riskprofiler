@@ -49,7 +49,8 @@
 
 			$comm_query = get_posts ( array (
 				'post_type' => 'community',
-				'posts_per_page' => -1
+				'posts_per_page' => -1,
+				'suppress_filters' => false
 			) );
 
 			if ( $comm_query ) {
@@ -59,7 +60,8 @@
 
 					$communities[] = array (
 						'name' => get_the_title( $comm->ID ),
-						'province' => __ ( $province['label'], 'rp' ),
+						'pr_val' => $province['value'],
+						'pr_name' => __ ( $province['label'], 'rp' ),
 						'post_id' => $comm->ID,
 						'slug' => get_the_slug ( $comm->ID ),
 						'feature' => (int) get_field ( 'comm_id', $comm->ID )

@@ -34,13 +34,13 @@
 <div class="app-container">
 	<div class="app-sidebar" data-width="">
 		<div class="app-sidebar-controls">
+			<div id="app-control-sort" class="app-sidebar-control app-sidebar-sort">
+				<?php
 
-			<div id="app-control-sort" class="app-sidebar-control app-sidebar-sort"><?php
+					include ( locate_template ( 'template/scenarios/control-sort.php' ) );
 
-				include ( locate_template ( 'template/scenarios/control-sort.php' ) );
-
-			?></div>
-			<?php /*<div id="app-control-filter" class="app-sidebar-control app-sidebar-filter"></div>*/ ?>
+				?>
+			</div>
 		</div>
 
 		<div class="app-sidebar-content">

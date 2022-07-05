@@ -303,6 +303,21 @@
 			margin-right: 0;
 		}
 	}
+
+	.highcharts-yaxis .highcharts-axis-line {
+	  stroke-width: 1;
+	}
+
+	.highcharts-color-0 {
+		fill: $green;
+		stroke: $green;
+	}
+
+	.highcharts-color-2 {
+		fill: $primary;
+		stroke: $primary;
+	}
+
 }
 
 .sidebar-item {
@@ -341,8 +356,11 @@
 	color: $primary;
 
 	.leaflet-popup-content {
-		min-width: 25vw;
 		margin: 0;
+
+		.popup-detail {
+			width: 300px;
+		}
 	}
 
 	.risk-popup-city {

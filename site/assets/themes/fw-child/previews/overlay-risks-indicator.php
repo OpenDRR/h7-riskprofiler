@@ -1,5 +1,13 @@
 <?php
 
+	// only show indicator data on the risks page
+
+	$show_data = false;
+
+	if ( is_page ( 'risks' ) ) {
+		$show_data = true;
+	}
+
 	$ranking = array();
 
 	if ( !empty ( get_field ( 'indicator_ranking', $item['id'] ) ) ) {
@@ -14,6 +22,13 @@
 	id="risk-var-<?php echo get_field ( 'indicator_key', $item['id'] ); ?>"
 	class="risk-var"
 	data-type="<?php echo _e ( get_field ( 'indicator_type', $item['id'] ), 'rp' ); ?>"
+
+	<?php
+
+		if ( $show_data == true ) {
+
+	?>
+
 	data-indicator='{
 		"key": "<?php echo get_field ( 'indicator_key', $item['id'] ); ?>",
 		"title": "<?php echo $item['title']; ?>",
@@ -51,6 +66,12 @@
 
 		?>
 	}'
+
+	<?php
+
+		}
+
+	?>
 >
 	<a href="<?php echo $GLOBALS['vars']['site_url']; ?>risks/#<?php echo get_field ( 'indicator_key', $item['id'] ); ?>"><?php echo $item['title']; ?></a>
 </div>

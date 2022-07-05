@@ -342,7 +342,9 @@ $app-transition: 0.25s;
 					}
 
 					.legend .items {
-						width: 50vw;
+						@include media-breakpoint-up(md) {
+							width: 50vw;
+						}
 					}
 				}
 			}
@@ -804,6 +806,14 @@ $app-transition: 0.25s;
 		.leaflet-left {
 			left: 50%;
 		}
+
+		.legend {
+			.items {
+				@include media-breakpoint-up(md) {
+					width: 50vw;
+				}
+			}
+		}
 	}
 
 	&[data-sidebar-width="none"] {
@@ -867,7 +877,7 @@ $app-transition: 0.25s;
 		.legend-item {
 			flex-grow: 1;
 			height: 0.75rem;
-			opacity: 0.8;
+			// opacity: 0.8;
 		}
 	}
 

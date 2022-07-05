@@ -1,6 +1,3 @@
-const geoapi_url = 'https://geo-api.riskprofiler.ca'
-const pbf_url = 'https://riskprofiler.ca'
-
 var click_flag = false
 var bounds
 
@@ -22,13 +19,15 @@ var z = 0
 				object: null,
 				panes: [],
 				offset: $('.app-sidebar').outerWidth(),
-				geojson: null,
-				choropleth: null,
 				current_zoom: 3,
 				last_zoom: -1,
 				last_click: null,
+				clicked_feature: null,
 				selected_feature: null,
 				tiles: null,
+				fsa: null,
+				popup: null,
+				tooltip: null,
 				defaults: {
 					coords: [60, -110],
 					zoom: 3
@@ -77,7 +76,6 @@ var z = 0
 					'#800026'
 				]
 			},
-			popup: null,
 			community: null,
 			search: {
 				input: null
@@ -119,9 +117,9 @@ var z = 0
 
     init: function () {
 
-      var plugin_instance = this;
+      var plugin = this;
       var plugin_item = this.item;
-      var plugin_settings = plugin_instance.options;
+      var plugin_settings = plugin.options;
       var plugin_elements = plugin_settings.elements;
 
       //
@@ -229,8 +227,16 @@ var z = 0
 
 			// BASEMAP
 
-			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			var basemap_URL = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+					basemap_att = 'Map data © 2022 Google | <a href="https://www.google.com/intl/en-CA_US/help/terms_maps/" target="_blank">Terms of use</a>'
+
+			if ($('body').hasClass('lang-fr')) {
+				basemap_URL += '&hl=fr'
+				basemap_att = 'Map data © 2022 Google | <a href="https://www.google.com/intl/en-CA_US/help/terms_maps/" target="_blank">Terms of use</a>'
+			}
+
+			L.tileLayer(basemap_URL, {
+		    attribution: basemap_att
 			}).addTo(map)
 
 			// PANES
@@ -239,6 +245,18 @@ var z = 0
 			plugin_settings.map.panes.data = plugin_settings.map.object.createPane('data')
 			plugin_settings.map.panes.data.style.zIndex = 560
 			plugin_settings.map.panes.data.style.pointerEvents = 'all'
+
+			// popup
+
+			plugin_settings.map.panes.popup = plugin_settings.map.object.createPane('popup')
+			plugin_settings.map.panes.popup.style.zIndex = 580
+			plugin_settings.map.panes.popup.style.pointerEvents = 'all'
+
+			// fsa - for loss exceedance boundary
+			plugin_settings.map.panes.fsa = plugin_settings.map.object.createPane('fsa')
+			plugin_settings.map.panes.fsa.style.zIndex = 570
+			plugin_settings.map.panes.fsa.style.display = 'none'
+			plugin_settings.map.panes.fsa.style.pointerEvents = 'none'
 
 			// PBF
 
@@ -253,10 +271,15 @@ var z = 0
 			// POPUP
 
 			plugin_settings.map.popup = L.popup({
-				pane: 'data',
+				pane: 'popup',
 				className: 'risk-popup'
 			})
 
+			plugin_settings.map.tooltip = L.tooltip({
+				pane: 'popup',
+				direction: 'top',
+				className: 'risk-tooltip'
+			})
 
 			// CONTROLS
 
@@ -429,6 +452,17 @@ var z = 0
 				on: ''
 			})
 
+			// HIGHCHARTS
+
+			Highcharts.setOptions({
+				lang: {
+					thousandsSep: ','
+				},
+				credits: {
+					enabled: false
+				}
+			})
+
 			//
 			// EVENTS
 			//
@@ -456,7 +490,7 @@ var z = 0
 
 				}
 
-				plugin_instance.prep_for_api({
+				plugin.prep_for_api({
 					event: 'zoomend'
 				})
 
@@ -470,33 +504,48 @@ var z = 0
 
 				if (map.hasLayer(plugin_settings.map.tiles)) {
 
-					// if there's a selected feature
+					// if (plugin_settings.current_view != 'detail') {
 
-					if (plugin_settings.map.selected_feature != null) {
+						// if not in detail view,
+						// see if a selected feature exists,
+						// i.e. the popup closed because it was opened somewhere else
 
-						// reset it
+						if (plugin_settings.map.clicked_feature != null) {
 
-						plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.selected_feature)
+							// reset the selected feature
 
-						plugin_settings.map.selected_feature = null
+							plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.clicked_feature)
 
-					}
+							// console.log('clicked', plugin_settings.map.clicked_feature)
+							// console.log('selected', plugin_settings.map.selected_feature)
 
-					// wait a sec
+							if (plugin_settings.map.clicked_feature == plugin_settings.map.selected_feature) {
 
-					setTimeout(function() {
+								plugin.set_selected_style()
 
-						// if there's still no selected feature
+							}
 
-						if (plugin_settings.map.selected_feature == null) {
+							plugin_settings.map.clicked_feature = null
 
-							// do this
+						}
 
-							$('.app-main').removeClass('feature-selected')
+						// wait a sec
 
-		        }
+						setTimeout(function() {
 
-					}, 500)
+							// if there's still no selected feature
+
+							if (plugin_settings.map.clicked_feature == null) {
+
+								// do this
+
+								$('.app-main').removeClass('feature-selected')
+
+			        }
+
+						}, 500)
+
+					// }
 
 				}
 
@@ -507,6 +556,8 @@ var z = 0
 			//
 
 			plugin_settings.sidebar.items = JSON.parse($('.app-sidebar-content').attr('data-items'))
+
+			$('body').find('.app-sidebar-content').removeAttr('data-items')
 
 			// console.log(plugin_settings.sidebar.items)
 
@@ -519,9 +570,9 @@ var z = 0
 
 					plugin_settings.sidebar.list = $('body').find('.sidebar-items')
 
-					plugin_instance.sort_sidebar()
+					plugin.sort_sidebar()
 
-					plugin_instance.prep_for_api()
+					plugin.prep_for_api()
 
 					// $('body').addClass('spinner-on')
 					// $('#spinner-progress').text('Loading items')
@@ -570,11 +621,11 @@ var z = 0
 
 			$('body').on('click', '.risk-var', function() {
 
-				plugin_instance.set_indicator(JSON.parse($(this).attr('data-indicator')))
+				plugin.set_indicator(JSON.parse($(this).attr('data-indicator')))
 
-				plugin_instance.sort_sidebar()
+				plugin.sort_sidebar()
 
-				plugin_instance.prep_for_api()
+				plugin.prep_for_api()
 
 			})
 
@@ -584,7 +635,19 @@ var z = 0
 
 					$('.app-head-back').trigger('click')
 
+				} else {
+
+					// reset the sidebar sorting
+
+					$('body').find('.control-toggle').removeClass('open')
+					$('body').find('.app-sidebar-control').slideUp(200)
+
+					$('body').find('.sort-item').removeClass('selected').attr('data-sort-order', 'asc').first().addClass('selected')
+
+					plugin.sort_sidebar()
+
 				}
+
 			})
 
 			// click the indicator breadcrumb
@@ -598,10 +661,7 @@ var z = 0
 			// click the 'view details' button in a feature popup
 
 			$('body').on('click', '.risk-detail-link', function() {
-				// map.closePopup()
-
-				// plugin_instance.set_community()
-				plugin_instance.item_detail($(this).attr('data-id'))
+				plugin.item_detail($(this).attr('data-id'))
 			})
 
 			// click the 'back' button to close the detail view
@@ -615,10 +675,25 @@ var z = 0
 				plugin_settings.map.object.getPane('data').style.pointerEvents = 'all'
 
 				// reset the map view
+
 				plugin_settings.map.object.setView(
 					plugin_settings.map.defaults.coords,
 					plugin_settings.map.defaults.zoom
 				)
+
+				// reset the clicked & selected features
+
+				plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.clicked_feature)
+				plugin_settings.map.clicked_feature = null
+
+				plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.selected_feature)
+				plugin_settings.map.selected_feature = null
+
+				// close the popup
+
+				plugin_settings.map.object.closePopup().closeTooltip(plugin_settings.map.tooltip)
+
+				// reset the app view mode
 
 				if (plugin_settings.map.current_zoom > 5) {
 					$('.app-page').attr('data-sidebar-width', 'none')
@@ -628,7 +703,9 @@ var z = 0
 
 				$('.app-main').attr('data-mode', '')
 
-				plugin_instance.sort_sidebar()
+				// reset the sidebar items
+
+				plugin.sort_sidebar()
 
 			})
 
@@ -643,9 +720,9 @@ var z = 0
 						plugin_settings.api.retrofit = 'b0'
 					}
 
-					plugin_settings.map.object.closePopup()
+					plugin_settings.map.object.closePopup().closeTooltip(plugin_settings.map.tooltip)
 
-					plugin_instance.prep_for_api()
+					plugin.prep_for_api()
 
 				}
 			})
@@ -679,14 +756,14 @@ var z = 0
 
 			}
 
-			plugin_instance.set_indicator(JSON.parse(init_item.attr('data-indicator')))
+			plugin.set_indicator(JSON.parse(init_item.attr('data-indicator')))
 
     },
 
 		set_indicator: function(indicator) {
 
-			var plugin_instance = this
-			var plugin_settings = plugin_instance.options
+			var plugin = this
+			var plugin_settings = plugin.options
 
 			plugin_settings.indicator = indicator
 
@@ -724,8 +801,8 @@ var z = 0
 
 		sort_sidebar: function() {
 
-			var plugin_instance = this
-			var plugin_settings = plugin_instance.options
+			var plugin = this
+			var plugin_settings = plugin.options
 
 			// console.log('sort', plugin_settings.indicator.ranking)
 
@@ -751,12 +828,14 @@ var z = 0
 							.attr('data-id', result_data.post_id)
 							.attr('data-name', result_data.name)
 							.attr('data-feature', result_data.feature)
+							.attr('data-rank', i + 1)
+							.attr('data-province', result_data.pr_val)
 
 						new_item.find('.sidebar-item-value').html(i + 1)
 
 						new_item.find('.sidebar-item-header').html(result_data.name)
 
-						new_item.find('.sidebar-item-province').html(result_data.province)
+						new_item.find('.sidebar-item-province').html(result_data.pr_name)
 
 					}
 
@@ -764,7 +843,7 @@ var z = 0
 
 			} else {
 
-				plugin_settings.sidebar.items.forEach(function(result) {
+				plugin_settings.sidebar.items.forEach(function(result, i) {
 
 					var new_item = $(plugin_settings.sidebar.markup)
 						.appendTo(plugin_settings.sidebar.list)
@@ -772,12 +851,14 @@ var z = 0
 						.attr('data-id', result.post_id)
 						.attr('data-name', result.name)
 						.attr('data-feature', result.feature)
+						.attr('data-rank', i + 1)
+						.attr('data-province', result.pr_val)
 
 					// new_item.find('.sidebar-item-value').html(i + 1)
 
 					new_item.find('.sidebar-item-header').html(result.name)
 
-					new_item.find('.sidebar-item-province').html(result.province)
+					new_item.find('.sidebar-item-province').html(result.pr_name)
 
 				})
 
@@ -787,8 +868,8 @@ var z = 0
 
 		set_community: function(fn_options) {
 
-			var plugin_instance = this
-			var plugin_settings = plugin_instance.options
+			var plugin = this
+			var plugin_settings = plugin.options
 
 			// plugin_settings.community = {
 			// 	title: '',
@@ -799,8 +880,8 @@ var z = 0
 
 		prep_for_api: function(fn_options) {
 
-			var plugin_instance = this
-			var plugin_settings = plugin_instance.options
+			var plugin = this
+			var plugin_settings = plugin.options
 
 			var map = plugin_settings.map.object
 
@@ -876,7 +957,7 @@ var z = 0
 				// console.log('update map')
 
         // get the tiles
-				plugin_instance.update_map()
+				plugin.update_map()
 
       }
 
@@ -885,12 +966,13 @@ var z = 0
 
 		update_map: function(fn_options) {
 
-			var plugin_instance = this
-			var plugin_settings = plugin_instance.options
+			var plugin = this
+			var plugin_settings = plugin.options
 
 			var map = plugin_settings.map.object
 
 			map.closePopup()
+			map.closeTooltip(plugin_settings.map.tooltip)
 
 			var indicator_key = plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit
 
@@ -906,6 +988,10 @@ var z = 0
 
 			}
 
+			if (map.hasLayer(plugin_settings.map.fsa)) {
+				map.removeLayer(plugin_settings.map.fsa)
+			}
+
 			var indicator_key = plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit
 
 			$(document).profiler('get_tiles', {
@@ -913,15 +999,14 @@ var z = 0
 				indicator: plugin_settings.indicator,
 				aggregation: plugin_settings.aggregation,
 				tiles: plugin_settings.map.tiles,
-				bounds: bounds,
 				options: {
 					pane: 'data',
 		      getFeatureId: function(feature) {
 
-						if (feature.properties[indicator_key] > z) {
-							z = feature.properties[indicator_key]
-							// console.log(z)
-						}
+						// if (feature.properties[indicator_key] > z) {
+						// 	z = feature.properties[indicator_key]
+						// 	console.log(z)
+						// }
 
 						if (feature.properties['eqri_abs_score_' + plugin_settings.api.retrofit] > plugin_settings.sidebar.max.eqri_abs_score) {
 							plugin_settings.sidebar.max.eqri_abs_score = feature.properties['eqri_abs_score_' + plugin_settings.api.retrofit]
@@ -930,7 +1015,7 @@ var z = 0
 						return feature.properties[feature_ID_key]
 		      },
 					bounds: bounds,
-		      vectorTileLayerStyles: plugin_instance.set_choro_style('psra_indicators_' + plugin_settings.aggregation.current.agg, indicator_key)
+		      vectorTileLayerStyles: plugin.set_choro_style('psra_indicators_' + plugin_settings.aggregation.current.agg, indicator_key)
 				},
 				functions: {
 					add: function(e) {
@@ -938,9 +1023,10 @@ var z = 0
 						// set the tile var to the new layer that was created
 						plugin_settings.map.tiles = e.target
 
-						//
+						// set selected feature style
+						plugin.set_selected_style()
 
-						// console.log(plugin_settings.indicator)
+						// update the legend
 
 						plugin_settings.legend.grades = plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg].legend
 
@@ -957,57 +1043,103 @@ var z = 0
 
 						$('.app-sidebar').find('[data-feature="' + this_ID + '"]').addClass('hover')
 
+						if (!$('.app-main').hasClass('feature-selected')) {
+
+							plugin_settings.map.tooltip.setContent(function() {
+
+								var current_agg = plugin_settings.aggregation.current.agg
+
+								var aggregation = plugin_settings.indicator.aggregation[current_agg]
+
+								return plugin_settings.indicator.legend.prepend
+									+ plugin._round(e.layer.properties[indicator_key], aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
+									+ ' '
+									+ plugin_settings.indicator.legend.append
+							})
+				        .setLatLng(e.latlng)
+				        .addTo(map)
+
+						}
+
 					},
 					click: function(e) {
 
-						// if we have a selected feature, reset the style
-		        if (plugin_settings.map.selected_feature != null) {
-		          plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.selected_feature)
+						var properties = e.layer.properties
+
+						// if we have a clicked feature, reset its style
+		        if (plugin_settings.map.clicked_feature != null) {
+		          plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.clicked_feature)
 		        }
+
+						plugin_settings.community = properties
 
 						$('.app-main').addClass('feature-selected')
 
-		        // set the selected feature id
-		        plugin_settings.map.selected_feature = e.layer.properties[feature_ID_key]
+		        // set the clicked feature id
 
-						plugin_settings.community = e.layer.properties
+		        plugin_settings.map.clicked_feature = properties[feature_ID_key]
+						plugin_settings.map.clicked_fill = e.layer.options.fillColor
 
-						// set the selected feature style
-		        plugin_settings.map.tiles.setFeatureStyle(plugin_settings.map.selected_feature, {
-		          fill: true,
-							fillColor: '#9595a0',
-							color: '#2b2c42',
-		          weight: 0.8,
-		          fillOpacity: 0.5
-		        })
+						// set the clicked feature style
+
+						plugin.set_clicked_style(plugin_settings.map.clicked_fill)
 
 						// set the popup content
 		        plugin_settings.map.popup.setContent(function() {
 
-							return plugin_instance.popup_content(e.layer.properties)
+							return plugin.popup_content(properties)
 
 						})
 			        .setLatLng(e.latlng)
 			        .openOn(map)
 
-
-
 					},
 					complete: function() {
-						console.log('z', z)
+						// console.log('z', z)
 					}
 				}
 			})
 		},
 
+		set_clicked_style: function(fill_color) {
+
+			var plugin = this
+			var plugin_settings = plugin.options
+
+			plugin_settings.map.tiles.setFeatureStyle(plugin_settings.map.clicked_feature, {
+				fill: true,
+				fillColor: fill_color,
+				fillOpacity: 0.8,
+				color: '#2b2c42',
+				opacity: 1,
+				weight: 2,
+			})
+
+		},
+
+		set_selected_style: function() {
+
+			var plugin = this
+			var plugin_settings = plugin.options
+
+			plugin_settings.map.tiles.setFeatureStyle(plugin_settings.map.selected_feature, {
+				fill: true,
+				fillColor: plugin_settings.map.clicked_fill,
+				fillOpacity: 0.8,
+				color: '#d90429',
+				opacity: 0.8,
+				weight: 1,
+			})
+
+		},
+
 		set_choro_style: function(pbf_key, indicator_key) {
 
-			var plugin_instance = this
-			var plugin_settings = plugin_instance.options
+			var plugin = this
+			var plugin_settings = plugin.options
 
 			var layer_style = {},
-					fillColor,
-					weight = 0.1
+					fillColor
 
 			var rounding = parseInt(plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
 
@@ -1017,14 +1149,14 @@ var z = 0
 
 				var rounded_color = properties[indicator_key] * Math.pow(10, rounding)
 
-				fillColor = plugin_instance._choro_color(rounded_color)
+				fillColor = plugin._choro_color(rounded_color)
 
 				return {
 					fillColor: fillColor,
-					weight: weight,
 					fillOpacity: 0.8,
-					color: '#000000',
+					color: '#2b2c42',
 					opacity: 0.6,
+					weight: 0.1,
 					fill: true
 				}
 			}
@@ -1034,8 +1166,8 @@ var z = 0
 
 		_choro_color: function(d) {
 
-      var plugin_instance = this
-      var plugin_settings = plugin_instance.options
+      var plugin = this
+      var plugin_settings = plugin.options
 
 			var current_agg = plugin_settings.aggregation.current.agg,
 					agg_settings = plugin_settings.indicator.aggregation[current_agg]
@@ -1063,8 +1195,8 @@ var z = 0
 
 		popup_content: function(properties) {
 
-      var plugin_instance = this
-      var plugin_settings = plugin_instance.options
+      var plugin = this
+      var plugin_settings = plugin.options
 
 			// console.log(properties)
 
@@ -1074,7 +1206,7 @@ var z = 0
 				popup_name += ' (' + properties.fsauid + ')'
 			}
 
-			var popup_markup = '<div class="d-flex align-items-center">'
+			var popup_markup = '<div class="popup-detail d-flex align-items-center">'
 
 				popup_markup += '<h5 class="risk-popup-city flex-grow-1 mb-0 p-2">' + popup_name + '</h5>'
 
@@ -1086,7 +1218,7 @@ var z = 0
 
 				popup_markup += '<div class="risk-popup-rank border-left py-2 px-3 font-size-lg text-primary">'
 					+ plugin_settings.indicator.legend.prepend
-					+ plugin_instance._round(this_val, aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
+					+ plugin._round(this_val, aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
 					+ ' ' + plugin_settings.indicator.legend.append
 					+ '</div>'
 
@@ -1106,10 +1238,12 @@ var z = 0
 
     item_detail: function(fn_options) {
 
-      var plugin_instance = this
+      var plugin = this
       var plugin_item = this.item
-      var plugin_settings = plugin_instance.options
+      var plugin_settings = plugin.options
       var plugin_elements = plugin_settings.elements
+
+			var map = plugin_settings.map.object
 
       // options
 
@@ -1125,6 +1259,33 @@ var z = 0
       var settings = $.extend(true, defaults, fn_options)
 
 			console.log('risks', 'detail', plugin_settings.community)
+
+			// reset the sidebar sorting
+
+			$('body').find('.control-toggle').removeClass('open')
+			$('body').find('.app-sidebar-control').slideUp(200)
+
+			$('body').find('.sort-item').removeClass('selected').attr('data-sort-order', 'asc').first().addClass('selected')
+
+			// remove previously added FSA
+
+			if (map.hasLayer(plugin_settings.map.fsa)) {
+				map.removeLayer(plugin_settings.map.fsa)
+			}
+
+			// reset the existing selected feature
+
+			if (plugin_settings.map.selected_feature != null) {
+				plugin_settings.map.tiles.resetFeatureStyle(plugin_settings.map.selected_feature)
+			}
+
+			// the clicked feature becomes the selected feature
+
+			plugin_settings.map.selected_feature = plugin_settings.map.clicked_feature
+
+			// set the new selected style
+
+			plugin.set_selected_style()
 
 			$(document).profiler('get_sidebar', {
 				url: 'risks/detail.php',
@@ -1144,6 +1305,10 @@ var z = 0
 						detail_content.find('.city-name').html(plugin_settings.community.csdname)
 					}
 
+					if (plugin_settings.community.fsauid) {
+						detail_content.find('.city-name').append(' (' + plugin_settings.community.fsauid + ')')
+					}
+
 					// console.log(plugin_settings.community)
 					// console.log(plugin_settings.api.retrofit)
 
@@ -1160,11 +1325,29 @@ var z = 0
 
 						}
 
-						var this_val = plugin_settings.community[this_key + '_' + plugin_settings.api.retrofit]
+						var this_val
+
+						if (plugin_settings.community[this_key + '_' + plugin_settings.api.retrofit]) {
+							this_val = plugin_settings.community[this_key + '_' + plugin_settings.api.retrofit]
+						} else {
+							this_val = plugin_settings.community[this_key]
+						}
 
 						if (typeof $(this).attr('data-decimals') != 'undefined') {
 
 							this_val = this_val.toFixed(parseInt($(this).attr('data-decimals')))
+
+						}
+
+						if (typeof $(this).attr('data-prepend') != 'undefined') {
+
+							this_val = $(this).attr('data-prepend') + this_val
+
+						}
+
+						if (typeof $(this).attr('data-append') != 'undefined') {
+
+							this_val += $(this).attr('data-append')
 
 						}
 
@@ -1220,6 +1403,60 @@ var z = 0
 
 					}, 1000)
 
+					// accordion behaviours
+
+					$('.app-sidebar').find('.accordion').on('shown.bs.collapse', function (e) {
+
+						var selected_card = $('.app-sidebar').find('.collapse.show'),
+								selected_header = selected_card.prev()
+
+						// add 'open' class to header
+
+						selected_header.addClass('open')
+
+						if ($(e.target).is('#detail-exceedance-collapse')) {
+
+							map.closePopup().closeTooltip(plugin_settings.map.tooltip)
+
+							// get FSA shape
+
+							$.ajax({
+								url: plugin_settings.api.base_URL + plugin_settings.aggregation.current.agg
+									+ '/items/'
+									+ plugin_settings.map.selected_feature,
+								dataType: 'json',
+								success: function(data) {
+
+									plugin_settings.map.panes.fsa.style.display = ''
+
+									plugin_settings.map.fsa = new L.GeoJSON(data, {
+										style: {
+											fill: false,
+											color: '#8b0707',
+											weight: 2,
+											opacity: 0.6
+										},
+										pane: 'fsa'
+									}).addTo(map)
+
+								}
+							})
+
+						} else {
+
+							if (map.hasLayer(plugin_settings.map.fsa)) {
+								map.removeLayer(plugin_settings.map.fsa)
+							}
+
+							plugin_settings.map.panes.fsa.style.display = 'none'
+
+						}
+
+					}).on('hide.bs.collapse', function () {
+
+						$('.app-sidebar').find('.collapse').prev().removeClass('open')
+
+					})
 
 				},
 				complete: function() {
@@ -1247,119 +1484,193 @@ var z = 0
 							var path = new L.GeoJSON(data)
 
 							plugin_settings.map.object.fitBounds(path.getBounds(), {
-								paddingTopLeft: [($(window).outerWidth() / 2) + 50, 50],
+								paddingTopLeft: [($(window).outerWidth() / 2) + 50, 100],
 								paddingBottomRight: [50, 50]
 							})
 
 						}
 					})
 
-					// initialize charts
+					// elastic search
 
-					Highcharts.setOptions({
-				    lang: {
-				      thousandsSep: ','
-				    },
-						credits: {
-							enabled: false
+					// console.log(plugin_settings.community)
+
+					if (plugin_settings.community.fsauid) {
+
+						var request_data = {
+						  "aggs": {
+						    "0": {
+						      "terms": {
+						        "field": "properties.eEL_Period",
+						        "order": {
+						          "1": "asc"
+						        },
+						        "size": 15
+						      },
+						      "aggs": {
+						        "1": {
+						          "sum": {
+						            "field": "properties.eEL_b0"
+						          }
+						        },
+						        "2": {
+						          "avg": {
+						            "field": "properties.e5L_b0"
+						          }
+						        },
+						        "3": {
+						          "sum": {
+						            "field": "properties.e95L_b0"
+						          }
+						        }
+						      }
+						    }
+						  },
+						  "size": 0,
+						  "fields": [],
+						  "script_fields": {},
+						  "stored_fields": [ "*" ],
+						  "runtime_mappings": {},
+						  "_source": { "excludes": [] },
+						  "query": {
+						    "bool": {
+						      "must": [],
+						      "filter": [
+						        {
+						          "match_phrase": {
+						            "properties.eEL_FSAUID.keyword": plugin_settings.community.fsauid
+						          }
+						        },
+						        {
+						          "match_phrase": {
+						            "properties.eEL_OccGen.keyword": "RES"
+						          }
+						        },
+						        {
+						          "match_phrase": {
+						            "properties.eEL_BldgType.keyword": "Concrete"
+						          }
+						        },
+						        {
+						          "match_phrase": {
+						            "properties.eEL_type.keyword": "structural"
+						          }
+						        }
+						      ],
+						      "should": [],
+						      "must_not": []
+						    }
+						  }
 						}
-				  })
 
-					var chart = Highcharts.chart('risk-detail-chart', {
-						tooltip: {
-							useHTML: true,
-							headerFormat: '',
-							// formatter: function() {
-							//
-							// 	var series_name = this.series.name
-							//
-							// 	if (this.series.name != this.series.userOptions.custom.full_name) {
-							// 		series_name = this.series.userOptions.custom.full_name + ' (' + this.series.name + ')'
-							// 	}
-							//
-							// 	return '<strong>' + series_name + ':</strong> '
-							// 		+ plugin_settings.indicator.legend.prepend
-							// 		+ this.y.toLocaleString(undefined, {
-							// 			maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['decimals']
-							// 		})
-							// 		+ ' '
-							// 		+ plugin_settings.indicator.legend.append
-							//
-							// }
-						},
-						chart: {
-							type: 'column',
-					    height: 250,
-							marginTop: 30,
-							marginLeft: 60,
-							styledMode: true
-						},
-						title: {
-							enabled: false,
-							text: null,
-							align: 'left',
-							x: 0
-						},
-						xAxis: {
-							labels: {
-								enabled: false
+						var this_series = [
+							{
+								name: '5%',
+								data: []
 							},
-							tickLength: 0
-						},
-						yAxis: {
-							min: 0,
-							title: { enabled: false },
-							labels: {
-								x: -5,
+							{
+								name: 'Mean',
+								data: []
+							},
+							{
+								name: '95%',
+								data: []
 							}
-						},
-						plotOptions: {
-							column: {
-								groupPadding: 0.02,
-								pointPadding: 0.2,
-								borderWidth: 0
-							}
-						},
-						series: [],
-						legend: {
-							enabled: false,
-							width: '100%',
-							maxHeight: 100,
-							margin: 10
-						},
-						navigation: {
-							buttonOptions: {
-								y: -10
-							}
-						},
-						exporting: {
-							menuItemDefinitions: {
-								dataModal: {
-									onclick: function() {
+						]
 
-										$('#chart-data-placeholder').html(this.getTable())
+						$.ajax({
+							method: 'POST',
+							tryCount : 0,
+							retryLimit : 3,
+							crossDomain: true,
+							headers: { "content-type": "application/json" },
+							url: api_url + '/opendrr_psra_expected_loss_fsa/_search',
+							data: JSON.stringify(request_data),
+							success: function(data) {
 
-										$('#chart-data-placeholder').find('table').addClass('table table-responsive')
+								// console.log(data)
 
-										$('#data-modal .modal-title').html(plugin_settings.indicator.label + ' ' + rp.by + ' ' + request.name)
+								data.aggregations[0].buckets.forEach(function(item) {
 
-										$('#data-modal').modal('show')
+									// if (item.key >= 50) {
 
+										// 5%
+										this_series[0]['data'].push([item.key, item[2]['value']])
+
+										// mean
+										this_series[1]['data'].push([item.key, item[1]['value']])
+
+										// 95%
+										this_series[2]['data'].push([item.key, item[3]['value']])
+
+									// }
+
+								})
+
+								// console.log(this_series)
+								// create chart
+
+								var chart = Highcharts.chart('risk-detail-chart', {
+									tooltip: {
+										useHTML: true,
+										headerFormat: '',
+										formatter: function() {
+
+											return '<strong>' + this.x + 'y RP:</strong> $' + plugin._round_dollars(this.y)
+
+										}
 									},
-									text: 'View data table'
-								}
-							},
-							buttons: {
-								contextButton: {
-									menuItems: [ 'downloadPNG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'dataModal' ]
-								}
+									chart: {
+										inverted: true,
+										styledMode: true
+									},
+									title: {
+										text: null,
+										enabled: false
+									},
+									xAxis: {
+										reversed: false,
+										title: {
+											text: 'Return period (years)'
+										},
+										tickInterval: 250
+									},
+									yAxis: {
+										title: {
+											text: 'Loss (CAD)'
+										},
+									},
+									plotOptions: {
+										series: {
+											marker: {
+												enabled: true
+											}
+										}
+									},
+									series: this_series,
+									legend: {
+										margin: 20
+									},
+									navigation: {
+										buttonOptions: {
+											y: -10
+										}
+									},
+									exporting: {
+										enabled: false
+									}
+								}, function (chart) {
+
+						    })
+
 							}
-						}
-					}, function (chart) {
+						})
 
+					} else {
 
+						$('body').find('#loss-exceedance-chart').remove()
 
-			    })
+					}
 
           $('body').removeClass('spinner-on')
 					$('#spinner-progress').text('')
@@ -1373,6 +1684,25 @@ var z = 0
 		_round: function(num, power) {
 			return num * Math.pow(10, power)
 		},
+
+		_round_dollars: function(num) {
+
+			var plugin = this,
+					rounded_num
+
+			if (num > 1000000000) {
+				rounded_num = plugin._round(num, -9).toFixed(2) + ' billion'
+			} else if (num > 100000) {
+				rounded_num = plugin._round(num, -6).toFixed(2) + ' million'
+			} else {
+				rounded_num = num.toLocaleString('en-CA', {
+					maximumFractionDigits: 0
+				})
+			}
+
+			return '$' + rounded_num
+
+		}
 
   }
 

@@ -105,16 +105,17 @@
 							"label": "Peak Ground Acceleration, in units of g",
 							"retrofit": false,
 							"aggregation": {
-								"1km": { "rounding": 0, "decimals": 6 },
-								"5km": { "rounding": 0, "decimals": 6 },
-								"10km": { "rounding": 0, "decimals": 6 },
-								"25km": { "rounding": 0, "decimals": 6 },
-								"50km": { "rounding": 0, "decimals": 6 }
+								"1km": { "rounding": 2, "decimals": 2 },
+								"5km": { "rounding": 2, "decimals": 2 },
+								"10km": { "rounding": 2, "decimals": 2 },
+								"25km": { "rounding": 2, "decimals": 2 },
+								"50km": { "rounding": 2, "decimals": 2 }
 							},
 							"legend": {
 								"prepend": "",
 								"append": "%g",
-								"values": [ 0, 0.17, 1.4, 3.9, 9.2, 18, 24, 65, 124 ]
+								"values": [ 0, 0.0017, 0.014, 0.039, 0.092, 0.18, 0.24, 0.65, 1.24 ],
+								"color": "default"
 							}
 						}'
 					>
@@ -218,6 +219,7 @@
 								<li class="indicator-item border-bottom" data-indicator='{
 									"key": "<?php the_field ( 'indicator_key' ); ?>",
 									"label": "<?php echo $indicator_title; ?>",
+									"type": "<?php echo $cat['key']; ?>",
 									"retrofit": <?php
 
 										echo ( get_field ( 'indicator_retrofit' ) == 1 ) ? 'true' : 'false';
@@ -267,12 +269,19 @@
 
 										}
 
+										// colors
+
+										if ( get_field ( 'indicator_color' ) == '' ) {
+											update_field ( 'indicator_color', 'default' );
+										}
+
+										$legend_fields['color'] = get_field ( 'indicator_color' );
+
 										echo json_encode ( $legend_fields );
 
 									?>
 								}'>
 									<span class="d-block px-3 py-1"><?php the_title(); ?></span>
-									<div id="<?php echo get_the_slug(); ?>-charts" class="indicator-charts"></div>
 								</li>
 
 								<?php
