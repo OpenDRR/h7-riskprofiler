@@ -23,6 +23,10 @@
 		color: $body-color;
 		transition: 0.25s;
 	}
+
+	svg {
+		overflow: visible;
+	}
 }
 
 body.nav-open {
@@ -75,7 +79,6 @@ body.nav-open {
 }
 
 #header-primary {
-	font-size: 1.125rem;
 
 	@include media-breakpoint-down(sm) {
 		position: fixed;
@@ -85,6 +88,11 @@ body.nav-open {
 		transform: translateY(20%);
 		transition: left 0s ease 0.25s, opacity 0.25s ease 0s, transform 0.25s ease 0s;
 		text-align: center;
+		font-size: 1.125rem;
+	}
+
+	@include media-breakpoint-up(lg) {
+		font-size: 1.125rem;
 	}
 
 	.current-nav-item {
@@ -132,6 +140,10 @@ body.nav-open {
 	font-size: 0.75rem;
 
 	@include media-breakpoint-up(md) {
+		font-size: 0.625rem;
+	}
+
+	@include media-breakpoint-up(lg) {
 		font-size: 0.6875rem;
 	}
 
@@ -142,11 +154,19 @@ body.nav-open {
 		opacity: 0;
 		transition: left 0s ease 0.25s, opacity 0.25s ease 0s;
 	}
+
+	.nav-link {
+		@include media-breakpoint-only(md) {
+			padding-left: 0.25rem;
+			padding-right: 0.25rem;
+		}
+	}
 }
 
 #header-menu-secondary {
 	margin-bottom: 0.8rem;
 	@include all-caps;
+
 
 	a {
 		&:hover {
@@ -338,7 +358,9 @@ $app-transition: 0.25s;
 					}
 
 					.leaflet-left {
-						left: 50%;
+						@include media-breakpoint-up(md) {
+							left: 50%;
+						}
 					}
 
 					.legend .items {
@@ -706,7 +728,7 @@ $app-transition: 0.25s;
 
 	.app-map {
 		position: relative;
-		height: 40vh;
+		height: 50vh;
 		order: 1;
 
 		@include media-breakpoint-up(md) {
@@ -800,11 +822,15 @@ $app-transition: 0.25s;
 
 	&[data-sidebar-width="half"] {
 		.app-sidebar {
-			width: 50%;
+			@include media-breakpoint-up(md) {
+				width: 50%;
+			}
 		}
 
 		.leaflet-left {
-			left: 50%;
+			@include media-breakpoint-up(md) {
+				left: 50%;
+			}
 		}
 
 		.legend {
@@ -819,9 +845,11 @@ $app-transition: 0.25s;
 	&[data-sidebar-width="none"] {
 
 		.app-sidebar {
-			width: 25%;
-			left: -25%;
-			opacity: 0;
+			@include media-breakpoint-up(md) {
+				width: 25%;
+				left: -25%;
+				opacity: 0;
+			}
 		}
 
 		.leaflet-left {

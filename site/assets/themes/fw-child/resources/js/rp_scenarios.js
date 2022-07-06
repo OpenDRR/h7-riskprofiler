@@ -2,6 +2,8 @@ var z = 0
 
 var csd_temp, s_temp
 
+var grades, color_ramp
+
 // scenario profiler
 // v1.0
 
@@ -592,7 +594,7 @@ var csd_temp, s_temp
 				max: 0,
         grades: [],
 				colors: {
-					default: [
+					shake: [
 						'#ffffcc',
 						'#ffeda0',
 						'#fed976',
@@ -603,16 +605,49 @@ var csd_temp, s_temp
 						'#bd0026',
 						'#800026',
 					],
+					default: [
+						'#F5F4CC',
+						'#F2E7C3',
+						'#F0DABA',
+						'#EECDB1',
+						'#EBC0A8',
+						'#E9B39F',
+						'#E7A696',
+						'#E59A8D',
+						'#E28D84',
+						'#E0807B',
+						'#DE7373',
+						'#DC666A',
+						'#D95961',
+						'#D74D58',
+						'#D5404F',
+						'#D33346',
+						'#D0263D',
+						'#CE1934',
+						'#CC0C2B',
+						'#CA0023'
+					],
 					green: [
 						'#F7F4F1',
-						'#ECEEE3',
-						'#E2E9D5',
-						'#D7E3C7',
-						'#CDDEBA',
-						'#C2D8AC',
-						'#B8D39E',
-						'#ADCD90',
-						'#A3C883',
+						'#F2F1EB',
+						'#EEEFE5',
+						'#E9EDDF',
+						'#E5EAD9',
+						'#E0E8D4',
+						'#DCE6CE',
+						'#D8E3C8',
+						'#D3E1C2',
+						'#CFDFBC',
+						'#CADCB7',
+						'#C6DAB1',
+						'#C1D8AB',
+						'#BDD5A5',
+						'#B9D39F',
+						'#B4D19A',
+						'#B0CE94',
+						'#ABCC8E',
+						'#A7CA88',
+						'#A3C883'
 					]
 				}
 			},
@@ -736,31 +771,34 @@ var csd_temp, s_temp
 
 			plugin_settings.map.legend.onAdd = function () {
 
-				console.log(plugin_settings.indicator, plugin_settings.legend)
+				// console.log('add legend', plugin_settings.indicator, plugin_settings.legend)
 
 				var div = L.DomUtil.create('div', 'info legend'),
-						legend = plugin_settings.indicator.legend,
-						// grades = [].concat(plugin_settings.legend.grades).reverse(),
 						grades = plugin_settings.legend.grades,
+						indicator = plugin_settings.indicator,
+						legend = indicator.legend,
 						prepend = legend.prepend,
 						append = legend.append,
-						aggregation = plugin_settings.indicator.aggregation,
-						current_agg = plugin_settings.aggregation.current.agg,
-						color_ramp = plugin_settings.legend.colors[legend.color]
+						aggregation = indicator.aggregation,
+						current_agg = plugin_settings.aggregation.current.agg
 
-				switch (aggregation[current_agg]['rounding']) {
-					case -9 :
-						append = 'billion ' + append
-						break
-					case -6 :
-						append = 'million ' + append
-						break
-					case -3 :
-						append = 'thousand ' + append
-						break
+				if (indicator.type != 'dollars') {
+
+					switch (aggregation[current_agg]['rounding']) {
+						case -9 :
+							append = 'billion ' + append
+							break
+						case -6 :
+							append = 'million ' + append
+							break
+						case -3 :
+							append = 'thousand ' + append
+							break
+					}
+
 				}
 
-				legend_markup = '<h6>' + plugin_settings.indicator.label + '</h6>'
+				legend_markup = '<h6>' + indicator.label + '</h6>'
 
 				// loop through our density intervals and generate a label with a colored square for each interval
 
@@ -768,19 +806,37 @@ var csd_temp, s_temp
 
 				for (var i = 1; i <= grades.length; i++) {
 
+					var this_val = plugin._round(grades[i - 1], aggregation[current_agg]['rounding']).toLocaleString(undefined, {
+							maximumFractionDigits: aggregation[current_agg]['decimals']
+						})
+
+					if (indicator.type == 'dollars') {
+
+						this_val = plugin._round_scale(grades[i - 1])
+
+					}
+
 					var row_markup = '<div class="legend-item" data-toggle="tooltip" data-placement="top" style="background-color: '
             + color_ramp[i - 1] + ';"'
 						+ ' title="'
 						+ prepend
-						+ plugin._round(grades[i - 1], aggregation[current_agg]['rounding']).toLocaleString(undefined, {
-								maximumFractionDigits: aggregation[current_agg]['decimals']
-							})
+						+ this_val
 
 					if (grades[i]) {
 
+						var next_val = plugin._round(grades[i], aggregation[current_agg]['rounding']).toLocaleString(undefined, {
+								maximumFractionDigits: aggregation[current_agg]['decimals']
+							})
+
+						if (indicator.type == 'dollars') {
+
+							next_val = plugin._round_scale(grades[i])
+
+						}
+
 						row_markup += ' – '
 							+ prepend
-							+ plugin._round(grades[i], aggregation[current_agg]['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation[current_agg]['decimals'] })
+							+ next_val
 							+ ' '
 							+ append
 
@@ -1936,16 +1992,11 @@ var csd_temp, s_temp
 				// we're swapping between aggregations
 
 				if (
-					(
-						plugin_settings.indicator.max.csd == 0 &&
-						plugin_settings.indicator.max.s == 0
-					) ||
-					(
-						plugin_settings.aggregation.previous != plugin_settings.aggregation.current.agg
-					)
+					plugin_settings.indicator.max.csd == 0 &&
+					plugin_settings.indicator.max.s == 0
 				) {
 
-					console.log('maxes are 0, get new ones')
+					// console.log('maxes are 0, get new ones')
 
 					// get the csd max
 
@@ -2014,7 +2065,7 @@ var csd_temp, s_temp
 
 		get_tiles: function(fn_options) {
 
-			console.log('get tiles')
+			// console.log('get tiles')
 
       var plugin = this
       var plugin_settings = plugin.options
@@ -2063,6 +2114,8 @@ var csd_temp, s_temp
 				projection: 'EPSG_900913'
 			}
 
+			// console.log('getting tiles now at ' + aggregation.agg + ' and max val ' + max_val)
+
 			if (plugin_settings.indicator.key == 'sH_PGA') {
 
 				// SHAKEMAP
@@ -2091,6 +2144,59 @@ var csd_temp, s_temp
 
 			z = 0
 
+			// figure out what to do with the color ramp
+
+			plugin_settings.legend.grades = []
+
+			if (plugin_settings.indicator.legend.values) {
+
+				// if the indicator has custom legend scales,
+				// use that for the current aggregation
+
+				plugin_settings.legend.grades = plugin_settings.indicator.legend.values[plugin_settings.aggregation.current.agg]
+
+				// console.log('custom grades', plugin_settings.legend.grades)
+
+			} else {
+
+				// use the calculated max value to generate the ramp
+
+				var legend_steps = 20,
+						legend_step = 0
+
+				legend_step = max_val / legend_steps
+
+				for (i = 1; i <= legend_steps; i += 1) {
+					plugin_settings.legend.grades.unshift(max_val - (legend_step * i))
+				}
+
+				// console.log('calculated grades', plugin_settings.legend.grades)
+
+			}
+
+			// get the selected color ramp array
+
+			color_ramp = plugin_settings.legend.colors[plugin_settings.indicator.legend.color]
+
+			// match up the lengths of the grade and color array
+
+			if (color_ramp.length > plugin_settings.legend.grades.length) {
+
+				var new_ramp = [ color_ramp[0] ]
+
+				var length_mismatch = (color_ramp.length - 2) / (plugin_settings.legend.grades.length - 2)
+
+				for (i = 0; i < color_ramp.length - 2; i += length_mismatch) {
+					// console.log(i, Math.floor(i + length_mismatch), color_ramp[Math.floor(i + length_mismatch)])
+					new_ramp.push(color_ramp[Math.floor(i + length_mismatch)])
+				}
+
+				new_ramp.push(color_ramp[color_ramp.length - 1])
+
+				color_ramp = new_ramp
+
+			}
+
 			$(document).profiler('get_tiles', {
 				map: map,
 				url: tile_url,
@@ -2103,40 +2209,13 @@ var csd_temp, s_temp
 		        return feature.properties[feature_ID_key]
 		      },
 					bounds: bounds,
-		      vectorTileLayerStyles: plugin.set_shake_styles(tile_url.collection + '_' + aggregation.agg, indicator_key)
+		      vectorTileLayerStyles: plugin.choro_style(tile_url.collection + '_' + aggregation.agg, indicator_key)
 				},
 				functions: {
 					add: function(e) {
 
 						// set the tile var to the new layer that was created
 						plugin_settings.map.layers.tiles = e.target
-
-						// redo the legend
-
-						// don't round here, use the full values
-						// for setting legend grades
-						// and choro colours
-
-						// var rounding = plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding']
-
-						if (plugin_settings.indicator.key == 'sH_PGA') {
-
-							plugin_settings.legend.grades = plugin_settings.indicator.legend.values
-
-						} else {
-
-							var legend_steps = 9,
-									legend_step = 0
-
-							plugin_settings.legend.grades = []
-
-							legend_step = max_val / legend_steps
-
-							for (i = 1; i <= legend_steps; i += 1) {
-								plugin_settings.legend.grades.unshift(max_val - (legend_step * i))
-							}
-
-						}
 
 						plugin_settings.map.legend.addTo(plugin_settings.map.object)
 
@@ -2212,7 +2291,7 @@ var csd_temp, s_temp
 
 		},
 
-		set_shake_styles: function(pbf_key, indicator_key) {
+		choro_style: function(pbf_key, indicator_key) {
 
 			var plugin = this
 			var plugin_settings = plugin.options
@@ -2227,10 +2306,10 @@ var csd_temp, s_temp
 				return {
 					fill: true,
 					fillColor: plugin._choro_color(rounded_val),
-					fillOpacity: 0.8,
+					fillOpacity: 0.9,
 					color: '#000000',
 					opacity: 0.6,
-					weight: (indicator_key == 'sH_PGA_max') ? 0 : 0.4
+					weight: (indicator_key == 'sH_PGA_max') ? 0 : 0.2
 				}
 			}
 
@@ -2255,22 +2334,26 @@ var csd_temp, s_temp
       var plugin = this
       var plugin_settings = plugin.options
 
-			// var grades = [].concat(plugin_settings.indicator.legend.values).reverse()
+			var rounding = plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding']
 
-			var grades = plugin_settings.legend.grades,
-					rounding = plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding']
+			var grades = plugin_settings.legend.grades
 
-			var color_ramp = plugin_settings.legend.colors[plugin_settings.indicator.legend.color]
+			// default to the lightest color
+			var this_color = color_ramp[0]
 
-			return d <= grades[1] * Math.pow(10, rounding) ? color_ramp[0] :
-				d <= grades[2] * Math.pow(10, rounding) ? color_ramp[1] :
-				d <= grades[3] * Math.pow(10, rounding) ? color_ramp[2] :
-				d <= grades[4] * Math.pow(10, rounding) ? color_ramp[3] :
-				d <= grades[5] * Math.pow(10, rounding) ? color_ramp[4] :
-				d <= grades[6] * Math.pow(10, rounding) ? color_ramp[5] :
-				d <= grades[7] * Math.pow(10, rounding) ? color_ramp[6] :
-				d <= grades[8] * Math.pow(10, rounding) ? color_ramp[7] :
-        color_ramp[8]
+			// go through each grade
+			for (i = 0; i < grades.length; i += 1) {
+
+				// if the value is greater than grade[i],
+				// update this_color to the corresponding value in the color_ramp array
+
+				if (d >= grades[i] * Math.pow(10, rounding)) {
+					this_color = color_ramp[i]
+				}
+
+			}
+
+			return this_color
 
 		},
 
@@ -2287,11 +2370,17 @@ var csd_temp, s_temp
 
 			if (indicator.type == 'dollars') {
 
-				rounded_val = plugin._round_dollars(properties[indicator_key])
+				rounded_val = plugin._round_scale(properties[indicator_key])
 
 			} else {
 
 				rounded_val = plugin._round(properties[indicator_key], aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
+
+				if (aggregation['rounding'] == -9) {
+					rounded_val += ' billion'
+				} else if (aggregation['rounding'] == -6) {
+					rounded_val += ' million'
+				}
 
 			}
 
@@ -2564,15 +2653,19 @@ var csd_temp, s_temp
 			return num * Math.pow(10, power)
 		},
 
-		_round_dollars: function(num) {
+		_round_scale: function(num) {
 
 			var plugin = this,
 					rounded_num
 
-			if (num > 1000000000) {
-				rounded_num = plugin._round(num, -9).toFixed(2) + ' billion'
-			} else if (num > 100000) {
-				rounded_num = plugin._round(num, -6).toFixed(2) + ' million'
+			// round the number to the given power
+			// shorten to 2 decimal places
+			// remove decimal places if equal to .00
+
+			if (num >= 1000000000) {
+				rounded_num = plugin._round(num, -9).toFixed(2).replace(/[.,]00$/, '') + ' billion'
+			} else if (num >= 100000) {
+				rounded_num = plugin._round(num, -6).toFixed(2).replace(/[.,]00$/, '') + ' million'
 			} else {
 				rounded_num = num.toLocaleString('en-CA', {
 					maximumFractionDigits: 0

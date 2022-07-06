@@ -114,8 +114,11 @@
 							"legend": {
 								"prepend": "",
 								"append": "%g",
-								"values": [ 0, 0.0017, 0.014, 0.039, 0.092, 0.18, 0.24, 0.65, 1.24 ],
-								"color": "default"
+								"values": {
+									"5km": [ 0, 0.0017, 0.014, 0.039, 0.092, 0.18, 0.24, 0.65, 1.24 ],
+									"1km": [ 0, 0.0017, 0.014, 0.039, 0.092, 0.18, 0.24, 0.65, 1.24 ]
+								},
+								"color": "shake"
 							}
 						}'
 					>
@@ -239,33 +242,22 @@
 
 										$legend_fields = get_field ( 'indicator_label' );
 
-										$legend_fields['values'] = array();
+										// check for custom legend scale
 
-										// max val
+										if ( get_field ( 'indicator_custom' ) == 1 ) {
 
-										// find the row in 'indicator_max' with this scenario's key and use its value
+											$legend_fields['values'] = array (
+												'csd' => array(),
+												's' => array()
+											);
 
-										$maxes = get_field ( 'indicator_max' );
-										$legend_max = 100;
+											foreach ( get_field ( 'indicator_scale' ) as $key => $group ) {
 
-										if ( is_array ( $maxes ) && !empty ( $maxes ) ) {
-											foreach ( $maxes as $max ) {
-												if ( $max['scenario'] == $scenario_key ) {
-													$legend_max = $max['value'];
-													break;
+												foreach ( $group as $row ) {
+													$legend_fields['values'][$key][] = floatval($row['value']);
 												}
+
 											}
-										}
-
-										// steps
-
-										$legend_steps = 9;
-
-										$legend_step = $legend_max / $legend_steps;
-
-										for ($i = $legend_steps; $i > 0; $i -= 1) {
-
-											$legend_fields['values'][] = $legend_max - ( $legend_step * $i);
 
 										}
 
@@ -276,6 +268,8 @@
 										}
 
 										$legend_fields['color'] = get_field ( 'indicator_color' );
+
+										unset ( $legend_fields['label_—_value'] );
 
 										echo json_encode ( $legend_fields );
 

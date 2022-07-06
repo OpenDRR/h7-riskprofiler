@@ -369,8 +369,12 @@
 }
 
 .map-search {
-	width: calc(25vw - 1rem);
 	position: relative;
+	width: calc(75vw - 1rem);
+
+	@include media-breakpoint-up(md) {
+		width: calc(25vw - 1rem);
+	}
 }
 
 #map-search-clear {
