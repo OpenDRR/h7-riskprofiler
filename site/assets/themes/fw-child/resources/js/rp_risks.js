@@ -696,6 +696,13 @@ var z = 0
 
 				plugin_settings.map.object.closePopup().closeTooltip(plugin_settings.map.tooltip)
 
+				// reset the FSA layer
+
+				if (map.hasLayer(plugin_settings.map.layers.fsa)) {
+					plugin_settings.map.panes.fsa.style.display = 'none'
+					map.removeLayer(plugin_settings.map.layers.fsa)
+				}
+
 				// reset the app view mode
 
 				if (plugin_settings.map.current_zoom > 5) {
