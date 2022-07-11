@@ -25,7 +25,10 @@ var z = 0
 				clicked_feature: null,
 				selected_feature: null,
 				tiles: null,
-				fsa: null,
+				layers: {
+					feature: null,
+					fsa: null
+				},
 				popup: null,
 				tooltip: null,
 				defaults: {
@@ -619,9 +622,9 @@ var z = 0
 
 			// click an indicator item
 
-			$('body').on('click', '.risk-var', function() {
+			$('body').on('click', '.risk-var-link', function() {
 
-				plugin.set_indicator(JSON.parse($(this).attr('data-indicator')))
+				plugin.set_indicator(JSON.parse($(this).closest('.risk-var').attr('data-indicator')))
 
 				plugin.sort_sidebar()
 
@@ -988,8 +991,9 @@ var z = 0
 
 			}
 
-			if (map.hasLayer(plugin_settings.map.fsa)) {
-				map.removeLayer(plugin_settings.map.fsa)
+			if (map.hasLayer(plugin_settings.map.layers.fsa)) {
+				plugin_settings.map.panes.fsa.style.display = 'none'
+				// map.removeLayer(plugin_settings.map.layers.fsa)
 			}
 
 			var indicator_key = plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit
@@ -1025,6 +1029,17 @@ var z = 0
 
 						// set selected feature style
 						plugin.set_selected_style()
+
+						// if we're switching aggregations to S,
+						// and the expected loss accordion is selected,
+						// turn the FSA pane/layer back on
+
+						if (
+							plugin_settings.aggregation.current.agg == 's' &&
+							map.hasLayer(plugin_settings.map.layers.fsa)
+						) {
+							plugin_settings.map.panes.fsa.style.display = ''
+						}
 
 						// update the legend
 
@@ -1176,11 +1191,6 @@ var z = 0
 
 			var rounding = parseInt(agg_settings['rounding'])
 
-			// if (plugin_settings.map.object.getZoom() > 10 && d > 3 && d < 6) {
-			// 	console.log(d, rounding)
-			// 	console.log(grades[0], grades[1], grades[2])
-			// }
-
 			return d >= grades[0] ? '#800026' :
 				d >= grades[1] ? '#bd0026' :
 				d >= grades[2] ? '#e31a1c' :
@@ -1269,8 +1279,8 @@ var z = 0
 
 			// remove previously added FSA
 
-			if (map.hasLayer(plugin_settings.map.fsa)) {
-				map.removeLayer(plugin_settings.map.fsa)
+			if (map.hasLayer(plugin_settings.map.layers.fsa)) {
+				map.removeLayer(plugin_settings.map.layers.fsa)
 			}
 
 			// reset the existing selected feature
@@ -1297,9 +1307,13 @@ var z = 0
 				},
 				success: function(data) {
 
+					// UX
+
 					plugin_settings.current_view = 'detail'
 
 					var detail_content = $('body').find('.sidebar-detail')
+
+					// populate labels
 
 					if (plugin_settings.community.csdname) {
 						detail_content.find('.city-name').html(plugin_settings.community.csdname)
@@ -1308,9 +1322,6 @@ var z = 0
 					if (plugin_settings.community.fsauid) {
 						detail_content.find('.city-name').append(' (' + plugin_settings.community.fsauid + ')')
 					}
-
-					// console.log(plugin_settings.community)
-					// console.log(plugin_settings.api.retrofit)
 
 					// populate indicator values
 
@@ -1355,7 +1366,7 @@ var z = 0
 
 					})
 
-					// score chart
+					// create score markers
 
 					setTimeout(function() {
 
@@ -1397,93 +1408,29 @@ var z = 0
 								}
 							})
 
-
-
 						})
 
 					}, 1000)
 
-					// accordion behaviours
-
-					$('.app-sidebar').find('.accordion').on('shown.bs.collapse', function (e) {
-
-						var selected_card = $('.app-sidebar').find('.collapse.show'),
-								selected_header = selected_card.prev()
-
-						// add 'open' class to header
-
-						selected_header.addClass('open')
-
-						if ($(e.target).is('#detail-exceedance-collapse')) {
-
-							map.closePopup().closeTooltip(plugin_settings.map.tooltip)
-
-							// get FSA shape
-
-							$.ajax({
-								url: plugin_settings.api.base_URL + plugin_settings.aggregation.current.agg
-									+ '/items/'
-									+ plugin_settings.map.selected_feature,
-								dataType: 'json',
-								success: function(data) {
-
-									plugin_settings.map.panes.fsa.style.display = ''
-
-									plugin_settings.map.fsa = new L.GeoJSON(data, {
-										style: {
-											fill: false,
-											color: '#8b0707',
-											weight: 2,
-											opacity: 0.6
-										},
-										pane: 'fsa'
-									}).addTo(map)
-
-								}
-							})
-
-						} else {
-
-							if (map.hasLayer(plugin_settings.map.fsa)) {
-								map.removeLayer(plugin_settings.map.fsa)
-							}
-
-							plugin_settings.map.panes.fsa.style.display = 'none'
-
-						}
-
-					}).on('hide.bs.collapse', function () {
-
-						$('.app-sidebar').find('.collapse').prev().removeClass('open')
-
-					})
-
-				},
-				complete: function() {
-
-					// console.log('risks', 'detail', 'done')
-
 					// fetch the feature from geoapi, use its geometry to zoom to the vector tile feature
 
-					var feature_ID_key = 'csduid'
-
-					if (plugin_settings.aggregation.current.agg == 's') {
-						feature_ID_key = 'Sauid'
-					}
-
-					// console.log(plugin_settings.community[feature_ID_key], plugin_settings.api.base_URL + plugin_settings.aggregation.current.agg + '_v' + plugin_settings.api.version + '/items/' + plugin_settings.community[feature_ID_key])
+					var feature_ID_key = (plugin_settings.aggregation.current.agg == 's') ? 'Sauid' : 'csduid'
 
 					$.ajax({
-						url: plugin_settings.api.base_URL + plugin_settings.aggregation.current.agg
-						// + '_v' + plugin_settings.api.version
-						+ '/items/'
-						+ plugin_settings.community[feature_ID_key],
+						url: plugin_settings.api.base_URL
+							+ plugin_settings.aggregation.current.agg
+							+ '/items/'
+							+ plugin_settings.community[feature_ID_key],
 						dataType: 'json',
 						success: function(data) {
 
-							var path = new L.GeoJSON(data)
+							// add the feature
 
-							plugin_settings.map.object.fitBounds(path.getBounds(), {
+							plugin_settings.map.layers.feature = new L.GeoJSON(data)
+
+							// fit bounds
+
+							plugin_settings.map.object.fitBounds(plugin_settings.map.layers.feature.getBounds(), {
 								paddingTopLeft: [($(window).outerWidth() / 2) + 50, 100],
 								paddingBottomRight: [50, 50]
 							})
@@ -1491,9 +1438,7 @@ var z = 0
 						}
 					})
 
-					// elastic search
-
-					// console.log(plugin_settings.community)
+					// run elastic search query to create loss curve chart
 
 					if (plugin_settings.community.fsauid) {
 
@@ -1564,18 +1509,9 @@ var z = 0
 						}
 
 						var this_series = [
-							{
-								name: '5%',
-								data: []
-							},
-							{
-								name: 'Mean',
-								data: []
-							},
-							{
-								name: '95%',
-								data: []
-							}
+							{ name: '5%', data: [] },
+							{ name: 'Mean', data: [] },
+							{ name: '95%', data: [] }
 						]
 
 						$.ajax({
@@ -1588,26 +1524,19 @@ var z = 0
 							data: JSON.stringify(request_data),
 							success: function(data) {
 
-								// console.log(data)
-
 								data.aggregations[0].buckets.forEach(function(item) {
 
-									// if (item.key >= 50) {
+									// 5%
+									this_series[0]['data'].push([item.key, item[2]['value']])
 
-										// 5%
-										this_series[0]['data'].push([item.key, item[2]['value']])
+									// mean
+									this_series[1]['data'].push([item.key, item[1]['value']])
 
-										// mean
-										this_series[1]['data'].push([item.key, item[1]['value']])
-
-										// 95%
-										this_series[2]['data'].push([item.key, item[3]['value']])
-
-									// }
+									// 95%
+									this_series[2]['data'].push([item.key, item[3]['value']])
 
 								})
 
-								// console.log(this_series)
 								// create chart
 
 								var chart = Highcharts.chart('risk-detail-chart', {
@@ -1659,9 +1588,7 @@ var z = 0
 									exporting: {
 										enabled: false
 									}
-								}, function (chart) {
-
-						    })
+								})
 
 							}
 						})
@@ -1671,6 +1598,134 @@ var z = 0
 						$('body').find('#loss-exceedance-chart').remove()
 
 					}
+
+					// accordion behaviours
+
+					$('.app-sidebar').find('.accordion').on('shown.bs.collapse', function (e) {
+
+						var selected_card = $('.app-sidebar').find('.collapse.show'),
+								selected_header = selected_card.prev()
+
+						// add 'open' class to header
+
+						selected_header.addClass('open')
+
+						if ($(e.target).is('#detail-exceedance-collapse')) {
+
+							map.closePopup().closeTooltip(plugin_settings.map.tooltip)
+
+							// get FSA shape via elastic search
+
+							// delete the old FSA
+							if (map.hasLayer(plugin_settings.map.layers.fsa)) {
+								map.removeLayer(plugin_settings.map.layers.fsa)
+							}
+
+							// create the request
+
+							var fsa_request = {
+								"size": 1000,
+								"fields": [],
+								"script_fields": {},
+								"stored_fields": [ "*" ],
+								"runtime_mappings": {},
+							  "_source": { "excludes": [] },
+								"query": {
+									"bool": {
+										"must": [],
+										"filter": [
+											{
+												"match_phrase": {
+													"properties.CFSAUID.keyword": plugin_settings.community.fsauid
+												}
+											}
+										],
+										"should": [],
+										"must_not": []
+									}
+								}
+							}
+
+							$.ajax({
+								method: 'POST',
+								tryCount : 0,
+								retryLimit : 3,
+								crossDomain: true,
+								headers: { "content-type": "application/json" },
+								url: api_url + '/opendrr_geometry_fsauid/_search',
+								data: JSON.stringify(fsa_request),
+								success: function(data) {
+
+									var source
+
+									// if a geometry exists
+
+									if (data.hits.hits[0]._source) {
+
+										source = data.hits.hits[0]._source
+
+										// show the pane
+
+										plugin_settings.map.panes.fsa.style.display = ''
+
+										// add the layer
+
+										plugin_settings.map.layers.fsa = new L.GeoJSON(source, {
+											style: {
+												fill: false,
+												color: '#8b0707',
+												weight: 2,
+												opacity: 0.6
+											},
+											pane: 'fsa'
+										}).addTo(map)
+
+										// fit bounds
+
+										plugin_settings.map.object.fitBounds(plugin_settings.map.layers.fsa.getBounds(), {
+											paddingTopLeft: [($(window).outerWidth() / 2) + 50, 100],
+											paddingBottomRight: [50, 50]
+										})
+
+									}
+
+								}
+							})
+
+						} else {
+
+							// hide the FSA pane (don't remove the layer)
+
+							plugin_settings.map.panes.fsa.style.display = 'none'
+
+							// fit the feature's bounds
+
+							plugin_settings.map.object.fitBounds(plugin_settings.map.layers.feature.getBounds(), {
+								paddingTopLeft: [($(window).outerWidth() / 2) + 50, 100],
+								paddingBottomRight: [50, 50]
+							})
+
+						}
+
+					}).on('hide.bs.collapse', function () {
+
+						$('.app-sidebar').find('.collapse').prev().removeClass('open')
+
+						// hide the FSA pane (don't remove the layer)
+
+						plugin_settings.map.panes.fsa.style.display = 'none'
+
+						// fit the feature's bounds
+
+						plugin_settings.map.object.fitBounds(plugin_settings.map.layers.feature.getBounds(), {
+							paddingTopLeft: [($(window).outerWidth() / 2) + 50, 100],
+							paddingBottomRight: [50, 50]
+						})
+
+					})
+
+				},
+				complete: function() {
 
           $('body').removeClass('spinner-on')
 					$('#spinner-progress').text('')
