@@ -808,6 +808,7 @@ body.nav-open #header-secondary {
   font-size: 0.625rem;
   opacity: 1;
   transition: opacity 0.25s;
+  margin-right: 0;
 }
 .app-page .leaflet-control-container .leaflet-control-layers,
 .app-page .leaflet-control-container .leaflet-control-zoom {
@@ -1116,7 +1117,6 @@ body.nav-open #header-secondary {
 
 #page-risks .leaflet-control-container .leaflet-control-attribution {
   margin-bottom: 0.75rem;
-  margin-right: 0;
 }
 #page-risks .highcharts-yaxis .highcharts-axis-line {
   stroke-width: 1;
