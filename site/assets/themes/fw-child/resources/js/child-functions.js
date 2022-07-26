@@ -31,6 +31,7 @@ var child_logging = true
 
 		$(document).on('overlay_show', function() {
 			$('body').removeClass('nav-open')
+			$('#menu-icon i').removeClass('fa-times').addClass('fa-bars')
 		})
 
     //

@@ -230,10 +230,36 @@ body.nav-open {
 // OVERLAYS
 //
 
+.overlay-wrap {
+	@include media-breakpoint-down(sm) {
+		z-index: 1060;
+	}
+}
+
+.overlay-content {
+	@include media-breakpoint-down(sm) {
+		padding: 0;
+	}
+}
+
+.overlay-close {
+	@include media-breakpoint-down(sm) {
+		top: 1rem;
+		right: 1rem;
+		font-size: 1.5rem;
+		line-height: 1.5rem;
+	}
+}
+
 #risks-text {
 	.block-text {
-		width: 66.666667%;
-		margin-left: 16.666667%;
+		width: 83.333333%;
+		margin-left: 8.333333%;
+
+		@include media-breakpoint-up(md) {
+			width: 66.666667%;
+			margin-left: 16.666667%;
+		}
 	}
 }
 

@@ -390,9 +390,36 @@ body.nav-open #header-secondary {
   align-items: center;
 }
 
+@media (max-width: 767.98px) {
+  .overlay-wrap {
+    z-index: 1060;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .overlay-content {
+    padding: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .overlay-close {
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
+}
+
 #risks-text .block-text {
-  width: 66.666667%;
-  margin-left: 16.666667%;
+  width: 83.333333%;
+  margin-left: 8.333333%;
+}
+@media (min-width: 768px) {
+  #risks-text .block-text {
+    width: 66.666667%;
+    margin-left: 16.666667%;
+  }
 }
 
 #psra {
