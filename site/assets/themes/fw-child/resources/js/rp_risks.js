@@ -234,7 +234,7 @@ var z = 0
 					basemap_att = 'Map data © 2022 Google | <a href="https://www.google.com/intl/en-CA_US/help/terms_maps/" target="_blank">Terms of use</a>'
 
 			if ($('body').hasClass('lang-fr')) {
-				basemap_URL += '&hl=fr'
+				basemap_URL += '&hl=fr-CA'
 				basemap_att = 'Map data © 2022 Google | <a href="https://www.google.com/intl/en-CA_US/help/terms_maps/" target="_blank">Terms of use</a>'
 			} else {
 				basemap_URL += '&hl=en'
