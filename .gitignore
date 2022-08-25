@@ -1,6 +1,9 @@
 .ftpconfig
 site/assets/debug.log
 sandbox
+.DS_Store
+.nova
+
 wp-config.php
 site/assets/plugins/simply-static/debug.txt
 site/assets/plugins/simply-static/static-files/
