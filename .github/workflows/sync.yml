@@ -36,7 +36,8 @@ jobs:
 
       - name: Fetch and merge latest commits from upstream, and push to GitHub
         run: |
-          set -x
+          set -euxo pipefail
+
           git config checkout.defaultRemote origin
           git config user.name github-actions
           git config user.email github-actions@github.com
