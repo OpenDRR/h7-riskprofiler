@@ -331,7 +331,7 @@ const api_url = 'https://api.riskprofiler.ca'
 				url: {
 					collection: 'psra_indicators',
 					aggregation: 'csd',
-					version: '1.4.0',
+					version: '1.4.3',
 					projection: 'EPSG_900913'
 				},
 				map: null,

@@ -17,7 +17,7 @@ var grades, color_ramp
 
     var defaults = {
 			api: {
-				version: '1.4.0',
+				version: '1.4.3',
 				base_URL: geoapi_url + '/collections/opendrr_dsra_',
 				retrofit: 'b0', // or r1
 				lang: 'en_US',
@@ -2112,7 +2112,6 @@ var grades, color_ramp
 			var tile_url = {
 				collection: 'dsra_' + plugin_settings.scenario.key.toLowerCase() + '_',
 				aggregation: aggregation.agg,
-				version: '1.4.0',
 				projection: 'EPSG_900913'
 			}
 
@@ -2587,7 +2586,7 @@ var grades, color_ramp
 						retryLimit : 3,
 						crossDomain: true,
 						headers: { "content-type": "application/json" },
-						url: api_url + '/opendrr_dsra_' + plugin_settings.scenario.key.toLowerCase() + '_indicators_b_v' + plugin_settings.api.version + '/_search',
+						url: api_url + '/opendrr_dsra_' + plugin_settings.scenario.key.toLowerCase() + '_indicators_b/_search',
 						data: JSON.stringify(request_data),
 						success: function(data) {
 							

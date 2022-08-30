@@ -13,6 +13,12 @@
 				background-color: transparentize($white, 0.8);
 			}
 		}
+		
+		.current-nav-item {
+			a {
+				background-color: $gray-100;
+			}
+		}
 	}
 
 	#hero {
