@@ -7,8 +7,7 @@ var child_logging = true
 ;(function($) {
   $(function() {
 		
-		var nav_items = $('#header-primary .fw-menu-item'),
-				current_nav_item = $('#header-primary').find('.current-nav-item')
+		var nav_items = $('#header-primary .fw-menu-item')
 
     //
     // CHILD THEME URL
@@ -30,25 +29,6 @@ var child_logging = true
 				$(this).removeClass('fa-bars').addClass('fa-times')
 			}
 
-		})
-
-		$(document).on('overlay_show', function() {
-			$('body').removeClass('nav-open')
-			$('#menu-icon i').removeClass('fa-times').addClass('fa-bars')
-			
-			$(nav_items[0]).removeClass('current-nav-item').find('a').removeClass('current-nav-link')
-			
-			$(nav_items[1]).addClass('current-nav-item').find('a').addClass('current-nav-link')
-			
-		}).on('overlay_hide', function() {
-			
-			$(nav_items[1]).removeClass('current-nav-item').find('a').removeClass('current-nav-link')
-			
-			console.log(current_nav_item)
-			if (current_nav_item.length) {
-				current_nav_item.addClass('current-nav-item').find('a').addClass('current-nav-link')
-			}
-			
 		})
 
     //
@@ -87,6 +67,8 @@ var child_logging = true
 
 		}
 		
+		var current_nav_item = $('#header-primary').find('.current-nav-item')
+		
 		// filter toggles in risks overlay
 
 		$('body').on('click', '.overlay-content #psra-items-filter .item', function() {
@@ -111,6 +93,27 @@ var child_logging = true
 				item_list.find('[data-type="' + selected_filter + '"]').closest('.query-item').slideDown(250)
 			}
 
+		})
+		
+		// overlay show/hide events
+		
+		$(document).on('overlay_show', function() {
+			$('body').removeClass('nav-open')
+			$('#menu-icon i').removeClass('fa-times').addClass('fa-bars')
+			
+			$(nav_items[0]).removeClass('current-nav-item').find('a').removeClass('current-nav-link')
+			
+			$(nav_items[1]).addClass('current-nav-item').find('a').addClass('current-nav-link')
+			
+		}).on('overlay_hide', function() {
+			
+			$(nav_items[1]).removeClass('current-nav-item').find('a').removeClass('current-nav-link')
+			
+			console.log(current_nav_item)
+			if (current_nav_item.length) {
+				current_nav_item.addClass('current-nav-item').find('a').addClass('current-nav-link')
+			}
+			
 		})
 
 		//
