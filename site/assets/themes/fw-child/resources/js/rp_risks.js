@@ -38,7 +38,7 @@ var z = 0
 			},
 			api: {
 				base_URL: geoapi_url + '/collections/opendrr_psra_indicators_',
-				version: '1.4.0',
+				version: '1.4.3',
 				retrofit: 'b0', // or r1
 				aggregation: 'csd', // or s
 				agg_prop: 'csduid', // or Sauid,
