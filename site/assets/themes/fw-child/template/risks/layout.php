@@ -15,7 +15,7 @@
 		<nav aria-label="breadcrumb">
 		  <ol class="breadcrumb border-bottom">
 		    <li class="breadcrumb-item persistent"><?php _e ( 'Probabilistic Risks', 'rp' ); ?></li>
-				<li id="breadcrumb-indicator" class="breadcrumb-item d-flex align-items-center">
+				<li id="breadcrumb-indicator" class="breadcrumb-item cancellable">
 					<a href="#psra" class="overlay-toggle d-flex align-items-center bg-light py-1 px-2">
 						<span class="indicator-title"></span>
 						<i class="fas fa-times ml-2"></i>

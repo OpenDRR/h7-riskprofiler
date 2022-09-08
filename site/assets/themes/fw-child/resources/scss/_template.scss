@@ -711,6 +711,38 @@ $app-transition: 0.25s;
 					border-left-color: $gray-400;
 				}
 			}
+			
+			&.cancellable {
+				display: flex;
+				align-items: center;
+				
+				a, div {
+					transition: 0.25s;
+					color: $body-color;
+					cursor: pointer;
+				
+					i {
+						transition: 0.25s;
+					}
+				
+					&:hover {
+						i {
+							color: $primary;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	// tour button
+	
+	#tour-btn {
+		cursor: pointer;
+		transition: 0.25s;
+		
+		&:hover {
+			background-color: $light;
 		}
 	}
 
@@ -748,7 +780,6 @@ $app-transition: 0.25s;
 	h6 {
 		font-size: 0.625rem;
 	}
-
 
 	// map
 
@@ -946,4 +977,14 @@ $app-transition: 0.25s;
 		}
 	}
 
+}
+
+//
+// PAGE STATES
+//
+
+body.page-tour-open {
+	#tour-btn {
+		background-color: $light;
+	}
 }

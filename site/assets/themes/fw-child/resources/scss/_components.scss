@@ -3,3 +3,17 @@
 .swiper-pagination-bullet {
 	transition: 0.25s;
 }
+
+// PAGE TOUR
+
+.page-tour {
+	z-index: 1500 !important;
+	
+	.page-tour-content {
+		font-size: 0.875rem;
+	}
+	
+	.page-tour-dontshow {
+		font-size: 0.625rem;
+	}
+}

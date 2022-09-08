@@ -5,7 +5,7 @@ $title-font-size: 1rem;
 @import '../vendor/Highcharts-9.3.3/code/css/highcharts';
 
 .highcharts-background {
-  fill: transparent;
+  fill: rgba(255,255,255,0);
 }
 
 // title

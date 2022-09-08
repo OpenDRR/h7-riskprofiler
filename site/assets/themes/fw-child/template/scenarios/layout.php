@@ -19,6 +19,10 @@
 		  </ol>
 		</nav>
 	</div>
+	
+	<div id="tour-btn" class="d-flex align-items-center px-2 border-bottom border-left page-tour-trigger">
+		<h6 class="mb-0"><?php _e ( 'Tour this page', 'rp' ); ?></h6>
+	</div>
 
 	<div id="chart-toggle" class="app-retrofit d-flex align-items-center px-2 border-bottom border-left">
 		<div id="chart-togglebox" class="checked disabled"></div>

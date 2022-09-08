@@ -284,24 +284,6 @@
 // RISKS
 //
 
-#breadcrumb-indicator {
-	a {
-		transition: 0.25s;
-		color: $body-color;
-
-		i {
-			transition: 0.25s;
-		}
-
-		&:hover {
-			i {
-				color: $primary;
-			}
-		}
-	}
-
-}
-
 #page-risks {
 	.leaflet-control-container {
 		.leaflet-control-attribution {

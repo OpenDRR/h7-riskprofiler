@@ -36,6 +36,7 @@ add_action ( 'wp', 'child_global_vars', 20 );
 //
 
 function child_theme_enqueue() {
+	
   $theme_dir = get_bloginfo ( 'template_directory' ) . '/';
   $bower_dir = $theme_dir . 'resources/bower_components/';
   $js_dir = $theme_dir . 'resources/js/';
@@ -47,6 +48,8 @@ function child_theme_enqueue() {
   //
   // STYLES
   //
+	
+	wp_dequeue_style ( 'global-styles' );
 
 	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) ) {
 
@@ -74,6 +77,7 @@ function child_theme_enqueue() {
 
 	$scenarios_translations = array (
     'by' => __( 'by', 'rp' ),
+		'in' => __( 'in', 'rp' ),
     'building_type' => __( 'Building Type', 'rp' ),
     'design_level' => __( 'Design Level', 'rp' ),
     'occupancy_class' => __( 'Occupancy Class', 'rp' ),

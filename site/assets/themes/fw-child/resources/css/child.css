@@ -760,6 +760,28 @@ body.nav-open #header-secondary {
   border: 5px solid transparent;
   border-left-color: #9595a0;
 }
+.app-page .app-breadcrumb .breadcrumb-item.cancellable {
+  display: flex;
+  align-items: center;
+}
+.app-page .app-breadcrumb .breadcrumb-item.cancellable a, .app-page .app-breadcrumb .breadcrumb-item.cancellable div {
+  transition: 0.25s;
+  color: #2b2c42;
+  cursor: pointer;
+}
+.app-page .app-breadcrumb .breadcrumb-item.cancellable a i, .app-page .app-breadcrumb .breadcrumb-item.cancellable div i {
+  transition: 0.25s;
+}
+.app-page .app-breadcrumb .breadcrumb-item.cancellable a:hover i, .app-page .app-breadcrumb .breadcrumb-item.cancellable div:hover i {
+  color: #d90429;
+}
+.app-page #tour-btn {
+  cursor: pointer;
+  transition: 0.25s;
+}
+.app-page #tour-btn:hover {
+  background-color: #ecf1f4;
+}
 @media (max-width: 767.98px) {
   .app-page #chart-toggle {
     display: none !important;
@@ -930,6 +952,10 @@ body.nav-open #header-secondary {
 }
 .app-page .leaflet-pulsing-icon:after {
   box-shadow: 0 0 0 2px #2b2c42 !important;
+}
+
+body.page-tour-open #tour-btn {
+  background-color: #ecf1f4;
 }
 
 .home #main-header {
@@ -1133,17 +1159,6 @@ body.nav-open #header-secondary {
   border-top-color: #343a40;
 }
 
-#breadcrumb-indicator a {
-  transition: 0.25s;
-  color: #2b2c42;
-}
-#breadcrumb-indicator a i {
-  transition: 0.25s;
-}
-#breadcrumb-indicator a:hover i {
-  color: #d90429;
-}
-
 #page-risks .leaflet-control-container .leaflet-control-attribution {
   margin-bottom: 0.75rem;
 }
@@ -1264,6 +1279,16 @@ body.nav-open #header-secondary {
 
 .swiper-pagination-bullet {
   transition: 0.25s;
+}
+
+.page-tour {
+  z-index: 1500 !important;
+}
+.page-tour .page-tour-content {
+  font-size: 0.875rem;
+}
+.page-tour .page-tour-dontshow {
+  font-size: 0.625rem;
 }
 
 .leaflet-popup-content-wrapper {
