@@ -893,9 +893,7 @@ var grades, color_ramp
 			plugin_settings.map.clusters = L.markerClusterGroup({
 				animateAddingMarkers: true,
 				iconCreateFunction: function (cluster) {
-					var markers = cluster.getAllChildMarkers();
-
-					// console.log(markers)
+					var markers = cluster.getAllChildMarkers()
 
 					var n = 0
 
@@ -903,7 +901,7 @@ var grades, color_ramp
 						n += 1
 					}
 
-					return L.divIcon({ html: n, className: 'scenario-cluster', iconSize: L.point(40, 40) });
+					return L.divIcon({ html: n, className: 'scenario-cluster', iconSize: L.point(40, 40) })
 				},
 				clusterPane: 'markers'
 			})
@@ -1073,7 +1071,8 @@ var grades, color_ramp
 
 										plugin.item_select({
 											scenario: feature.properties,
-											marker: this
+											marker: this,
+											fit: false
 										})
 
 									})
@@ -1679,7 +1678,8 @@ var grades, color_ramp
 			var defaults = {
 				scenario: null,
 				marker: null,
-				event: null
+				event: null,
+				fit: true
 			}
 
 			if (typeof fn_options == 'string') {
@@ -1727,7 +1727,8 @@ var grades, color_ramp
 				// get the bounding layer
 
 				plugin.get_bounds({
-					scenario: settings.scenario
+					scenario: settings.scenario,
+					fit: settings.fit
 				})
 
 				plugin.do_breadcrumb('select')
@@ -1849,7 +1850,8 @@ var grades, color_ramp
       var plugin_settings = plugin.options
 
       var settings = $.extend(true, {
-				scenario: null
+				scenario: null,
+				fit: true
 			}, fn_options)
 
 			var map = plugin_settings.map.object
@@ -1884,13 +1886,17 @@ var grades, color_ramp
 							},
 							pane: 'bbox'
 						}).addTo(map)
+						
+						if (settings.fit == true) {
 
-						map.fitBounds(
-							plugin_settings.map.layers.bbox.getBounds(),
-							{
-								paddingTopLeft: [$(window).outerWidth() / 4, 0]
-							}
-						)
+							map.fitBounds(
+								plugin_settings.map.layers.bbox.getBounds(),
+								{
+									paddingTopLeft: [$(window).outerWidth() / 4, 0]
+								}
+							)
+							
+						}
 
 					}
 				})
