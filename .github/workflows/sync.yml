@@ -45,7 +45,7 @@ jobs:
           git remote add upstream ${{ secrets.UPSTREAM_GIT_REPO }}
           git fetch upstream --tags
 
-          LAST_SYNC_UPSTREAM_REF=$(git tag -l --format='%(contents)' last-sync-upstream-ref)
+          LAST_SYNC_UPSTREAM_REF=$(git tag -l --format='%(contents)' last-sync-upstream-ref | head -1)
           if [[ -z $LAST_SYNC_UPSTREAM_REF ]]; then
             echo 'ERROR: `last-sync-upstream-ref` tag not found. Please create it manually.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1
