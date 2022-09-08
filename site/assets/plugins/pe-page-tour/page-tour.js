@@ -15,7 +15,7 @@
       default_open: true,
       open: false,
       current: 1,
-      debug: true,
+      debug: false,
 			cookie: {
 				name: 'pe-page-tour',
 				expires: 30
@@ -201,12 +201,6 @@
       //plugin_elements.content.html(plugin_settings.steps[0]['text']);
       
       // set position
-			
-			console.log({
-				my: plugin_settings.steps[0]['position']['my'],
-				at: plugin_settings.steps[0]['position']['at'],
-				of: $(plugin_settings.steps[0]['position']['of'])
-			})
       
       plugin_item.show().css('opacity', 0).position({
         my: plugin_settings.steps[0]['position']['my'],

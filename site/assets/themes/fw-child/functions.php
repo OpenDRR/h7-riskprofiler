@@ -1713,3 +1713,28 @@ function update_max_vals() {
 }
 
 // add_action ( 'wp_body_open', 'update_max_vals' );
+
+add_action ( 'fw_body_close', function() {
+	
+?>
+
+<div id="cookie-modal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header bg-light">
+				<h5 class="modal-title">Disclaimer</h5>
+			</div>
+			
+			<div class="modal-body">
+				Terms and conditions go here.
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Agree and continue</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php
+
+});

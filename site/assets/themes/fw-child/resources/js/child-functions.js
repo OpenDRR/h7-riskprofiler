@@ -120,12 +120,33 @@ var child_logging = true
 		// BOOTSTRAP
 		//
 
-		$('.accordion').on('hidden.bs.collapse', function (e) {
-
-			console.log(e)
-
-			console.log($(this))
-
+// 		$('.accordion').on('hidden.bs.collapse', function (e) {
+// 
+// 			console.log(e)
+// 
+// 			console.log($(this))
+// 
+// 		})
+		
+		// COOKIE MODAL
+		
+		// cookie debug: uncomment to reset
+		Cookies.remove('risk-profiler-terms')
+		
+		console.log('current cookie val: ', Cookies.get('risk-profiler-terms'))
+		
+		if (Cookies.get('risk-profiler-terms') != 'agree') {
+			
+			$('#cookie-modal').modal('show')
+			
+		}
+		
+		$('#cookie-modal').on('hide.bs.modal', function () {
+			
+			Cookies.set('risk-profiler-terms', 'agree', { expires: 1 })
+			
+			console.log('new cookie value: ', Cookies.get('risk-profiler-terms'))
+			
 		})
 
     if (child_logging == true) {

@@ -716,8 +716,8 @@ $form-validation-states: map-merge(
 $zindex-dropdown:                   1000 !default;
 $zindex-sticky:                     1020 !default;
 $zindex-fixed:                      1030 !default;
-$zindex-modal-backdrop:             1040 !default;
-$zindex-modal:                      1050 !default;
+$zindex-modal-backdrop:             1600;
+$zindex-modal:                      1650;
 $zindex-popover:                    1060 !default;
 $zindex-tooltip:                    1070 !default;
 
@@ -980,7 +980,7 @@ $modal-title-line-height:           $line-height-base !default;
 $modal-content-color:               null !default;
 $modal-content-bg:                  $white !default;
 $modal-content-border-color:        rgba($black, .2) !default;
-$modal-content-border-width:        $border-width !default;
+$modal-content-border-width:        0px;
 $modal-content-border-radius:       $border-radius-lg;
 $modal-content-inner-border-radius: subtract($modal-content-border-radius, $modal-content-border-width);
 $modal-content-box-shadow-xs:       0 .25rem .5rem rgba($black, .5) !default;
@@ -990,8 +990,8 @@ $modal-backdrop-bg:                 $black !default;
 $modal-backdrop-opacity:            .5 !default;
 $modal-header-border-color:         $border-color !default;
 $modal-footer-border-color:         $modal-header-border-color !default;
-$modal-header-border-width:         $modal-content-border-width !default;
-$modal-footer-border-width:         $modal-header-border-width !default;
+$modal-header-border-width:         0px;
+$modal-footer-border-width:         0px;
 $modal-header-padding-y:            1rem !default;
 $modal-header-padding-x:            1rem !default;
 $modal-header-padding:              $modal-header-padding-y $modal-header-padding-x !default; // Keep this for backwards compatibility

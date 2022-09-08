@@ -599,12 +599,10 @@ add_action ( 'acf/init', function() {
 add_action ( 'wp_enqueue_scripts', function() {
 	
 	wp_enqueue_script ( 'jquery-ui-core' );
-	
-	wp_enqueue_script ( 'page-tour-js-cookie', plugin_dir_url ( __FILE__ ) . 'vendor/js.cookie.min.js', null, '3.0.1', true );
 		
 	wp_enqueue_style ( 'page-tour', plugin_dir_url ( __FILE__ ) . 'page-tour.css', null, '1.0', 'all' );
 	
-	wp_enqueue_script ( 'page-tour', plugin_dir_url ( __FILE__ ) . 'page-tour.js', array ( 'jquery' ), '1.0', true );
+	wp_enqueue_script ( 'page-tour', plugin_dir_url ( __FILE__ ) . 'page-tour.js', array ( 'jquery', 'fw-cookie' ), '1.0', true );
 	
 }, 50 );
 
