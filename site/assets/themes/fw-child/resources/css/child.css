@@ -753,6 +753,8 @@ body.nav-open #header-secondary {
   align-items: center;
 }
 .app-page .app-breadcrumb .breadcrumb-item {
+  display: flex;
+  align-items: center;
   padding-right: 0.25rem;
 }
 .app-page .app-breadcrumb .breadcrumb-item:not(:first-child):before {

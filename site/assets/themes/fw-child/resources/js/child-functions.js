@@ -131,7 +131,7 @@ var child_logging = true
 		// COOKIE MODAL
 		
 		// cookie debug: uncomment to reset
-		Cookies.remove('risk-profiler-terms')
+		// Cookies.remove('risk-profiler-terms')
 		
 		console.log('current cookie val: ', Cookies.get('risk-profiler-terms'))
 		

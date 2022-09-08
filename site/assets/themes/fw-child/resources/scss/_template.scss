@@ -702,6 +702,8 @@ $app-transition: 0.25s;
 		}
 
 		.breadcrumb-item {
+			display: flex;
+			align-items: center;
 			padding-right: 0.25rem;
 
 			&:not(:first-child) {
