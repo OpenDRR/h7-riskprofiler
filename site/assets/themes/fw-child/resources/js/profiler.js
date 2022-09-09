@@ -367,13 +367,12 @@ const api_url = 'https://api.riskprofiler.ca'
 			}
 
 			if (settings.aggregation !== null) {
-
 				settings.url.aggregation = settings.aggregation.current.agg
-
 			}
 
-			proto_URL = pbf_url + '/' + settings.url.collection + '_' + settings.url.aggregation /*+ '_v' + settings.url.version */ + '/' + settings.url.projection + '/{z}/{x}/{y}.pbf'
+			proto_URL = pbf_url + '/' + settings.url.collection + '_' + settings.url.aggregation + '/' + settings.url.projection + '/{z}/{x}/{y}.pbf'
 
+			// console.log(settings.url)
 			// console.log('pbf url', proto_URL)
 
 			// load the tiles

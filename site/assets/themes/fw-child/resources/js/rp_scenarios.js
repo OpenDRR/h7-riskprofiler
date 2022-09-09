@@ -317,6 +317,11 @@ var grades, color_ramp
 						tooltips: false,
 						columns: [
 							{
+								code: 'PC',
+								name: 'Pre-Code',
+								value: [0]
+							},
+							{
 								code: 'LC',
 								name: 'Low Code',
 								value: [0]
@@ -329,11 +334,6 @@ var grades, color_ramp
 							{
 								code: 'HC',
 								name: 'High Code',
-								value: [0]
-							},
-							{
-								code: 'PC',
-								name: 'Pre-Code',
 								value: [0]
 							}
 						]
@@ -1071,8 +1071,7 @@ var grades, color_ramp
 
 										plugin.item_select({
 											scenario: feature.properties,
-											marker: this,
-											fit: false
+											marker: this
 										})
 
 									})
@@ -1196,7 +1195,7 @@ var grades, color_ramp
 						enabled: false,
 						text: plugin._get_table_title(request.name),
 						align: 'left',
-						y: -50
+						y: -100
 					},
 					xAxis: {
 						labels: {
@@ -1356,16 +1355,16 @@ var grades, color_ramp
 
           plugin_settings.aggregation.previous = plugin_settings.aggregation.current.agg
 
-					// plugin.prep_for_api({
-					// 	event: 'zoomend'
-					// })
-
 					plugin.get_layer({
 						event: 'zoomend'
 					})
 
 					plugin_settings.map.last_zoom = plugin_settings.map.current_zoom
 
+				} else if (plugin_settings.current_view == 'select') {
+					
+					// todo: adjust shakemap aggregation
+					
 				}
 
 			})
@@ -1401,13 +1400,26 @@ var grades, color_ramp
 
 				var this_scenario = JSON.parse($(this).attr('data-scenario'))
 
+				// cycle through the markers to find the one that matches this scenario
+				
 				plugin_settings.map.markers.resetStyle().eachLayer(function(layer) {
 
 					if (this_scenario.id == layer.feature.properties.id) {
+						
+						var fit_scenario = true
+						
+						// console.log('current zoom', plugin_settings.map.object.getZoom())
+						
+						if (plugin_settings.map.object.getZoom() >= 10) {
+							fit_scenario = false
+							
+							console.log('don\'t fit bounds because we\'re zoomed in')
+						}
 
 						plugin.item_select({
 							scenario: this_scenario,
-							marker: layer
+							marker: layer,
+							fit: fit_scenario
 						})
 
 					}
@@ -1704,9 +1716,9 @@ var grades, color_ramp
 
 			if (settings.scenario != null) {
 
+				// set the given scenario as the new global scenario object
+				
 				plugin_settings.scenario = settings.scenario
-
-				// console.log(plugin_settings.scenario)
 
 				// select the marker
 
@@ -1716,6 +1728,7 @@ var grades, color_ramp
 				})
 
 				// update the epicentre and display it
+				
 				plugin.set_epicenter()
 
 				// select the sidebar item
@@ -1865,39 +1878,109 @@ var grades, color_ramp
 				$('#spinner-progress').text('Loading scenario data')
 
 				plugin_settings.map.panes.bbox.style.display = ''
-
-				$.ajax({
-					url: 'https://geo-api.riskprofiler.ca/collections/opendrr_shakemap_scenario_extents/items/' + settings.scenario.key,
-					data: {
-						f: 'json'
+				
+				// recreate the get_tiles function to show the shakemap here instead of just the scenario extent
+				
+				if (map.hasLayer(plugin_settings.map.layers.bbox)) map.removeLayer(plugin_settings.map.layers.bbox)
+				
+				var bounds = L.latLngBounds(L.latLng(
+					plugin_settings.scenario.bounds.sw_lat,
+					plugin_settings.scenario.bounds.sw_lng
+				), L.latLng(
+					plugin_settings.scenario.bounds.ne_lat,
+					plugin_settings.scenario.bounds.ne_lng
+				))
+				
+				// set the indicator
+				
+				plugin.set_indicator({
+					key: 'sH_PGA', 
+					label: 'Peak Ground Acceleration, in units of g', 
+					retrofit: false, 
+					aggregation: { 
+						'1km': { rounding: 2, decimals: 2 }, 
+						'5km': { rounding: 2, decimals: 2 }, 
+						'10km': { rounding: 2, decimals: 2 }, 
+						'25km': { rounding: 2, decimals: 2 }, 
+						'50km': { rounding: 2, decimals: 2 }
+					}, 
+					legend: { 
+						prepend: '', 
+						append: '%g', 
+						values: { 
+							'5km': [ 0, 0.0017, 0.014, 0.039, 0.092, 0.18, 0.24, 0.65, 1.24 ], 
+							'1km': [ 0, 0.0017, 0.014, 0.039, 0.092, 0.18, 0.24, 0.65, 1.24 ]
+						}, 
+						'color': 'shake'
+					} 
+				})
+					
+				color_ramp = plugin_settings.legend.colors['shake']
+				
+				// find the aggregation settings for the current zoom value
+				
+				plugin_settings.aggregation.settings.shake.forEach(function (i) {
+				
+					if (map.getZoom() >= i.min && map.getZoom() <= i.max) {
+						if (plugin_settings.aggregation.current.agg != i.agg) {
+							plugin_settings.aggregation.current = i
+						}
+					}
+				
+				})
+				
+				// set tile vars
+				
+				var	aggregation = plugin_settings.aggregation.current,
+						feature_ID_key
+				
+				var tile_url = {
+					collection: 'dsra_' + plugin_settings.scenario.key.toLowerCase() + '_shakemap_hexgrid',
+					aggregation: aggregation.agg,
+					projection: 'EPSG_900913'
+				}
+				
+				// SHAKEMAP
+			
+				feature_ID_key = 'gridid_1'
+			
+				if (aggregation.agg == '5km') {
+					tile_url.collection = tile_url.collection.slice(0, -4) + 'bin'
+					feature_ID_key = 'gridid_5'
+				}
+				
+				plugin_settings.legend.grades = plugin_settings.indicator.legend.values[aggregation.agg]
+				
+				$(document).profiler('get_tiles', {
+					map: map,
+					url: tile_url,
+					indicator: plugin_settings.indicator,
+					aggregation: plugin_settings.aggregation,
+					tiles: plugin_settings.map.layers.bbox,
+					options: {
+						pane: 'bbox',
+						getFeatureId: function(feature) {
+							return feature.properties[feature_ID_key]
+						},
+						bounds: bounds,
+						vectorTileLayerStyles: plugin.choro_style(tile_url.collection + '_' + aggregation.agg, plugin_settings.indicator.key + '_max')
 					},
-					dataType: 'json',
-					success: function(bounds) {
-
-						// remove existing
-
-						if (map.hasLayer(plugin_settings.map.layers.bbox)) map.removeLayer(plugin_settings.map.layers.bbox)
-
-						plugin_settings.map.layers.bbox = L.geoJSON(bounds, {
-							style: {
-								fillColor: '#d90429',
-								fillOpacity: 0.2,
-								weight: 0
-							},
-							pane: 'bbox'
-						}).addTo(map)
-						
-						if (settings.fit == true) {
-
-							map.fitBounds(
-								plugin_settings.map.layers.bbox.getBounds(),
-								{
+					functions: {
+						add: function(e) {
+							
+							// set the tile var to the new layer that was created
+							plugin_settings.map.layers.bbox = e.target
+							
+							// fit bounds if necessary
+							if (settings.fit == true) {
+								
+								map.fitBounds(bounds, {
 									paddingTopLeft: [$(window).outerWidth() / 4, 0]
-								}
-							)
+								})
+								
+							}
 							
 						}
-
 					}
 				})
 
@@ -2201,11 +2284,12 @@ var grades, color_ramp
 
 				// SHAKEMAP
 
-				tile_url.collection += 'shakemap_hexbin'
+				tile_url.collection += 'shakemap_hexgrid'
 
 				feature_ID_key = 'gridid_1'
 
 				if (aggregation.agg == '5km') {
+					tile_url.collection = tile_url.collection.slice(0, -4) + 'bin'
 					feature_ID_key = 'gridid_5'
 				}
 
@@ -2297,6 +2381,10 @@ var grades, color_ramp
 
 						// set the tile var to the new layer that was created
 						plugin_settings.map.layers.tiles = e.target
+						
+						map.fitBounds(bounds, {
+							paddingTopLeft: [$(window).outerWidth() / 4, 0]
+						})
 
 						plugin_settings.map.legend.addTo(plugin_settings.map.object)
 
@@ -2396,16 +2484,21 @@ var grades, color_ramp
 			var plugin_settings = plugin.options
 
 			var layer_style = {},
-					fillColor
+					fillOpacity = 0.9
+					
+			if (plugin_settings.current_view != 'detail') {
+				fillOpacity = 0.75
+			}
 
 			layer_style[pbf_key] = function(properties) {
 
 				var rounded_val = plugin._round(properties[indicator_key], plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['rounding'])
 
+
 				return {
 					fill: true,
 					fillColor: plugin._choro_color(rounded_val),
-					fillOpacity: 0.9,
+					fillOpacity: fillOpacity,
 					color: '#000000',
 					opacity: 0.6,
 					weight: (indicator_key == 'sH_PGA_max') ? 0 : 0.2
@@ -2691,10 +2784,10 @@ var grades, color_ramp
 						data: JSON.stringify(request_data),
 						success: function(data) {
 
-							// if (request.field == 'E_BldgTypeG') {
-							// 	console.log('request', JSON.stringify(request_data))
-							// 	console.log('return', data)
-							// }
+							if (request.field == 'E_BldgDesLev') {
+								console.log('request', JSON.stringify(request_data))
+								console.log('return', data)
+							}
 
 							request.columns.forEach(function(column) {
 								column.value = [0]

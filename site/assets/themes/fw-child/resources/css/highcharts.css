@@ -1015,6 +1015,10 @@ g.highcharts-series, .highcharts-markers, .highcharts-point {
   fill: #ecf1f4;
 }
 
+.highcharts-legend-item > text {
+  font-weight: 400;
+}
+
 .highcharts-bg-0 {
   background-color: #7cb5ec;
 }
