@@ -133,7 +133,7 @@ var child_logging = true
 		// cookie debug: uncomment to reset
 		// Cookies.remove('risk-profiler-terms')
 		
-		console.log('current cookie val: ', Cookies.get('risk-profiler-terms'))
+		// console.log('current cookie val: ', Cookies.get('risk-profiler-terms'))
 		
 		if (Cookies.get('risk-profiler-terms') != 'agree') {
 			
@@ -145,7 +145,7 @@ var child_logging = true
 			
 			Cookies.set('risk-profiler-terms', 'agree', { expires: 1 })
 			
-			console.log('new cookie value: ', Cookies.get('risk-profiler-terms'))
+			// console.log('new cookie value: ', Cookies.get('risk-profiler-terms'))
 			
 		})
 

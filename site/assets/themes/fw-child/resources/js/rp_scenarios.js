@@ -2784,10 +2784,10 @@ var grades, color_ramp
 						data: JSON.stringify(request_data),
 						success: function(data) {
 
-							if (request.field == 'E_BldgDesLev') {
-								console.log('request', JSON.stringify(request_data))
-								console.log('return', data)
-							}
+							// if (request.field == 'E_BldgDesLev') {
+							// 	console.log('request', JSON.stringify(request_data))
+							// 	console.log('return', data)
+							// }
 
 							request.columns.forEach(function(column) {
 								column.value = [0]
