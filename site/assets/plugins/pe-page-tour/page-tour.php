@@ -72,7 +72,16 @@ add_action ( 'acf/init', function() {
 		// include the options group field
 		// before registering
 		
-		if ( get_field ( 'tour_ids', 'option' ) != '' ) {
+		// hack: try to grab the IDs with get_field,
+		// and if it's blank use get_option to grab the EN value
+		
+		$tour_IDs_field = get_field ( 'tour_ids', 'option' );
+		
+		if ( get_field ( 'tour_ids', 'option' ) == '' ) {
+			$tour_IDs_field = get_option ( 'options_tour_ids' );
+		}
+		
+		if ( $tour_IDs_field != '' ) {
 			
 			$tour_settings_args['fields'][] = array(
 				'key' => 'tour_settings_options',
@@ -388,9 +397,9 @@ add_action ( 'acf/init', function() {
 		// get the IDs that are set and register the
 		// 'tour' field to those objects
 		
-		if ( get_field ( 'tour_ids', 'option' ) != '' ) {
+		if ( $tour_IDs_field != '' ) {
 			
-			$tour_IDs = explode ( ',', get_field ( 'tour_ids', 'option' ) );
+			$tour_IDs = explode ( ',', $tour_IDs_field );
 			$tour_locations = array();
 			
 			foreach ( $tour_IDs as $id ) {
