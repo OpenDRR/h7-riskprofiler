@@ -73,5 +73,5 @@
 
 	?>
 >
-	<a href="<?php echo $GLOBALS['vars']['site_url']; ?>risks/#<?php echo get_field ( 'indicator_key', $item['id'] ); ?>" class="risk-var-link d-block p-2"><?php echo $item['title']; ?></a>
+	<a href="<?php echo $GLOBALS['vars']['site_url']; ?>risks/#<?php echo get_field ( 'indicator_key', $item['id'] ); ?>" class="risk-var-link d-block p-2"><span class="item-title"><?php echo $item['title']; ?></span><span class="item-description"><?php the_field ( 'description', $item['id'] ); ?></span></a>
 </div>

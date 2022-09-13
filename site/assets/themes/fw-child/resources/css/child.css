@@ -441,6 +441,17 @@ body.nav-open #header-secondary {
   color: #fff;
 }
 
+#psra-items .risk-var-link span {
+  display: block;
+}
+#psra-items .risk-var-link .item-title {
+  font-weight: 500;
+}
+#psra-items .risk-var-link .item-description {
+  font-size: 0.75rem;
+  color: #8d99ae;
+}
+
 @media (min-width: 768px) {
   .app-page {
     display: flex;

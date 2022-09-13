@@ -1245,7 +1245,7 @@ var z = 0
 
 			popup_markup += '<div class="risk-popup-details bg-light p-2">'
 
-				popup_markup += '<p>real: ' + properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit] + '</p>'
+				// popup_markup += '<p>real: ' + properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit] + '</p>'
 
 				popup_markup += '<span class="risk-detail-link btn btn-outline-primary" data-id="' + plugin_settings.aggregation.current.prop + '">View Details</span>'
 
