@@ -1074,11 +1074,20 @@ var z = 0
 								var current_agg = plugin_settings.aggregation.current.agg
 
 								var aggregation = plugin_settings.indicator.aggregation[current_agg]
-
+								
+								var this_val = plugin._format_figure(e.layer.properties[indicator_key])
+								
+								if (this_val.charAt(0) == '<') {
+									this_val = rp.less_than
+										+ ' '
+										+ this_val.substring(1)
+								}
+								
 								return plugin_settings.indicator.legend.prepend
-									+ plugin._round(e.layer.properties[indicator_key], aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
+									+ this_val
 									+ ' '
 									+ plugin_settings.indicator.legend.append
+									
 							})
 				        .setLatLng(e.latlng)
 				        .addTo(map)
@@ -1225,19 +1234,25 @@ var z = 0
 				popup_name += ' (' + properties.fsauid + ')'
 			}
 
-			var popup_markup = '<div class="popup-detail d-flex align-items-center">'
+			var popup_markup = '<div class="popup-detail p-2">'
 
-				popup_markup += '<h5 class="risk-popup-city flex-grow-1 mb-0 p-2">' + popup_name + '</h5>'
-
-				var this_val = properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit]
-
+				popup_markup += '<h5 class="risk-popup-city mb-1">' + popup_name + '</h5>'
+				
 				var current_agg = plugin_settings.aggregation.current.agg
-
+				
 				var aggregation = plugin_settings.indicator.aggregation[current_agg]
 
-				popup_markup += '<div class="risk-popup-rank border-left py-2 px-3 font-size-lg text-primary">'
+				var this_val = properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit]
+				
+				// if (this_val < 1) {
+				// 	this_val = plugin._format_figure(this_val)
+				// } else {
+				// 	this_val = plugin._round(this_val, aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
+				// }
+
+				popup_markup += '<div class="risk-popup-rank text-primary">'
 					+ plugin_settings.indicator.legend.prepend
-					+ plugin._round(this_val, aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
+					+ plugin._format_figure(properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit])
 					+ ' ' + plugin_settings.indicator.legend.append
 					+ '</div>'
 
@@ -1766,6 +1781,153 @@ var z = 0
 
 			return '$' + rounded_num
 
+		},
+		
+		_format_figure: function(num) {
+			
+			var plugin = this
+			var plugin_settings = plugin.options
+			
+			var rounded_num = num
+			
+			// console.log(plugin_settings.indicator)
+			
+			if (plugin_settings.indicator.key == 'eCr_Fatality') {
+				
+				if (num == 0) {
+					rounded_num = 0
+				} else {
+					console.log(1)
+					rounded_num = plugin._significant_figs(num)
+				}
+				
+			} else if (
+				plugin_settings.indicator.key.includes('eDtr') ||
+				plugin_settings.indicator.key.includes('eAALm')
+			) {
+				
+				// ratios
+				
+				if (num == 0) {
+					rounded_num = 0
+				} else {
+					rounded_num = plugin._significant_figs(num)
+				}
+					
+			} else if (plugin_settings.indicator.type == 'dollars') {
+				
+				// dollars
+				
+				if (num == 0) {
+					rounded_num = 0
+				} else if (num < 1000) {
+					rounded_num = '<1000'
+				} else {
+					rounded_num = plugin._significant_figs(num)
+				}
+		
+			} else {
+				
+				// standard formatting for injuries/damage
+				
+				if (num < 1) {
+					rounded_num = 0
+				} else if (num < 10) {
+					rounded_num = '<10'
+				} else {
+					rounded_num = plugin._significant_figs(num)
+				}
+				
+			}
+			
+			return rounded_num.toString()
+			
+		},
+		
+		_significant_figs: function(num) {
+			
+			var plugin = this
+			
+			var rounded_num = num
+			
+			if (num > 0 && num <= 0.01) {
+				
+				// 0.0X
+				
+				rounded_num = num.toPrecision(1)
+				
+			} else if (num > 0.01 && num < 1) {
+				
+				// 0.XX
+				
+				rounded_num = num.toPrecision(2)
+				
+			} else if (num < 1000) {
+				
+				// XX0
+				
+				rounded_num = (plugin._round(num, -1).toFixed(0) * 10)
+				
+			} else if (num < 10000) {
+				
+				// X.X thousand
+				
+				rounded_num = plugin._round(num, -3).toFixed(1).replace(/[.,]0$/, '') + ' thousand'
+				
+			} else if (num < 100000) {
+				
+				// XX thousand
+				
+				rounded_num = plugin._round(num, -3).toFixed(0) + ' thousand'
+				
+			} else if (num < 1000000) {
+				
+				// XX0 thousand
+				
+				rounded_num = (plugin._round(num, -4).toFixed(0) * 10) + ' thousand'
+				
+			} else if (num < 10000000) {
+				
+				// X.X million
+				
+				rounded_num = plugin._round(num, -6).toFixed(1).replace(/[.,]0$/, '') + ' million'
+				
+			} else if (num < 100000000) {
+				
+				// XX million
+				
+				rounded_num = plugin._round(num, -6).toFixed(0) + ' million'
+				
+			} else if (num < 1000000000) {
+				
+				// XX0 million
+				
+				rounded_num = (plugin._round(num, -7).toFixed(0) * 10) + ' million'
+				
+			} else if (num < 10000000000) {
+				
+				// X.X billion
+				
+				rounded_num = plugin._round(num, -9).toFixed(1).replace(/[.,]0$/, '') + ' billion'
+				
+			} else if (num < 100000000000) {
+				
+				// XX billion
+				
+				rounded_num = plugin._round(num, -9).toFixed(0) + ' billion'
+				
+			} else if (num < 1000000000000) {
+				
+				// XX0 billion
+				
+				rounded_num = (plugin._round(num, -10).toFixed(0) * 10) + ' billion'
+				
+			}
+			
+			console.log(num, rounded_num)
+			
+			return rounded_num
+			
 		}
 
   }

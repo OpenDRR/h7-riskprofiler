@@ -84,11 +84,18 @@ function child_theme_enqueue() {
 		'crumb_select_marker' => __( 'Select a marker to retrieve data', 'rp' ),
 		'crumb_scenario' => __( 'Scenario', 'rp' ),
 		'crumb_scenario_detail' => __( 'Scenario Detail', 'rp' ),
+		'less_than' => __ ( 'Less than', 'rp' )
 	);
 
 	wp_localize_script ( 'rp-scenarios', 'rp', $scenarios_translations );
 
 	wp_register_script ( 'rp-risks', $child_js_dir . 'rp_risks.js', array ( 'profiler', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
+	
+	$risks_translations = array (
+		'less_than' => __ ( 'Less than', 'rp' )
+	);
+	
+	wp_localize_script ( 'rp-risks', 'rp', $risks_translations );
 
   wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions' ), NULL, true );
 

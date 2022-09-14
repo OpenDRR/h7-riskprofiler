@@ -1210,9 +1210,6 @@ body.page-tour-open #tour-btn {
   background-color: #dee2e6;
 }
 
-.risk-popup {
-  color: #d90429;
-}
 .risk-popup .leaflet-popup-content {
   margin: 0;
 }
@@ -1221,6 +1218,9 @@ body.page-tour-open #tour-btn {
 }
 .risk-popup .risk-popup-city {
   font-size: 1.25rem;
+}
+.risk-popup .risk-popup-rank {
+  font-size: 1rem;
 }
 
 .map-search {

@@ -340,8 +340,6 @@
 }
 
 .risk-popup {
-	color: $primary;
-
 	.leaflet-popup-content {
 		margin: 0;
 
@@ -352,6 +350,10 @@
 
 	.risk-popup-city {
 		font-size: 1.25rem;
+	}
+	
+	.risk-popup-rank {
+		font-size: 1rem;
 	}
 }
 
