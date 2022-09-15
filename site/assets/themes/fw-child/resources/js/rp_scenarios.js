@@ -786,21 +786,21 @@ var grades, color_ramp
 						aggregation = indicator.aggregation,
 						current_agg = plugin_settings.aggregation.current.agg
 
-// 				if (indicator.type != 'dollars') {
-// 
-// 					switch (aggregation[current_agg]['rounding']) {
-// 						case -9 :
-// 							append = 'billion ' + append
-// 							break
-// 						case -6 :
-// 							append = 'million ' + append
-// 							break
-// 						case -3 :
-// 							append = 'thousand ' + append
-// 							break
-// 					}
-// 
-// 				}
+				if (indicator.type != 'dollars') {
+
+					switch (aggregation[current_agg]['rounding']) {
+						case -9 :
+							append = 'billion ' + append
+							break
+						case -6 :
+							append = 'million ' + append
+							break
+						case -3 :
+							append = 'thousand ' + append
+							break
+					}
+
+				}
 
 				legend_markup = '<h6>' + indicator.label + '</h6>'
 
@@ -815,7 +815,9 @@ var grades, color_ramp
 						})
 
 					if (indicator.type == 'dollars') {
-						this_val = plugin._format_figure(grades[i - 1])
+
+						this_val = plugin._round_scale(grades[i - 1])
+
 					}
 
 					var row_markup = '<div class="legend-item" data-toggle="tooltip" data-placement="top" style="background-color: '
@@ -827,12 +829,12 @@ var grades, color_ramp
 					if (grades[i]) {
 
 						var next_val = plugin._round(grades[i], aggregation[current_agg]['rounding']).toLocaleString(undefined, {
-							maximumFractionDigits: aggregation[current_agg]['decimals']
-						})
+								maximumFractionDigits: aggregation[current_agg]['decimals']
+							})
 
 						if (indicator.type == 'dollars') {
 
-							next_val = plugin._format_figure(grades[i])
+							next_val = plugin._round_scale(grades[i])
 
 						}
 
@@ -1165,35 +1167,15 @@ var grades, color_ramp
 							if (this.series.name != this.series.userOptions.custom.full_name) {
 								series_name = this.series.userOptions.custom.full_name + ' (' + this.series.name + ')'
 							}
-							
-							var tooltip_val
-							
-							// if (plugin._round_scale(this.y) == '<1000') {
-							if (plugin._format_figure(this.y).charAt(0) == '<') {
-								
-								tooltip_val = rp.less_than 
-									+ ' ' 
-									+ plugin_settings.indicator.legend.prepend 
-									+ plugin._format_figure(this.y).substring(1)
-									+ ' ' 
-									+ plugin_settings.indicator.legend.append
-									
-							} else {
-								
-								tooltip_val = plugin_settings.indicator.legend.prepend
-									+ plugin._format_figure(this.y) 
-									+ ' ' 
-									+ plugin_settings.indicator.legend.append
-									
-							}
 
-							return '<strong>' + series_name + ':</strong> ' + tooltip_val
-								
-								// old:
-								// this.y.toLocaleString(undefined, {
-								// 	maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['decimals']
-								// })
-								
+							return '<strong>' + series_name + ':</strong> '
+								+ plugin_settings.indicator.legend.prepend
+								+ this.y.toLocaleString(undefined, {
+									maximumFractionDigits: plugin_settings.indicator.aggregation[plugin_settings.aggregation.current.agg]['decimals']
+								})
+								+ ' '
+								+ plugin_settings.indicator.legend.append
+
 						}
 					},
 					chart: {
@@ -1370,7 +1352,7 @@ var grades, color_ramp
 				if (plugin_settings.current_view == 'detail') {
 
 					plugin_settings.map.current_zoom = e.target.getZoom()
-					
+
           plugin_settings.aggregation.previous = plugin_settings.aggregation.current.agg
 
 					plugin.get_layer({
@@ -1395,10 +1377,6 @@ var grades, color_ramp
 					$('body').find('.app-head-back').trigger('click')
 				}
 				
-			})
-			
-			$(document).on('overlay_show', function() {
-				$('#page-tour').page_tour('hide_tour')
 			})
 			
 			//
@@ -2258,9 +2236,7 @@ var grades, color_ramp
       var plugin_settings = plugin.options
 			var map = plugin_settings.map.object
 
-      var settings = $.extend(true, {
-				fit: false
-			}, fn_options)
+      var settings = $.extend(true, {}, fn_options)
 
 			// close popups
 
@@ -2406,12 +2382,9 @@ var grades, color_ramp
 						// set the tile var to the new layer that was created
 						plugin_settings.map.layers.tiles = e.target
 						
-						if (settings.fit == true) {
-							map.fitBounds(bounds, {
-								paddingTopLeft: [$(window).outerWidth() / 4, 0]
-							})
-							
-						}
+						map.fitBounds(bounds, {
+							paddingTopLeft: [$(window).outerWidth() / 4, 0]
+						})
 
 						plugin_settings.map.legend.addTo(plugin_settings.map.object)
 
@@ -2584,62 +2557,32 @@ var grades, color_ramp
 			var indicator = plugin_settings.indicator,
 					current_agg = plugin_settings.aggregation.current.agg,
 					aggregation = indicator.aggregation[current_agg]
-					
-			var popup_val,
-					rounded_val
 
-			if (indicator.key != 'sH_PGA') {
-				
-				// rounded_val = plugin._round_scale(properties[indicator_key])
-				
-				rounded_val = plugin._format_figure(properties[indicator_key])
-				
-				if (rounded_val.charAt(0) == '<') {
-					
-					popup_val = rp.less_than
-						+ ' '
-						+ indicator.legend.prepend
-						+ rounded_val.substring(1)
-						+ ' '
-						+ indicator.legend.append
-					
-				} else {
-					
-					popup_val = indicator.legend.prepend
-						+ rounded_val
-						+ ' '
-						+ indicator.legend.append
-					
-				}
-				
+			var rounded_val
+
+			if (indicator.type == 'dollars') {
+
+				rounded_val = plugin._round_scale(properties[indicator_key])
+
 			} else {
-				
+
 				rounded_val = plugin._round(properties[indicator_key], aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
-				
-				popup_val = indicator.legend.prepend
-					+ rounded_val
-					+ ' '
-					+ indicator.legend.append
-				
+
+				if (aggregation['rounding'] == -9) {
+					rounded_val += ' billion'
+				} else if (aggregation['rounding'] == -6) {
+					rounded_val += ' million'
+				}
+
 			}
-			
-			// if (indicator.type == 'dollars') {
 
-				// rounded_val = plugin._round_scale(properties[indicator_key])
-
-// 			} else {
-// 
-// 				rounded_val = plugin._round(properties[indicator_key], aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
-// 
-// 				if (aggregation['rounding'] == -9) {
-// 					rounded_val += ' billion'
-// 				} else if (aggregation['rounding'] == -6) {
-// 					rounded_val += ' million'
-// 				}
-// 
-// 			}
-
-			return '<p>' + popup_val + '</p>'
+			return '<p>'
+				+ indicator.legend.prepend
+				+ rounded_val
+				+ ' '
+				+ indicator.legend.append
+				+ '</p>'
+				// + '<p>Real value: ' + e.layer.properties[indicator_key] + '</p>'
 
 		},
 
@@ -2906,129 +2849,28 @@ var grades, color_ramp
 		_round: function(num, power) {
 			return num * Math.pow(10, power)
 		},
-		
-		_format_figure: function(num) {
-			
-			var plugin = this
-			var plugin_settings = plugin.options
-			
-			var rounded_num = num
-			
-			if (plugin_settings.indicator.key == 'sCt_DebrisTotal') {
-				
-				if (num == 0) {
-					rounded_num = 0
-				} else if (num < 100) {
-					rounded_num = '<100'
-				} else {
-					rounded_num = plugin._significant_figs(num)
-				}
-				
-			} else if (plugin_settings.indicator.type == 'dollars') {
-				
-				// dollars
-				
-				if (num == 0) {
-					rounded_num = 0
-				} else if (num < 1000) {
-					rounded_num = '<1000'
-				} else {
-					rounded_num = plugin._significant_figs(num)
-				}	
-		
-			} else if (
-				plugin_settings.indicator.type == 'death' || 
-				plugin_settings.indicator.type == 'damage'
-			) {
-				
-				// injuries/damage
-				
-				if (num < 1) {
-					rounded_num = 0
-				} else if (num < 10) {
-					rounded_num = '<10'
-				} else {
-					rounded_num = plugin._significant_figs(num)
-				}
-				
+
+		_round_scale: function(num) {
+
+			var plugin = this,
+					rounded_num
+
+			// round the number to the given power
+			// shorten to 2 decimal places
+			// remove decimal places if equal to .00
+
+			if (num >= 1000000000) {
+				rounded_num = plugin._round(num, -9).toFixed(2).replace(/[.,]00$/, '') + ' billion'
+			} else if (num >= 100000) {
+				rounded_num = plugin._round(num, -6).toFixed(2).replace(/[.,]00$/, '') + ' million'
+			} else {
+				rounded_num = num.toLocaleString('en-CA', {
+					maximumFractionDigits: 0
+				})
 			}
-			
-			return rounded_num.toString()
-			
-		},
-		
-		_significant_figs: function(num) {
-			
-			var plugin = this
-			
-			var rounded_num = num
-			
-			if (num < 1000) {
-				
-				// XX0
-				
-				rounded_num = (plugin._round(num, -1).toFixed(0) * 10)
-				
-			} else if (num < 10000) {
-				
-				// X.X thousand
-				
-				rounded_num = plugin._round(num, -3).toFixed(1).replace(/[.,]0$/, '') + ' thousand'
-				
-			} else if (num < 100000) {
-				
-				// XX thousand
-				
-				rounded_num = plugin._round(num, -3).toFixed(0) + ' thousand'
-				
-			} else if (num < 1000000) {
-				
-				// XX0 thousand
-				
-				rounded_num = (plugin._round(num, -4).toFixed(0) * 10) + ' thousand'
-				
-			} else if (num < 10000000) {
-				
-				// X.X million
-				
-				rounded_num = plugin._round(num, -6).toFixed(1).replace(/[.,]0$/, '') + ' million'
-				
-			} else if (num < 100000000) {
-				
-				// XX million
-				
-				rounded_num = plugin._round(num, -6).toFixed(0) + ' million'
-				
-			} else if (num < 1000000000) {
-				
-				// XX0 million
-				
-				rounded_num = (plugin._round(num, -7).toFixed(0) * 10) + ' million'
-				
-			} else if (num < 10000000000) {
-				
-				// X.X billion
-				
-				rounded_num = plugin._round(num, -9).toFixed(1).replace(/[.,]0$/, '') + ' billion'
-				
-			} else if (num < 100000000000) {
-				
-				// XX billion
-				
-				rounded_num = plugin._round(num, -9).toFixed(0) + ' billion'
-				
-			} else if (num < 1000000000000) {
-				
-				// XX0 billion
-				
-				rounded_num = (plugin._round(num, -10).toFixed(0) * 10) + ' billion'
-				
-			}
-			
-			// console.log(num, rounded_num)
-			
+
 			return rounded_num
-			
+
 		}
 
   }

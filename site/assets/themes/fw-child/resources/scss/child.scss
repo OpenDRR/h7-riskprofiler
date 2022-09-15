@@ -1,17 +1,11 @@
-//
-// REQUIRED INCLUDES
-//
+// recreate global.css using the child theme's custom bootstrap _variables.scss
 
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/functions";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/variables";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/mixins";
-@import 'variables';
-@import '../../../fw-parent/resources/scss/helpers/mixins';
-@import '../../../fw-parent/resources/scss/bootstrap/mixins';
+@import "global-reboot";
 
 //
 // MIXINS
 //
+
 
 
 //
@@ -179,23 +173,23 @@ h6 {
 }
 
 input.text-white::placeholder {
-  color: transparentize($white, 0.25);
+	color: transparentize($white, 0.25);
 }
 
 input.text-white::-webkit-input-placeholder {
-  color: transparentize($white, 0.25);
+	color: transparentize($white, 0.25);
 }
 
 input.text-white::-moz-placeholder {
-  color: transparentize($white, 0.25);
+	color: transparentize($white, 0.25);
 }
 
 input.text-white:-ms-input-placeholder {
-  color: transparentize($white, 0.25);
+	color: transparentize($white, 0.25);
 }
 
 input.text-white:-moz-placeholder {
-  color: transparentize($white, 0.25);
+	color: transparentize($white, 0.25);
 }
 
 .spinner-border {
@@ -232,8 +226,6 @@ body.spinner-on {
 //
 // CONTENT TYPES
 //
-
-
 
 //
 // TEMPLATE

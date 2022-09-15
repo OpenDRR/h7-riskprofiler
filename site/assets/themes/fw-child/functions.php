@@ -38,119 +38,116 @@ add_action ( 'wp', 'child_global_vars', 20 );
 function child_theme_enqueue() {
 	
   $theme_dir = get_bloginfo ( 'template_directory' ) . '/';
-  $bower_dir = $theme_dir . 'resources/bower_components/';
+  $vendor_dir = $theme_dir . 'resources/vendor/';
   $js_dir = $theme_dir . 'resources/js/';
 
   $child_theme_dir = get_stylesheet_directory_uri() . '/';
-  $child_bower_dir = $child_theme_dir . 'resources/bower_components/';
+  $child_vendor_dir = $child_theme_dir . 'resources/vendor/';
   $child_js_dir = $child_theme_dir . 'resources/js/';
 
   //
   // STYLES
   //
 	
+	// dequeue global CSS
+	
 	wp_dequeue_style ( 'global-styles' );
-
+	
+	wp_dequeue_style ( 'global-style' );
+	
 	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) ) {
-
+	
 		wp_enqueue_style ( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', null, '1.7.1', 'all' );
-
+	
 		wp_enqueue_style ( 'leaflet-cluster', $child_theme_dir . 'resources/vendor/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css', null, null, 'all' );
-
+	
 		wp_enqueue_style ( 'leaflet-cluster-default', $child_theme_dir . 'resources/vendor/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css', null, null, 'all' );
-
+	
 		wp_enqueue_style ( 'leaflet-pulse', $child_theme_dir . 'resources/vendor/leaflet-icon-pulse/dist/L.Icon.Pulse.css', null, null, 'all' );
-
+	
 		wp_enqueue_style ( 'highcharts', $child_theme_dir . 'resources/css/highcharts.css', null, null, 'all' );
-
-  }
-
-  wp_enqueue_style ( 'child-style', $child_theme_dir . 'style.css', array ( 'global-style' ), NULL, 'all' );
+	
+	}
+	
+	wp_enqueue_style ( 'child-style', $child_theme_dir . 'style.css', null, null, 'all' );
 
   //
   // SCRIPTS
   //
 
-	wp_register_script ( 'profiler', $child_js_dir . 'profiler.js', array ( 'leaflet' ), NULL, true );
-
+  wp_register_script ( 'profiler', $child_js_dir . 'profiler.js', array ( 'leaflet' ), NULL, true );
+	
 	wp_register_script ( 'rp-scenarios', $child_js_dir . 'rp_scenarios.js', array ( 'profiler', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
-
+	
 	$scenarios_translations = array (
-    'by' => __( 'by', 'rp' ),
+		'by' => __( 'by', 'rp' ),
 		'in' => __( 'in', 'rp' ),
-    'building_type' => __( 'Building Type', 'rp' ),
-    'design_level' => __( 'Design Level', 'rp' ),
-    'occupancy_class' => __( 'Occupancy Class', 'rp' ),
+		'building_type' => __( 'Building Type', 'rp' ),
+		'design_level' => __( 'Design Level', 'rp' ),
+		'occupancy_class' => __( 'Occupancy Class', 'rp' ),
 		'crumb_select_marker' => __( 'Select a marker to retrieve data', 'rp' ),
 		'crumb_scenario' => __( 'Scenario', 'rp' ),
 		'crumb_scenario_detail' => __( 'Scenario Detail', 'rp' ),
-		'less_than' => __ ( 'Less than', 'rp' )
 	);
-
+	
 	wp_localize_script ( 'rp-scenarios', 'rp', $scenarios_translations );
-
+	
 	wp_register_script ( 'rp-risks', $child_js_dir . 'rp_risks.js', array ( 'profiler', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
 	
-	$risks_translations = array (
-		'less_than' => __ ( 'Less than', 'rp' )
-	);
+	wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions' ), NULL, true );
 	
-	wp_localize_script ( 'rp-risks', 'rp', $risks_translations );
-
-  wp_register_script ( 'child-functions', $child_js_dir . 'child-functions.js', array ( 'jquery', 'global-functions' ), NULL, true );
-
-  // localize admin url
-
+	// localize admin url
+	
 	wp_localize_script ( 'child-functions', 'admin_ajax_data',
-    array (
+		array (
 			'url' => admin_url ( 'admin-ajax.php' )
 		)
 	);
 
   // VENDOR
-
-  wp_register_script ( 'togglebox', $child_theme_dir . 'resources/vendor/pe-togglebox/togglebox.js', array ( 'jquery' ), true );
+	
+	wp_register_script ( 'togglebox', $child_theme_dir . 'resources/vendor/pe-togglebox/togglebox.js', array ( 'jquery' ), true );
 
   wp_enqueue_script ( 'child-functions' );
 
   // PAGE CONDITIONALS
-
+	
 	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) ) {
-
+	
 		wp_enqueue_script ( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', null, '1.7.1', true );
-
+	
 		wp_enqueue_script ( 'leaflet-vector', 'https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js', array ( 'leaflet' ), null, true );
-
+	
 		wp_enqueue_script ( 'togglebox' );
-
+	
 		wp_enqueue_script ( 'highcharts', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/highcharts.js',  null, null, true );
-
+	
 		wp_enqueue_script ( 'highcharts-export', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/exporting.js',  null, null, true );
-
+	
 		wp_enqueue_script ( 'highcharts-export-data', $child_theme_dir . 'resources/vendor/Highcharts-9.3.3/code/modules/export-data.js',  null, null, true );
-
-  }
-
+	
+	}
+	
 	if ( is_page ( 'scenarios' ) ) {
-
+	
 		wp_enqueue_script ( 'leaflet-cluster', $child_theme_dir . 'resources/vendor/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js', array ( 'leaflet' ), '1.4.1', true );
-
+	
 		wp_enqueue_script ( 'leaflet-pulse', $child_theme_dir . 'resources/vendor/leaflet-icon-pulse/dist/L.Icon.Pulse.js', array ( 'leaflet' ), '1.4.1', true );
-
+	
 		wp_enqueue_script ( 'leaflet-heat', $child_theme_dir . 'resources/js/leaflet-heat.js', array ( 'leaflet' ), null, true );
-
+	
 		wp_enqueue_script ( 'spherical-mercator', $child_theme_dir . 'resources/js/sphericalmercator.js', array ( 'leaflet' ), null, true );
-
+	
 		wp_enqueue_script ( 'leaflet-geopackage', 'https://unpkg.com/@ngageoint/leaflet-geopackage@3.0.3/dist/leaflet-geopackage.min.js', array ( 'leaflet' ), null, true );
-
+	
 		wp_enqueue_script ( 'leaflet-vector', 'https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js', array ( 'leaflet' ), null, true );
-
+	
 		wp_enqueue_script ( 'rp-scenarios' );
-
-  } elseif ( is_page ( 'risks' ) ) {
-
+	
+	} elseif ( is_page ( 'risks' ) ) {
+	
 		wp_enqueue_script ( 'rp-risks' );
-
+	
 	}
 
 }
@@ -229,7 +226,7 @@ function add_favicon() {
 
 }
 
-add_action( 'wp_head', 'add_favicon' );
+add_action ( 'wp_head', 'add_favicon' );
 
 //
 // ADMIN STUFF
@@ -238,7 +235,7 @@ add_action( 'wp_head', 'add_favicon' );
 // DISABLE EDITOR
 
 function remove_default_editor() {
-  remove_post_type_support ( 'page', 'editor' );
+	remove_post_type_support ( 'page', 'editor' );
 }
 
 add_action ( 'init', 'remove_default_editor' );
@@ -246,7 +243,7 @@ add_action ( 'init', 'remove_default_editor' );
 // DISABLE COMMENTS
 
 add_action ( 'admin_menu', function() {
-  remove_menu_page ( 'edit-comments.php' );
+	remove_menu_page ( 'edit-comments.php' );
 } );
 
 add_action ( 'init', function() {
@@ -258,99 +255,10 @@ add_action ( 'init', function() {
 
 add_action ( 'wp_before_admin_bar_render', function() {
 
-  global $wp_admin_bar;
-  $wp_admin_bar->remove_menu ( 'comments' );
+	global $wp_admin_bar;
+	$wp_admin_bar->remove_menu ( 'comments' );
 
 } );
-
-//
-// WP AJAX
-//
-
-// function get_job_post() {
-//
-// 	$post = $_POST['id'];
-//
-// 	setup_postdata ( $post );
-//
-// 	include ( locate_template ( 'single-position.php' ) );
-//
-// 	wp_reset_postdata();
-//
-// 	die();
-//
-// }
-//
-// add_action ( 'wp_ajax_get_job_post', 'get_job_post' );
-// add_action ( 'wp_ajax_nopriv_get_job_post', 'get_job_post' );
-
-//
-// SCENARIO JSON
-// update scenarios.json whenever a post is created/updated
-//
-//
-// // function to create the JSON file
-//
-// function create_scenarios_json() {
-//
-// 	$scenarios = array();
-//
-// 	$scenario_query = new WP_Query ( array (
-// 		'post_type' => 'scenario',
-// 		'posts_per_page' => -1
-// 	));
-//
-// 	while ( $scenario_query->have_posts() ) {
-// 		$scenario_query->the_post();
-//
-// 		$scenarios[] = array (
-// 			'id' => get_the_ID(),
-// 			'title' => get_the_title(),
-// 			'description' => get_field ( 'scenario_description' ),
-// 			'magnitude' => get_field ( 'scenario_magnitude' ),
-// 			'key' => get_field ( 'scenario_key' ),
-// 			'coords' => get_field ( 'scenario_coords' ),
-// 			'deaths' => get_field ( 'scenario_deaths' ),
-// 			'damage' => get_field ( 'scenario_damage' ),
-// 			'dollars' => get_field ( 'scenario_dollars' )
-// 		);
-//
-// 	}
-//
-// 	// wp_reset_postdata();
-//
-// 	// open the file
-//
-// 	$path = locate_template ( 'resources/json/scenarios.json' );
-// 	$fp = fopen ( $path, 'w' );
-//
-// 	if ( !$fp ) {
-// 		echo 'error';
-// 	}
-//
-// 	// write
-// 	fwrite ( $fp, json_encode ( $scenarios, JSON_PRETTY_PRINT ) );
-//
-// 	// close
-// 	fclose ( $fp );
-//
-// }
-//
-// // create_scenarios_json();
-//
-// // UPDATE ON EDIT
-//
-// function scenario_json ( $post_id, $post, $update ) {
-//
-// 	echo 'json';
-//
-// }
-//
-// // add_action ( 'save_post_scenario', 'scenario_json' );
-
-//
-// ALTER SCENARIO QUERY
-//
 
 add_action ( 'pre_get_posts', 'alter_query' );
 
@@ -384,10 +292,10 @@ function alter_query($query) {
 //
 
 function add_acf_columns ( $columns ) {
-  return array_merge ( $columns, array (
+	return array_merge ( $columns, array (
 		'indicator_key' => __ ( 'Key' ),
 		'indicator_type' => __ ( 'Type' )
-  ) );
+	) );
 }
 
 add_filter ( 'manage_indicator_posts_columns', 'add_acf_columns' );
