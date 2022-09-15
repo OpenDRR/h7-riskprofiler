@@ -20153,6 +20153,17 @@ body.nav-open #header-secondary {
   color: #fff;
 }
 
+#psra-items .risk-var-link span {
+  display: block;
+}
+#psra-items .risk-var-link .item-title {
+  font-weight: 500;
+}
+#psra-items .risk-var-link .item-description {
+  font-size: 0.75rem;
+  color: #8d99ae;
+}
+
 @media (min-width: 768px) {
   .app-page {
     display: flex;
@@ -20911,9 +20922,6 @@ body.page-tour-open #tour-btn {
   background-color: #dee2e6;
 }
 
-.risk-popup {
-  color: #d90429;
-}
 .risk-popup .leaflet-popup-content {
   margin: 0;
 }
@@ -20922,6 +20930,9 @@ body.page-tour-open #tour-btn {
 }
 .risk-popup .risk-popup-city {
   font-size: 1.25rem;
+}
+.risk-popup .risk-popup-rank {
+  font-size: 1rem;
 }
 
 .map-search {

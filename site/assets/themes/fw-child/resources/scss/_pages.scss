@@ -96,10 +96,10 @@
 		* {
 			outline: none;
 			user-select: none;
-	    -webkit-user-select: none;
-	    -moz-user-select: none;
-	    -khtml-user-select: none;
-	    -ms-user-select: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-khtml-user-select: none;
+			-ms-user-select: none;
 		}
 
 		.carousel-pagination {
@@ -292,7 +292,7 @@
 	}
 
 	.highcharts-yaxis .highcharts-axis-line {
-	  stroke-width: 1;
+		stroke-width: 1;
 	}
 
 	.highcharts-color-0 {
@@ -340,8 +340,6 @@
 }
 
 .risk-popup {
-	color: $primary;
-
 	.leaflet-popup-content {
 		margin: 0;
 
@@ -352,6 +350,10 @@
 
 	.risk-popup-city {
 		font-size: 1.25rem;
+	}
+	
+	.risk-popup-rank {
+		font-size: 1rem;
 	}
 }
 
