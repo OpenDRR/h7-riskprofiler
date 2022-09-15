@@ -249,8 +249,6 @@ const api_url = 'https://api.riskprofiler.ca'
 						settings.complete()
 					}
 
-
-
         }
 			})
 
@@ -266,9 +264,9 @@ const api_url = 'https://api.riskprofiler.ca'
 				order: null
 			}, fn_options)
 
-			console.log($('body').find('.sidebar-item:visible'))
+			console.log($('body').find('.sidebar-item'))
 
-			var result = $('body').find('.sidebar-item[data-' + settings.key + ']:visible').sort(function (a, b) {
+			var result = $('body').find('.sidebar-item[data-' + settings.key + ']').sort(function (a, b) {
 
 				var item = $(a).attr('data-' + settings.key)
 				var compare = $(b).attr('data-' + settings.key)
@@ -292,7 +290,7 @@ const api_url = 'https://api.riskprofiler.ca'
 
 			$('body').find('.sidebar-items').html(result)
 
-			// console.log('sort', settings.key, settings.order)
+			console.log('sort', settings.key, settings.order)
 
 		},
 

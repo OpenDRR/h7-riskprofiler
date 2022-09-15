@@ -1116,6 +1116,41 @@ var grades, color_ramp
 					$('#spinner-progress').text('')
 				}
 			})
+			
+			$('body').on('input', '#control-search-input', function() {
+			
+				var search_val = $(this).val().toUpperCase(),
+						results
+			
+				if (search_val != '') {
+			
+					$('.sidebar-item-title').each(function() {
+			
+						// console.log($(this).text().toUpperCase(), search_val, $(this).text().toUpperCase().indexOf(search_val))
+			
+						if ($(this).text().toUpperCase().indexOf(search_val) === -1) {
+			
+							$(this).closest('.sidebar-item').hide()
+			
+						} else {
+			
+							$(this).closest('.sidebar-item').show()
+			
+						}
+			
+					})
+			
+					// results = $('.sidebar-item-header:contains("' + search_val + '")')
+					//
+					// console.log(results)
+			
+				} else {
+			
+					$('body').find('.sidebar-item').show()
+			
+				}
+			
+			})
 
 			//
 			// INITIALIZE CHARTS
