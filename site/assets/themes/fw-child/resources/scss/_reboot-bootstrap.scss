@@ -1,11 +1,4 @@
 //
-// GLOBAL VARIABLES
-//
-
-$all-grid-breakpoints: 'sm', 'md', 'lg', 'xl';
-$all-grid-breakpoint-sizes: 576, 768, 992, 1200;
-
-//
 // BOOTSTRAP
 //
 
@@ -49,73 +42,4 @@ $all-grid-breakpoint-sizes: 576, 768, 992, 1200;
 @import "../../../fw-parent/resources/vendor/bootstrap/scss/utilities";
 @import "../../../fw-parent/resources/vendor/bootstrap/scss/print";
 
-
 @import '../../../fw-parent/resources/scss/bootstrap/extras';
-
-//
-// HELPERS
-//
-
-@import '../../../fw-parent/resources/scss/helpers/mixins';
-@import '../../../fw-parent/resources/scss/helpers/tags';
-
-// classes
-
-$full-height-height: 100vh !default;
-
-$bg-z-index: 1 !default;
-
-@import '../../../fw-parent/resources/scss/helpers/classes';
-
-//
-// TEMPLATE
-//
-
-// HEADER
-// template/_header.scss
-
-$alert-height: auto !default;
-$alert-bg: $danger !default;
-$alert-text-color: $white !default;
-$alert-link-color: $alert-text-color !default;
-$alert-close-color: $alert-link-color !default;
-$alert-z-index: 1030 !default;
-
-@import '../../../fw-parent/resources/scss/template/header';
-
-//
-// STRUCTURE
-//
-
-$section-bg-alt: $white;
-
-// containers
-
-$container-max-width: 1200px !default;
-
-@import '../../../fw-parent/resources/scss/structure';
-
-//
-// BLOCKS
-//
-
-@import '../../../fw-parent/resources/scss/blocks/animation';
-@import '../../../fw-parent/resources/scss/blocks/menu';
-@import '../../../fw-parent/resources/scss/blocks/heading';
-@import '../../../fw-parent/resources/scss/blocks/text';
-@import '../../../fw-parent/resources/scss/blocks/image';
-@import '../../../fw-parent/resources/scss/blocks/video';
-@import '../../../fw-parent/resources/scss/blocks/jumbotron';
-@import '../../../fw-parent/resources/scss/blocks/carousel';
-@import '../../../fw-parent/resources/scss/blocks/big-list';
-@import '../../../fw-parent/resources/scss/blocks/query';
-@import '../../../fw-parent/resources/scss/blocks/post-grid';
-@import '../../../fw-parent/resources/scss/blocks/post-carousel';
-@import '../../../fw-parent/resources/scss/blocks/terms';
-@import '../../../fw-parent/resources/scss/blocks/tabs';
-
-//
-// VENDOR
-//
-
-@import '../../../fw-parent/resources/scss/vendor';

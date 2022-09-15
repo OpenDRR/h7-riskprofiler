@@ -1,6 +1,24 @@
-// recreate global.css using the child theme's custom bootstrap _variables.scss
+@import '../../../fw-parent/resources/scss/variables-global';
 
-@import "global-reboot";
+//
+// REBOOT
+//
+
+// use child theme's _variables.scss to recompile bootstrap
+
+@import 'reboot-bootstrap';
+
+$section-bg-alt: $white;
+
+// override fw variables
+
+$overlay-close-color: $primary;
+$overlay-close-top: 150px;
+$overlay-close-right: 2rem;
+
+// use these variables to recompile fw
+
+@import 'reboot-fw';
 
 //
 // MIXINS

@@ -1166,22 +1166,23 @@ var grades, color_ramp
 								series_name = this.series.userOptions.custom.full_name + ' (' + this.series.name + ')'
 							}
 							
-							var tooltip_val
+							var this_val = plugin._format_figure(this.y),
+									tooltip_val
 							
 							// if (plugin._round_scale(this.y) == '<1000') {
-							if (plugin._format_figure(this.y).charAt(0) == '<') {
+							if (this_val.charAt(0) == '<') {
 								
 								tooltip_val = rp.less_than 
 									+ ' ' 
 									+ plugin_settings.indicator.legend.prepend 
-									+ plugin._format_figure(this.y).substring(1)
+									+ this_val.substring(1)
 									+ ' ' 
 									+ plugin_settings.indicator.legend.append
 									
 							} else {
 								
 								tooltip_val = plugin_settings.indicator.legend.prepend
-									+ plugin._format_figure(this.y) 
+									+ this_val
 									+ ' ' 
 									+ plugin_settings.indicator.legend.append
 									

@@ -1,0 +1,56 @@
+//
+// GLOBAL VARIABLES
+//
+
+@import "../../../fw-parent/resources/scss/variables-fw";
+
+//
+// HELPERS
+//
+
+@import '../../../fw-parent/resources/scss/helpers/mixins';
+@import '../../../fw-parent/resources/scss/helpers/tags';
+
+// classes
+
+@import '../../../fw-parent/resources/scss/helpers/classes';
+
+//
+// TEMPLATE
+//
+
+// HEADER
+// template/_header.scss
+
+@import '../../../fw-parent/resources/scss/template/header';
+
+//
+// STRUCTURE
+//
+
+@import '../../../fw-parent/resources/scss/structure';
+
+//
+// BLOCKS
+//
+
+@import '../../../fw-parent/resources/scss/blocks/animation';
+@import '../../../fw-parent/resources/scss/blocks/menu';
+@import '../../../fw-parent/resources/scss/blocks/heading';
+@import '../../../fw-parent/resources/scss/blocks/text';
+@import '../../../fw-parent/resources/scss/blocks/image';
+@import '../../../fw-parent/resources/scss/blocks/video';
+@import '../../../fw-parent/resources/scss/blocks/jumbotron';
+@import '../../../fw-parent/resources/scss/blocks/carousel';
+@import '../../../fw-parent/resources/scss/blocks/big-list';
+@import '../../../fw-parent/resources/scss/blocks/query';
+@import '../../../fw-parent/resources/scss/blocks/post-grid';
+@import '../../../fw-parent/resources/scss/blocks/post-carousel';
+@import '../../../fw-parent/resources/scss/blocks/terms';
+@import '../../../fw-parent/resources/scss/blocks/tabs';
+
+//
+// VENDOR
+//
+
+@import '../../../fw-parent/resources/scss/vendor';
