@@ -134,7 +134,7 @@ define( 'WP_CONTENT_DIR', ABSPATH . WP_CONTENT_FOLDERNAME );
 //     define( 'WP_SITEURL', $protocol . '://' . $_SERVER['HTTP_HOST'] . '/site/' );
 // would result in WP_SITEURL being 'http:///site/'
 // which causes Simply Static export to fail.
-define( 'WP_SITEURL', $protocol . '://riskprofiler.demo/site' );
+define( 'WP_SITEURL', $protocol . '://' . getenv_docker( 'WORDPRESS_HOST', 'riskprofiler2.demo' ) . '/site' );
 define( 'WP_CONTENT_URL', WP_SITEURL . '/' . WP_CONTENT_FOLDERNAME );
 
 define( 'WP_DISABLE_FATAL_ERROR_HANDLER', true );
