@@ -125,9 +125,17 @@ if ($configExtra = getenv_docker('WORDPRESS_CONFIG_EXTRA', '')) {
 
 /* Customization for RiskProfiler.ca based on HabitatSeven settings */
 
+$protocol = 'http';
+if ( stripos ( $_SERVER['SERVER_PROTOCOL'], 'https' ) === 0 ) $protocol .= 's';
+
 define( 'WP_CONTENT_FOLDERNAME', 'assets' );
 define( 'WP_CONTENT_DIR', ABSPATH . WP_CONTENT_FOLDERNAME );
-define( 'WP_CONTENT_URL', get_option( 'siteurl' ) . '/' . WP_CONTENT_FOLDERNAME );
+// When called from WP-CLI, $_SERVER['HTTP_HOST'] is undefined, thus
+//     define( 'WP_SITEURL', $protocol . '://' . $_SERVER['HTTP_HOST'] . '/site/' );
+// would result in WP_SITEURL being 'http:///site/'
+// which causes Simply Static export to fail.
+define( 'WP_SITEURL', $protocol . '://riskprofiler.demo/site' );
+define( 'WP_CONTENT_URL', WP_SITEURL . '/' . WP_CONTENT_FOLDERNAME );
 
 define( 'WP_DISABLE_FATAL_ERROR_HANDLER', true );
 
