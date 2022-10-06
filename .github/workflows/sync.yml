@@ -50,14 +50,16 @@ jobs:
             echo 'ERROR: `last-sync-upstream-ref` tag not found. Please create it manually.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
-          UPSTREAM_MAIN_REF="$(git rev-parse --verify upstream/main)"
-          if [[ "$LAST_SYNC_UPSTREAM_REF" == "$UPSTREAM_MAIN_REF" ]]; then
+          #UPSTREAM_BRANCH=upstream/main
+          UPSTREAM_BRANCH=upstream/fw-v2
+          LATEST_UPSTREAM_REV=$(git rev-parse --verify $UPSTREAM_BRANCH)
+          if [[ "$LAST_SYNC_UPSTREAM_REF" == "$LATEST_UPSTREAM_REV" ]]; then
             echo 'INFO: No change since last sync, skipping.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
-          git cherry-pick "$LAST_SYNC_UPSTREAM_REF"..upstream/main |& tee -a "$GITHUB_STEP_SUMMARY"
-          git tag -a -f -m "$UPSTREAM_MAIN_REF" last-sync-upstream-ref
+          git cherry-pick "$LAST_SYNC_UPSTREAM_REF"..$UPSTREAM_BRANCH |& tee -a "$GITHUB_STEP_SUMMARY"
+          git tag -a -f -m "$LATEST_UPSTREAM_REV" last-sync-upstream-ref
 
           git push origin --all
           git push origin -f last-sync-upstream-ref
