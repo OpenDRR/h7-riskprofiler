@@ -1,45 +1,7 @@
-//
-// BOOTSTRAP
-//
+// use child theme variables.scss to recompile global.scss
 
 @import "../../../fw-parent/resources/vendor/bootstrap/scss/functions";
+@import 'variables';
 
-@import "variables";
-
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/mixins";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/root";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/reboot";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/type";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/images";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/code";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/grid";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/tables";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/forms";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/buttons";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/transitions";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/dropdown";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/button-group";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/input-group";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/custom-forms";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/nav";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/navbar";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/card";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/breadcrumb";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/pagination";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/badge";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/jumbotron";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/alert";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/progress";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/media";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/list-group";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/close";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/toasts";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/modal";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/tooltip";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/popover";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/carousel";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/spinners";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/utilities";
-@import "../../../fw-parent/resources/vendor/bootstrap/scss/print";
-
+@import '../../../fw-parent/resources/scss/bootstrap/setup';
 @import '../../../fw-parent/resources/scss/bootstrap/extras';
