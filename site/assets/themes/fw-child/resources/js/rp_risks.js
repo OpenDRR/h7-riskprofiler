@@ -1360,6 +1360,8 @@ var z = 0
 					}
 
 					// populate indicator values
+					
+					console.log(plugin_settings.community)
 
 					detail_content.find('[data-indicator').each(function() {
 
@@ -1373,18 +1375,34 @@ var z = 0
 						}
 
 						var this_val
-
-						if (plugin_settings.community[this_key + '_' + plugin_settings.api.retrofit]) {
+						
+						if (typeof plugin_settings.community[this_key + '_' + plugin_settings.api.retrofit] != 'undefined') {
+							
 							this_val = plugin_settings.community[this_key + '_' + plugin_settings.api.retrofit]
-						} else {
+							console.log(1, this_val)
+							
+						} else if (typeof plugin_settings.community[this_key] != 'undefined') {
+							
 							this_val = plugin_settings.community[this_key]
+							console.log(2, this_val)
+							
+						} else {
+							
+							// indicator not found
+							
+							$(this).hide()
+							
 						}
+						
+						// use new formatting function
+						
+						this_val = plugin._format_figure(this_val)
 
-						if (typeof $(this).attr('data-decimals') != 'undefined') {
-
-							this_val = this_val.toFixed(parseInt($(this).attr('data-decimals')))
-
-						}
+						// if (typeof $(this).attr('data-decimals') != 'undefined') {
+						// 	
+						// 	this_val = this_val.toFixed(parseInt($(this).attr('data-decimals')))
+						// 	
+						// }
 
 						if (typeof $(this).attr('data-prepend') != 'undefined') {
 
@@ -1804,12 +1822,16 @@ var z = 0
 			
 			// console.log(plugin_settings.indicator)
 			
+			if (typeof num == 'undefined') {
+				num = 0
+			}
+			
 			if (plugin_settings.indicator.key == 'eCr_Fatality') {
 				
 				if (num == 0) {
 					rounded_num = 0
 				} else {
-					console.log(1)
+					console.log(1, num)
 					rounded_num = plugin._significant_figs(num)
 				}
 				
