@@ -901,7 +901,7 @@ var z = 0
 				event: null
 			}, fn_options)
 
-			console.log('prep', plugin_settings.indicator.key)
+			// console.log('prep', plugin_settings.indicator.key)
 
 			var fetch = false
 
@@ -1247,6 +1247,9 @@ var z = 0
 			}
 
 			var popup_markup = '<div class="popup-detail p-2">'
+			
+			
+				popup_markup += '<h6>' + plugin_settings.indicator.title + '</h6>'
 
 				popup_markup += '<h5 class="risk-popup-city mb-1">' + popup_name + '</h5>'
 				
@@ -1254,18 +1257,17 @@ var z = 0
 				
 				var aggregation = plugin_settings.indicator.aggregation[current_agg]
 
-				var this_val = properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit]
+				var this_val = plugin._format_figure(properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit])
 				
-				// if (this_val < 1) {
-				// 	this_val = plugin._format_figure(this_val)
-				// } else {
-				// 	this_val = plugin._round(this_val, aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
-				// }
+				if (this_val.charAt(0) == '<') {
+					this_val = rp.less_than + ' ' + this_val.substring(1)
+				}
 
-				popup_markup += '<div class="risk-popup-rank text-primary">'
+				popup_markup += '<div class="risk-popup-rank text-primary">' 
 					+ plugin_settings.indicator.legend.prepend
-					+ plugin._format_figure(properties[plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit])
-					+ ' ' + plugin_settings.indicator.legend.append
+					+ this_val
+					+ ' '
+					+ plugin_settings.indicator.legend.append
 					+ '</div>'
 
 			popup_markup += '</div>'
@@ -1361,8 +1363,6 @@ var z = 0
 
 					// populate indicator values
 					
-					console.log(plugin_settings.community)
-
 					detail_content.find('[data-indicator').each(function() {
 
 						var this_key = $(this).attr('data-indicator')
@@ -1831,7 +1831,6 @@ var z = 0
 				if (num == 0) {
 					rounded_num = 0
 				} else {
-					console.log(1, num)
 					rounded_num = plugin._significant_figs(num)
 				}
 				
