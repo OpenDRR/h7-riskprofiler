@@ -4,6 +4,7 @@
 
 .home {
 	#main-header {
+		position: fixed;
 		background-color: transparentize($white, 0.6);
 	}
 
@@ -39,10 +40,13 @@
 	}
 
 	#quick-links {
-		font-size: 1.25rem;
 		font-family: $headings-font-family;
 		font-weight: 500;
 
+		@include media-breakpoint-up(lg) {
+			font-size: 1.25rem;
+		}
+		
 		li {
 			margin-bottom: 0.5rem;
 		}
@@ -437,4 +441,41 @@
 		}
 	}
 
+}
+
+//
+// FAQ
+//
+
+.accordion-trigger {
+	margin-top: 1rem;
+	padding: 1rem 1rem 1rem 0.5rem;
+	border-bottom: 1px solid $border-color;
+	cursor: pointer;
+	
+	&:before {
+		content: '+';
+		color: $primary;
+		display: inline-block;
+		width: 1rem;
+		margin-right: 1rem;
+		transition: 0.25s;
+	}
+	
+	&:hover {
+		&:before {
+			margin-right: 1.25rem;
+		}
+	}
+	
+	&.open {
+		&:before {
+			content: '–';
+			margin-right: 1.25rem;
+		}
+	}
+}
+
+.accordion-content {
+	padding: 1rem 1rem 1rem 2.75rem;
 }

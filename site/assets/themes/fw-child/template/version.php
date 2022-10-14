@@ -1,8 +1,8 @@
 <p class="text-gray-400"><?php
 
-	_e ( 'Risk Profiler v', 'rp' );
+	_e ( 'RiskProfiler', 'rp' );
 
-	echo get_field ( 'version', 'option' );
+	echo ' v' . get_field ( 'version', 'option' );
 
 	echo '<span class="mx-1">•</span>';
 

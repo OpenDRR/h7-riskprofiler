@@ -56,7 +56,23 @@
 				<h6><?php _e ( 'Deaths', 'rp' ); ?></h6>
 				<p><?php
 
-					echo number_format_i18n ( get_field ( 'scenario_deaths' ), 0 );
+					$deaths = get_field ( 'scenario_deaths' );
+					
+					if ( $deaths < 1 ) {
+						
+						_e ( '0 people', 'rp' );
+						
+					} else if ( $deaths < 10 ) {
+						
+						printf ( __ ( 'Less than %s people', 'rp' ), 10 );
+						
+					} else {
+						
+						$deaths = significant_figs ( $deaths );
+						
+						printf ( __ ( '%s people', 'rp' ), $deaths );
+						
+					}
 
 				?></p>
 			</div>
@@ -64,23 +80,62 @@
 			<div>
 				<h6><?php _e ( 'Damage', 'rp' ); ?></h6>
 				<p><?php
+				
+					$damage = get_field ( 'scenario_damage' );
+					
+					if ( $damage == 0 ) {
+						
+						_e ( '0 buildings', 'rp' );
+						
+					} elseif ( $damage <= 1 ) {
+						
+						_e ( '1 or less', 'rp' );
+						echo ' ';
+						_e ( 'buildings', 'rp' );
+						
+					} else if ( $damage <= 10 ) {
+						
+						_e ( '10 buildings', 'rp' ); 
+						
+					} else if ( $damage <= 100 ) {
+						
+						echo number_format ( $damage * pow ( 10, -1 ), 0 ) * 10;
+						echo ' ';
+						_e ( 'buildings', 'rp' );
+						
+					} else {
+						
+						$damage = significant_figs ( $damage );
+						
+						printf ( __ ( '%s buildings', 'rp' ), $damage );
+						
+					}
 
-					echo number_format_i18n ( get_field ( 'scenario_damage' ), 0 );
-
-				?> <?php _e ( 'buildings', 'rp' ); ?></p>
+				?></p>
 			</div>
 
 			<div>
 				<h6><?php _e ( 'Dollars', 'rp' ); ?></h6>
-				<p>$<?php
+				<p><?php
 
 					$dollars = (int) get_field ( 'scenario_dollars' );
-
-					$dollars = $dollars * pow ( 10, -9 );
-
-					printf ( __ ( '%s billion', 'rp' ), number_format ( $dollars, 1 ) );
-
-					// echo number_format_i18n ( get_field ( 'scenario_dollars' ), 0 );
+					
+					if ($dollars == 0) {
+						
+						echo '$0 CAD';
+						
+					} elseif ($dollars < 1000) {
+						
+						_e ( 'Less than', 'rp' );
+						echo '$1000 CAD';
+						
+					} else {
+						
+						$dollars = significant_figs ( $dollars );
+						
+						echo '$' . $dollars;
+						
+					}
 
 				?></p>
 			</div>

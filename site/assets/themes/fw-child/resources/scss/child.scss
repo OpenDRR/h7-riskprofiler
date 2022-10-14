@@ -241,6 +241,33 @@ body.spinner-on {
 	}
 }
 
+.card.type-home-learnmore {
+	.card-body {
+		padding: 0;
+	}
+	
+	.card-title {
+		display: flex;
+		align-items: flex-end;
+		padding: 1rem;
+		margin-bottom: 0;
+		background: $gray-200;
+		min-height: 8rem;
+		transition: 0.25s;
+	}
+	
+	.card-text {
+		padding: 1rem;
+		font-size: 0.875rem;
+	}
+	
+	&:hover {
+		.card-title {
+			background-color: darken($gray-200, 5%);
+		}
+	}
+}
+
 //
 // CONTENT TYPES
 //

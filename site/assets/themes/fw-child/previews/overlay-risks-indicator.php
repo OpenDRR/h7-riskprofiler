@@ -55,6 +55,29 @@
 				}
 
 			}
+			
+			// if custom legend
+			
+			if ( get_field ( 'indicator_custom', $item['id'] ) == 1 ) {
+			
+				$new_legend = array (
+					'csd' => array(),
+					's' => array()
+				);
+			
+				foreach ( get_field ( 'indicator_scale', $item['id'] ) as $key => $group ) {
+			
+					foreach ( $group as $row ) {
+						$new_legend[$key][] = floatval($row['value']);
+					}
+					
+					$agg_fields[$key]['legend'] = $new_legend[$key];
+			
+				}
+				
+				// print_r($new_legend);
+			
+			}
 
 			echo json_encode ( $agg_fields );
 

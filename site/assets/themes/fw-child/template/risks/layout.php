@@ -50,7 +50,8 @@
 			$comm_query = get_posts ( array (
 				'post_type' => 'community',
 				'posts_per_page' => -1,
-				'suppress_filters' => false
+				'suppress_filters' => false,
+				'orderby' => 'rand'
 			) );
 
 			if ( $comm_query ) {

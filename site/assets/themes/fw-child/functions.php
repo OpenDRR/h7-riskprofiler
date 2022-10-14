@@ -88,6 +88,8 @@ function child_theme_enqueue() {
 		'crumb_select_marker' => __( 'Select a marker to retrieve data', 'rp' ),
 		'crumb_scenario' => __( 'Scenario', 'rp' ),
 		'crumb_scenario_detail' => __( 'Scenario Detail', 'rp' ),
+		'less_than' => __ ( 'Less than', 'rp' ),
+		'one_or_less' => __ ( '1 or less', 'rp' )
 	);
 	
 	wp_localize_script ( 'rp-scenarios', 'rp', $scenarios_translations );
@@ -95,7 +97,8 @@ function child_theme_enqueue() {
 	wp_register_script ( 'rp-risks', $child_js_dir . 'rp_risks.js', array ( 'profiler', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
 	
 	$risks_translations = array (
-		'less_than' => __ ( 'Less than', 'rp' )
+		'less_than' => __ ( 'Less than', 'rp' ),
+		'one_or_less' => __ ( '1 or less', 'rp' )
 	);
 	
 	wp_localize_script ( 'rp-risks', 'rp', $risks_translations );
@@ -1659,3 +1662,93 @@ add_action ( 'fw_body_close', function() {
 <?php
 
 });
+
+function round_pow ( $num, $power ) {
+	return $num * pow ( 10, $power );
+}
+
+function significant_figs ( $num ) {
+	
+	if ($num < 1000) {
+		
+		// XX0
+		
+		$rounded_num = number_format ( round_pow ( $num, -1), 0 ) * 10;
+		
+	} else if ($num < 10000) {
+		
+		// X.X thousand
+		
+		// $rounded_num = round($num, -3).toFixed(1).replace(/[.,]0$/, '') + ' thousand'
+		
+		$rounded_num = number_format ( round_pow ( $num, -3 ), 1 ) . ' thousand';
+		
+	} else if ($num < 100000) {
+		
+		// XX thousand
+		
+		// $rounded_num = round($num, -3).toFixed(0) + ' thousand'
+		
+		$rounded_num = number_format ( round_pow ( $num, -3 ), 0 ) . ' thousand';
+		
+	} else if ($num < 1000000) {
+		
+		// XX0 thousand
+		
+		// $rounded_num = (round($num, -4).toFixed(0) * 10) + ' thousand'
+		
+		$rounded_num = ( number_format ( round_pow ( $num, -4 ), 0 ) * 10 ) . ' thousand';
+		
+	} else if ($num < 10000000) {
+		
+		// X.X million
+		
+		// $rounded_num = round($num, -6).toFixed(1).replace(/[.,]0$/, '') + ' million'
+		
+		$rounded_num = number_format ( round_pow ( $num, -6 ), 1 ) . ' million';
+		
+	} else if ($num < 100000000) {
+		
+		// XX million
+		
+		// $rounded_num = round($num, -6).toFixed(0) + ' million'
+		
+		$rounded_num = number_format ( round_pow ( $num, -6 ), 0 ) . ' million';
+		
+	} else if ($num < 1000000000) {
+		
+		// XX0 million
+		
+		// $rounded_num = (round($num, -7).toFixed(0) * 10) + ' million'
+		
+		$rounded_num = ( number_format ( round_pow ( $num, -7 ), 1 ) * 10 ) . ' million';
+		
+	} else if ($num < 10000000000) {
+		
+		// X.X billion
+		
+		// $rounded_num = round($num, -9).toFixed(1).replace(/[.,]0$/, '') + ' billion'
+		
+		$rounded_num = number_format ( round_pow ( $num, -9 ), 1 ) . ' billion';
+		
+	} else if ($num < 100000000000) {
+		
+		// XX billion
+		
+		// $rounded_num = round($num, -9).toFixed(0) + ' billion'
+		
+		$rounded_num = number_format ( round_pow ( $num, -9 ), 0 ) . ' billion';
+		
+	} else if ($num < 1000000000000) {
+		
+		// XX0 billion
+		
+		// $rounded_num = (round($num, -10).toFixed(0) * 10) + ' billion'
+		
+		$rounded_num = ( number_format ( round_pow ( $num, -10 ), 1 ) * 10 ) . ' billion';
+		
+	}
+	
+	return $rounded_num;
+	
+}

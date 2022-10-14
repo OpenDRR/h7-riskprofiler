@@ -11,9 +11,20 @@
 	
 	.page-tour-content {
 		font-size: 0.875rem;
+		padding-left: 0.625rem !important;
+		padding-right: 0.625rem !important;
 	}
 	
 	.page-tour-dontshow {
 		font-size: 0.625rem;
+	}
+	
+	.page-tour-next {
+		display: flex;
+		align-items: center;
+		
+		i {
+			margin-left: 0.25rem;
+		}
 	}
 }
