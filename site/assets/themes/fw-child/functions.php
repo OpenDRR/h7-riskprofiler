@@ -1646,14 +1646,29 @@ add_action ( 'fw_body_close', function() {
 	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 		<div class="modal-content">
 			<div class="modal-header bg-light">
-				<h5 class="modal-title">Disclaimer</h5>
+				<h5 class="modal-title"><?php _e ( 'Disclaimer', 'rp' ); ?></h5>
 			</div>
 			
 			<div class="modal-body">
-				Terms and conditions go here.
+				<?php 
+				
+					$disclaimer_post = get_page_by_title ( 'Review the Disclaimer', OBJECT );
+					
+					foreach ( get_field ( 'elements', $disclaimer_post->ID ) as $element ) {
+						
+						if ( $element['acf_fc_layout'] == 'block_content' ) {
+							
+							echo $element['blocks'][0]['body'];
+							break;
+							
+						}
+					}
+					
+				?>
 			</div>
+			
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal">Agree and continue</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal"><?php _e ( 'Agree and continue', 'rp' ); ?></button>
 			</div>
 		</div>
 	</div>
