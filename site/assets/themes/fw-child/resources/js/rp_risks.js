@@ -1995,7 +1995,15 @@ var color_ramp = [
 			
 			var rounded_num = num
 			
-			if (num < 0.01 && !num.toString().includes('e-')) {
+			if (num.toString().includes('e-')) {
+				
+				var exponent = num.toString().split('e-'),
+						zeros = parseInt(exponent[1]) - 1,
+						digit = exponent[0].split('.')[0]
+				
+				rounded_num = '0.' + '0'.repeat(zeros) + digit
+				
+			} else if (num < 0.01) {
 				
 				// 0.0[...]X
 				
