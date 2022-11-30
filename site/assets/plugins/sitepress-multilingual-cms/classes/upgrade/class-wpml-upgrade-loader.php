@@ -18,6 +18,7 @@ use WPML\Upgrade\Commands\AddAutomaticColumnToIclTranslateJob;
 use WPML\TM\Upgrade\Commands\AddReviewStatusColumnToTranslationStatus;
 use WPML\TM\Upgrade\Commands\AddAteCommunicationRetryColumnToTranslationStatus;
 use WPML\TM\Upgrade\Commands\AddAteSyncCountToTranslationJob;
+use WPML\TM\Upgrade\Commands\ResetTranslatorOfAutomaticJobs;
 
 /**
  * Class WPML_Upgrade_Loader
@@ -124,6 +125,7 @@ class WPML_Upgrade_Loader implements IWPML_Action {
 			$this->factory->create_command_definition( AddStringPackageIdIndexToStrings::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
 			$this->factory->create_command_definition( DisableOptionsAutoloading::class, [], [ 'admin' ] ),
 			$this->factory->create_command_definition( RemoveRestDisabledNotice::class, [], [ 'admin' ] ),
+			$this->factory->create_command_definition( ResetTranslatorOfAutomaticJobs::class, [], [ 'admin' ] ),
 			$this->factory->create_command_definition( DropCodeLocaleIndexFromLocaleMap::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
 			$this->factory->create_command_definition( AddPrimaryKeyToLocaleMap::class, array( $this->upgrade_schema ), array( 'admin', 'ajax', 'front-end' ) ),
 			$this->factory->create_command_definition( AddCountryColumnToLanguages::class, [ $this->upgrade_schema ], [ 'admin', 'ajax', 'front-end' ] ),
