@@ -19,7 +19,7 @@ function child_global_vars() {
 
   }
 
-	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) ) {
+	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) || is_page ( 'risques' ) ) {
 
 		$classes['body'][] = 'app-page';
 
@@ -55,7 +55,7 @@ function child_theme_enqueue() {
 	
 	wp_dequeue_style ( 'global-style' );
 	
-	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) ) {
+	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) || is_page ( 'risques' ) ) {
 	
 		wp_enqueue_style ( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', null, '1.7.1', 'all' );
 	
@@ -89,7 +89,11 @@ function child_theme_enqueue() {
 		'crumb_scenario' => __( 'Scenario', 'rp' ),
 		'crumb_scenario_detail' => __( 'Scenario Detail', 'rp' ),
 		'less_than' => __ ( 'Less than', 'rp' ),
-		'one_or_less' => __ ( '1 or less', 'rp' )
+		'one_or_less' => __ ( '1 or less', 'rp' ),
+		'peak_ground_acceleration' => __ ( 'Peak Ground Acceleration, in units of g', 'rp' ),
+		'thousand' => __ ( 'thousand', 'rp' ),
+		'million' => __ ( 'million', 'rp' ),
+		'billion' => __ ( 'billion', 'rp' ),
 	);
 	
 	wp_localize_script ( 'rp-scenarios', 'rp', $scenarios_translations );
@@ -98,7 +102,27 @@ function child_theme_enqueue() {
 	
 	$risks_translations = array (
 		'less_than' => __ ( 'Less than', 'rp' ),
-		'one_or_less' => __ ( '1 or less', 'rp' )
+		'one_or_less' => __ ( '1 or less', 'rp' ),
+		'forward_sortation_area' => __ ( 'Forward Sortation Area', 'rp' ),
+		'census_subdivision' => __ ( 'Census Subdivision', 'rp' ),
+		'view_details' => __ ( 'View Details', 'rp' ),
+		'search_communities' => __ ( 'Search Communities', 'rp' ),
+		'very_low_score' => __ ( 'Very Low Score', 'rp' ),
+		'low_score' => __ ( 'Low Score', 'rp' ),
+		'moderate_score' => __ ( 'Moderate Score', 'rp' ),
+		'high_score' => __ ( 'High Score', 'rp' ),
+		'very_high_score' => __ ( 'Very High Score', 'rp' ),
+		'relatively_low_score' => __ ( 'Relatively Low Score', 'rp' ),
+		'relatively_moderate_score' => __ ( 'Relatively Moderate Score', 'rp' ),
+		'relatively_high_score' => __ ( 'Relatively High Score', 'rp' ),
+		'thousand' => __ ( 'thousand', 'rp' ),
+		'million' => __ ( 'million', 'rp' ),
+		'billion' => __ ( 'billion', 'rp' ),
+		'return_period_years' => __ ( 'Return period (years)', 'rp' ),
+		'loss_cad' => __ ( 'Loss (CAD)', 'rp' ),
+		'five_percent' => __ ( '5%', 'rp' ),
+		'mean' => __ ( 'mean', 'rp' ),
+		'ninety_five_percent' => __ ( '95%', 'rp' ),
 	);
 	
 	wp_localize_script ( 'rp-risks', 'rp', $risks_translations );
@@ -121,7 +145,7 @@ function child_theme_enqueue() {
 
   // PAGE CONDITIONALS
 	
-	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) ) {
+	if ( is_page ( 'scenarios' ) || is_page ( 'risks' ) || is_page ( 'risques' ) ) {
 	
 		wp_enqueue_script ( 'leaflet', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', null, '1.7.1', true );
 	
@@ -153,7 +177,7 @@ function child_theme_enqueue() {
 	
 		wp_enqueue_script ( 'rp-scenarios' );
 	
-	} elseif ( is_page ( 'risks' ) ) {
+	} elseif ( is_page ( 'risks' ) || is_page ( 'risques' ) ) {
 	
 		wp_enqueue_script ( 'rp-risks' );
 	
@@ -1652,9 +1676,13 @@ add_action ( 'fw_body_close', function() {
 			<div class="modal-body">
 				<?php 
 				
-					$disclaimer_post = get_page_by_title ( 'Review the Disclaimer', OBJECT );
+					$disclaimer_ID = 930;
 					
-					foreach ( get_field ( 'elements', $disclaimer_post->ID ) as $element ) {
+					if ( apply_filters ( 'wpml_current_language', NULL ) == 'fr' ) {
+						$disclaimer_ID = 1367;
+					}
+					
+					foreach ( get_field ( 'elements', $disclaimer_ID ) as $element ) {
 						
 						if ( $element['acf_fc_layout'] == 'block_content' ) {
 							
@@ -1696,7 +1724,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -3).toFixed(1).replace(/[.,]0$/, '') + ' thousand'
 		
-		$rounded_num = number_format ( round_pow ( $num, -3 ), 1 ) . ' thousand';
+		$rounded_num = number_format ( round_pow ( $num, -3 ), 1 ) . ' ' . __ ( 'thousand', 'rp' );
 		
 	} else if ($num < 100000) {
 		
@@ -1704,7 +1732,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -3).toFixed(0) + ' thousand'
 		
-		$rounded_num = number_format ( round_pow ( $num, -3 ), 0 ) . ' thousand';
+		$rounded_num = number_format ( round_pow ( $num, -3 ), 0 ) . ' ' . __ ( 'thousand', 'rp' );
 		
 	} else if ($num < 1000000) {
 		
@@ -1712,7 +1740,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = (round($num, -4).toFixed(0) * 10) + ' thousand'
 		
-		$rounded_num = ( number_format ( round_pow ( $num, -4 ), 0 ) * 10 ) . ' thousand';
+		$rounded_num = ( number_format ( round_pow ( $num, -4 ), 0 ) * 10 ) . ' ' . __ ( 'thousand', 'rp' );
 		
 	} else if ($num < 10000000) {
 		
@@ -1720,7 +1748,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -6).toFixed(1).replace(/[.,]0$/, '') + ' million'
 		
-		$rounded_num = number_format ( round_pow ( $num, -6 ), 1 ) . ' million';
+		$rounded_num = number_format ( round_pow ( $num, -6 ), 1 ) . ' ' . __ ( 'million', 'rp' );
 		
 	} else if ($num < 100000000) {
 		
@@ -1728,7 +1756,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -6).toFixed(0) + ' million'
 		
-		$rounded_num = number_format ( round_pow ( $num, -6 ), 0 ) . ' million';
+		$rounded_num = number_format ( round_pow ( $num, -6 ), 0 ) . ' ' . __ ( 'million', 'rp' );
 		
 	} else if ($num < 1000000000) {
 		
@@ -1736,7 +1764,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = (round($num, -7).toFixed(0) * 10) + ' million'
 		
-		$rounded_num = ( number_format ( round_pow ( $num, -7 ), 1 ) * 10 ) . ' million';
+		$rounded_num = ( number_format ( round_pow ( $num, -7 ), 1 ) * 10 ) . ' ' . __ ( 'million', 'rp' );
 		
 	} else if ($num < 10000000000) {
 		
@@ -1744,7 +1772,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -9).toFixed(1).replace(/[.,]0$/, '') + ' billion'
 		
-		$rounded_num = number_format ( round_pow ( $num, -9 ), 1 ) . ' billion';
+		$rounded_num = number_format ( round_pow ( $num, -9 ), 1 ) . ' ' . __ ( 'billion', 'rp' );
 		
 	} else if ($num < 100000000000) {
 		
@@ -1752,7 +1780,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -9).toFixed(0) + ' billion'
 		
-		$rounded_num = number_format ( round_pow ( $num, -9 ), 0 ) . ' billion';
+		$rounded_num = number_format ( round_pow ( $num, -9 ), 0 ) . ' ' . __ ( 'billion', 'rp' );
 		
 	} else if ($num < 1000000000000) {
 		
@@ -1760,7 +1788,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = (round($num, -10).toFixed(0) * 10) + ' billion'
 		
-		$rounded_num = ( number_format ( round_pow ( $num, -10 ), 1 ) * 10 ) . ' billion';
+		$rounded_num = ( number_format ( round_pow ( $num, -10 ), 1 ) * 10 ) . ' ' . __ ( 'billion', 'rp' );
 		
 	}
 	

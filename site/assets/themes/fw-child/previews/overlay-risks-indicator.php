@@ -4,15 +4,15 @@
 
 	$show_data = false;
 
-	if ( is_page ( 'risks' ) ) {
+	if ( is_page ( 'risks' ) || is_page ( 'risques' ) ) {
 		$show_data = true;
 	}
 
-	$ranking = array();
+	$ranking = '[]';
 
 	if ( !empty ( get_field ( 'indicator_ranking', $item['id'] ) ) ) {
 
-		$ranking = get_field ( 'indicator_ranking', $item['id'] );
+		$ranking = json_encode ( get_field ( 'indicator_ranking', $item['id'] ) );
 
 	}
 
@@ -33,7 +33,7 @@
 		"key": "<?php echo get_field ( 'indicator_key', $item['id'] ); ?>",
 		"title": "<?php echo $item['title']; ?>",
 		"type": "<?php echo get_field ( 'indicator_type', $item['id'] ); ?>",
-		"ranking": <?php echo json_encode ( $ranking ); ?>,
+		"ranking": <?php echo $ranking; ?>,
 		"aggregation": <?php
 
 			$legend_steps = 9;

@@ -1166,6 +1166,14 @@ var grades, color_ramp
 					enabled: false
 				}
 			})
+			
+			if ($('body').hasClass('lang-fr')) {
+				Highcharts.setOptions({
+					lang: {
+						numericSymbols: [" k", " M", " G", " T", " P", " E"]
+					}
+				})
+			}
 
 			// each chart element
 
@@ -1963,7 +1971,7 @@ var grades, color_ramp
 				
 				plugin.set_indicator({
 					key: 'sH_PGA', 
-					label: 'Peak Ground Acceleration, in units of g', 
+					label: rp.peak_ground_acceleration, 
 					retrofit: false, 
 					aggregation: { 
 						'1km': { rounding: 2, decimals: 2 }, 
@@ -2680,9 +2688,9 @@ var grades, color_ramp
 // 				rounded_val = plugin._round(properties[indicator_key], aggregation['rounding']).toLocaleString(undefined, { maximumFractionDigits: aggregation['decimals'] })
 // 
 // 				if (aggregation['rounding'] == -9) {
-// 					rounded_val += ' billion'
+// 					rounded_val += ' ' + rp.billion
 // 				} else if (aggregation['rounding'] == -6) {
-// 					rounded_val += ' million'
+// 					rounded_val += ' ' + rp.million
 // 				}
 // 
 // 			}
@@ -3033,55 +3041,55 @@ var grades, color_ramp
 				
 				// X.X thousand
 				
-				rounded_num = plugin._round(num, -3).toFixed(1).replace(/[.,]0$/, '') + ' thousand'
+				rounded_num = plugin._round(num, -3).toFixed(1).replace(/[.,]0$/, '') + ' ' + rp.thousand
 				
 			} else if (num < 100000) {
 				
 				// XX thousand
 				
-				rounded_num = plugin._round(num, -3).toFixed(0) + ' thousand'
+				rounded_num = plugin._round(num, -3).toFixed(0) + ' ' + rp.thousand
 				
 			} else if (num < 1000000) {
 				
 				// XX0 thousand
 				
-				rounded_num = (plugin._round(num, -4).toFixed(0) * 10) + ' thousand'
+				rounded_num = (plugin._round(num, -4).toFixed(0) * 10) + ' ' + rp.thousand
 				
 			} else if (num < 10000000) {
 				
 				// X.X million
 				
-				rounded_num = plugin._round(num, -6).toFixed(1).replace(/[.,]0$/, '') + ' million'
+				rounded_num = plugin._round(num, -6).toFixed(1).replace(/[.,]0$/, '') + ' ' + rp.million
 				
 			} else if (num < 100000000) {
 				
 				// XX million
 				
-				rounded_num = plugin._round(num, -6).toFixed(0) + ' million'
+				rounded_num = plugin._round(num, -6).toFixed(0) + ' ' + rp.million
 				
 			} else if (num < 1000000000) {
 				
 				// XX0 million
 				
-				rounded_num = (plugin._round(num, -7).toFixed(0) * 10) + ' million'
+				rounded_num = (plugin._round(num, -7).toFixed(0) * 10) + ' ' + rp.million
 				
 			} else if (num < 10000000000) {
 				
 				// X.X billion
 				
-				rounded_num = plugin._round(num, -9).toFixed(1).replace(/[.,]0$/, '') + ' billion'
+				rounded_num = plugin._round(num, -9).toFixed(1).replace(/[.,]0$/, '') + ' ' + rp.billion
 				
 			} else if (num < 100000000000) {
 				
 				// XX billion
 				
-				rounded_num = plugin._round(num, -9).toFixed(0) + ' billion'
+				rounded_num = plugin._round(num, -9).toFixed(0) + ' ' + rp.billion
 				
 			} else if (num < 1000000000000) {
 				
 				// XX0 billion
 				
-				rounded_num = (plugin._round(num, -10).toFixed(0) * 10) + ' billion'
+				rounded_num = (plugin._round(num, -10).toFixed(0) * 10) + ' ' + rp.billion
 				
 			}
 			

@@ -87,7 +87,7 @@
 			</div>
 		</div>
 
-		<div class="sidebar-button">Explore Scenario</div>
+		<div class="sidebar-button"><?php _e ( 'Explore Scenario', 'rp' ); ?></div>
 	</div>
 
 	<?php

@@ -2,7 +2,17 @@
 
 	$parse_uri = explode ( 'assets', $_SERVER['SCRIPT_FILENAME'] );
 	require_once ( $parse_uri[0] . 'wp-load.php' );
-
+	
+	$lang = 'en';
+	
+	if ( isset ( $_GET['lang'] ) ) {
+		
+		do_action ( 'wpml_switch_language', $_GET['lang'] );
+		
+		$lang = 'fr';
+		
+	}
+	
 ?>
 
 <div class="sidebar-detail city">
@@ -33,7 +43,23 @@
 						aria-expanded="false"
 						aria-controls="detail-scores-collapse"
 					>
-						<?php _e ( 'Risk Score', 'rp' ); ?>
+						<?php 
+						
+							// WPML nonsense:
+							// for whatever reason
+							// if you output a string this way once,
+							// every string after it
+							// gets translated
+							
+							echo apply_filters ( 
+								'wpml_translate_single_string', 
+								'Risk Score',
+								'rp', 
+								'Risk Score', 
+								$lang
+							);
+						
+						?>
 						<i class="fas fa-caret-down"></i>
 					</div>
 
@@ -158,7 +184,17 @@
 					>
 						<div class="card-body">
 
-							<p>Loss exceedance curve data for postal code <strong data-indicator="fsauid"></strong>, as outlined in <span class="text-primary">red</span> on the map.</p>
+							<p><?php
+							
+								printf ( 
+									__ ( 
+										'Loss exceedance curve data for postal code %s, as outlined in %s on the map.', 'rp' 
+									), 
+									'<strong data-indicator="fsauid"></strong>', 
+									'<span class="text-primary">red</span>'
+								);
+							
+						  ?></p>
 
 							<div id="risk-detail-chart" class="chart"></div>
 

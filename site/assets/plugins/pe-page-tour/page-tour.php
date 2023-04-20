@@ -199,7 +199,7 @@ add_action ( 'acf/init', function() {
 									'class' => '',
 									'id' => '',
 								),
-								'wpml_cf_preferences' => '',
+								'wpml_cf_preferences' => 1,
 								'default_value' => 'Start Over',
 								'placeholder' => '',
 								'prepend' => '',
@@ -219,7 +219,7 @@ add_action ( 'acf/init', function() {
 									'class' => '',
 									'id' => '',
 								),
-								'wpml_cf_preferences' => '',
+								'wpml_cf_preferences' => 1,
 								'default_value' => 'Close',
 								'placeholder' => '',
 								'prepend' => '',
@@ -239,7 +239,7 @@ add_action ( 'acf/init', function() {
 									'class' => '',
 									'id' => '',
 								),
-								'wpml_cf_preferences' => '',
+								'wpml_cf_preferences' => 1,
 								'default_value' => 'Don’t show again',
 								'placeholder' => '',
 								'prepend' => '',
@@ -259,7 +259,7 @@ add_action ( 'acf/init', function() {
 									'class' => '',
 									'id' => '',
 								),
-								'wpml_cf_preferences' => '',
+								'wpml_cf_preferences' => 1,
 								'default_value' => 'Next',
 								'placeholder' => '',
 								'prepend' => '',
@@ -640,6 +640,15 @@ add_action ( 'fw_body_close', function() {
 	) {
 		
 		$options_field['cookie']['expires'] = (int) $options_field['cookie']['expires'];
+		
+		foreach ( $options_field['labels'] as $key => $val ) {
+			
+			// hacky way of outputting strings so WPML will register them
+			// _e ( $val, 'pe-page-tour' );
+			
+			$options_field['labels'][$key] = __ ( $val, 'pe-page-tour' );
+			
+		}
 		
 		$js_options = json_encode ( $options_field );
 		
