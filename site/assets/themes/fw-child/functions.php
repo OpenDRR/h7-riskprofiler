@@ -96,8 +96,8 @@ function child_theme_enqueue() {
 		'billion' => __ ( 'billion', 'rp' ),
 		
 		'wood' => __ ( 'Wood', 'rp' ),
-		'concrete', __ ( 'Concrete', 'rp' ),
-		'steel', __ ( 'Steel', 'rp' ),
+		'concrete' => __ ( 'Concrete', 'rp' ),
+		'steel' => __ ( 'Steel', 'rp' ),
 		'urmasonry' => __ ( 'Unreinforced Masonry', 'rp' ),
 		'rmasonry' => __ ( 'Reinforced Masonry', 'rp' ),
 		'precast' => __ ( 'Precast', 'rp' ),
