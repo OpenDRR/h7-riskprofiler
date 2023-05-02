@@ -25,7 +25,10 @@ class SaveManager extends SaveUser {
 		return self::getUser( $data )
 		           ->map( $setRole )
 		           ->map( [ self::class, 'sendInstructions' ] )
-		           ->map( Fns::always( true ) );
+		           ->map( function( $user ) {
+					   do_action( 'wpml_tm_ate_synchronize_managers' );
+					   return true;
+				   } );
 	}
 
 	public static function sendInstructions( \WP_User $manager ) {

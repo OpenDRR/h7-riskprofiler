@@ -1,6 +1,9 @@
 <?php
 
 use WPML\FP\Obj;
+use WPML\FP\Str;
+use WPML\FP\Fns;
+use function WPML\FP\pipe;
 
 /**
  * Class WPML_Elementor_Translate_IDs
@@ -52,12 +55,22 @@ class WPML_Elementor_Translate_IDs implements IWPML_Action {
 		$sub_name = isset( $parsed_condition['sub_name'] ) ? $parsed_condition['sub_name'] : null;
 
 		if ( (int) $sub_id > 0 && $sub_name ) {
-			$element_type = $sub_name;
+			$startsWith = Str::startsWith( Fns::__, $sub_name );
+			$getType    = Str::pregReplace( Fns::__, '', $sub_name );
+
+			$findReplace = wpml_collect( [
+				'in_'           => '/^in_|_children$/',
+				'child_of_'     => '/^child_of_/',
+				'any_child_of_' => '/^any_child_of_/',
+			] );
 
 			if ( 'child_of' === $sub_name ) {
 				$element_type = get_post_type( $sub_id );
-			} elseif ( 0 === strpos( $sub_name, 'in_' ) ) {
-				$element_type = preg_replace( '/^in_|_children$/', '', $sub_name );
+			} else {
+				$element_type = $findReplace
+					->filter( pipe( Fns::nthArg( 1 ), $startsWith ) )
+					->map( $getType )
+					->first( Fns::identity(), $sub_name );
 			}
 
 			$sub_id = $this->translate_id( $sub_id, $element_type );

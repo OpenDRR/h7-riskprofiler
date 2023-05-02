@@ -79,7 +79,7 @@ class WPML_TM_Action_Helper {
 
 		$terms = array();
 		// we shouldn't adjust term by current language need get terms by post_id
-		remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1 );
+		$hasFilter = remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1 );
 
 		$post_taxonomy_terms = wp_get_object_terms( $post->ID, $taxonomy );
 		if ( ! is_wp_error( $post_taxonomy_terms ) ) {
@@ -92,7 +92,9 @@ class WPML_TM_Action_Helper {
 			sort( $terms, SORT_STRING );
 		}
 
-		add_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
+		if ( $hasFilter ) {
+			add_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
+		}
 
 		return $terms;
 	}
