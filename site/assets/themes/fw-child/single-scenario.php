@@ -109,12 +109,11 @@
 									
 									if ($dollars == 0) {
 										
-										echo '$0 CAD';
+										printf ( __ ( '$%s CAD', 'rp' ), 0 );
 										
 									} elseif ($dollars < 1000) {
 										
-										_e ( 'Less than', 'rp' );
-										echo '$1000 CAD';
+										printf ( __ ( 'Less than $%s CAD', 'rp' ), 1000 );
 										
 									} else {
 										
