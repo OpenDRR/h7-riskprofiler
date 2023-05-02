@@ -80,6 +80,9 @@ function child_theme_enqueue() {
 	wp_register_script ( 'rp-scenarios', $child_js_dir . 'rp_scenarios.js', array ( 'profiler', 'highcharts', 'leaflet', 'leaflet-vector' ), NULL, true );
 	
 	$scenarios_translations = array (
+		'retrieving_scenario_data' => __ ( 'Retrieving scenario data', 'rp' ),
+		'loading_visualization' => __ ( 'Loading visualization', 'rp' ),
+		'initializing_map' => __ ( 'Initializing map', 'rp' ),
 		'by' => __( 'by', 'rp' ),
 		'in' => __( 'in', 'rp' ),
 		'building_type' => __( 'Building Type', 'rp' ),

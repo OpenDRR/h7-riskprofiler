@@ -696,7 +696,7 @@ var grades, color_ramp
 			// SETUP UX STUFF
 			//
 
-			$('#spinner-progress').text('Initializing map')
+			$('#spinner-progress').text(rp.initializing_map)
 
 			$('#data-modal').modal({
 				show: false
@@ -2206,7 +2206,7 @@ var grades, color_ramp
 			var plugin_settings = plugin.options
 			var map = plugin_settings.map.object
 
-			$('#spinner-progress').text('Retrieving scenario data')
+			$('#spinner-progress').text(rp.retrieving_scenario_data)
 
 			// console.log('get max vals', plugin_settings.indicator.max)
 
@@ -2279,7 +2279,7 @@ var grades, color_ramp
 
 							console.log('calculated max values', plugin_settings.indicator.max)
 
-							$('#spinner-progress').text('Loading visualization')
+							$('#spinner-progress').text(rp.loading_visualization)
 
 							plugin.get_tiles()
 
