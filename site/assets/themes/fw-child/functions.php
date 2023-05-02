@@ -1807,11 +1807,17 @@ function round_pow ( $num, $power ) {
 
 function significant_figs ( $num ) {
 	
+	$decimal = '.';
+	
+	if ( apply_filters ( 'wpml_current_language', NULL ) == 'fr' ) {
+		$decimal = ',';
+	}
+	
 	if ($num < 1000) {
 		
 		// XX0
 		
-		$rounded_num = number_format ( round_pow ( $num, -1), 0 ) * 10;
+		$rounded_num = number_format ( round_pow ( $num, -1), 0, $decimal ) * 10;
 		
 	} else if ($num < 10000) {
 		
@@ -1819,7 +1825,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -3).toFixed(1).replace(/[.,]0$/, '') + ' thousand'
 		
-		$rounded_num = number_format ( round_pow ( $num, -3 ), 1 ) . ' ' . __ ( 'thousand', 'rp' );
+		$rounded_num = number_format ( round_pow ( $num, -3 ), 1, $decimal ) . ' ' . __ ( 'thousand', 'rp' );
 		
 	} else if ($num < 100000) {
 		
@@ -1827,7 +1833,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -3).toFixed(0) + ' thousand'
 		
-		$rounded_num = number_format ( round_pow ( $num, -3 ), 0 ) . ' ' . __ ( 'thousand', 'rp' );
+		$rounded_num = number_format ( round_pow ( $num, -3 ), 0, $decimal ) . ' ' . __ ( 'thousand', 'rp' );
 		
 	} else if ($num < 1000000) {
 		
@@ -1835,7 +1841,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = (round($num, -4).toFixed(0) * 10) + ' thousand'
 		
-		$rounded_num = ( number_format ( round_pow ( $num, -4 ), 0 ) * 10 ) . ' ' . __ ( 'thousand', 'rp' );
+		$rounded_num = ( number_format ( round_pow ( $num, -4 ), 0, $decimal ) * 10 ) . ' ' . __ ( 'thousand', 'rp' );
 		
 	} else if ($num < 10000000) {
 		
@@ -1843,7 +1849,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -6).toFixed(1).replace(/[.,]0$/, '') + ' million'
 		
-		$rounded_num = number_format ( round_pow ( $num, -6 ), 1 ) . ' ' . __ ( 'million', 'rp' );
+		$rounded_num = number_format ( round_pow ( $num, -6 ), 1, $decimal ) . ' ' . __ ( 'million', 'rp' );
 		
 	} else if ($num < 100000000) {
 		
@@ -1851,7 +1857,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -6).toFixed(0) + ' million'
 		
-		$rounded_num = number_format ( round_pow ( $num, -6 ), 0 ) . ' ' . __ ( 'million', 'rp' );
+		$rounded_num = number_format ( round_pow ( $num, -6 ), 0, $decimal ) . ' ' . __ ( 'million', 'rp' );
 		
 	} else if ($num < 1000000000) {
 		
@@ -1859,7 +1865,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = (round($num, -7).toFixed(0) * 10) + ' million'
 		
-		$rounded_num = ( number_format ( round_pow ( $num, -7 ), 1 ) * 10 ) . ' ' . __ ( 'million', 'rp' );
+		$rounded_num = ( number_format ( round_pow ( $num, -7 ), 1, $decimal ) * 10 ) . ' ' . __ ( 'million', 'rp' );
 		
 	} else if ($num < 10000000000) {
 		
@@ -1867,7 +1873,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -9).toFixed(1).replace(/[.,]0$/, '') + ' billion'
 		
-		$rounded_num = number_format ( round_pow ( $num, -9 ), 1 ) . ' ' . __ ( 'billion', 'rp' );
+		$rounded_num = number_format ( round_pow ( $num, -9 ), 1, $decimal ) . ' ' . __ ( 'billion', 'rp' );
 		
 	} else if ($num < 100000000000) {
 		
@@ -1875,7 +1881,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = round($num, -9).toFixed(0) + ' billion'
 		
-		$rounded_num = number_format ( round_pow ( $num, -9 ), 0 ) . ' ' . __ ( 'billion', 'rp' );
+		$rounded_num = number_format ( round_pow ( $num, -9 ), 0, $decimal ) . ' ' . __ ( 'billion', 'rp' );
 		
 	} else if ($num < 1000000000000) {
 		
@@ -1883,7 +1889,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = (round($num, -10).toFixed(0) * 10) + ' billion'
 		
-		$rounded_num = ( number_format ( round_pow ( $num, -10 ), 1 ) * 10 ) . ' ' . __ ( 'billion', 'rp' );
+		$rounded_num = ( number_format ( round_pow ( $num, -10 ), 1, $decimal ) * 10 ) . ' ' . __ ( 'billion', 'rp' );
 		
 	}
 	
