@@ -157,7 +157,7 @@
 						aria-controls="detail-shake-collapse"
 						data-indicator='{
 							"key": "sH_PGA",
-							"label": "Peak Ground Acceleration, in units of g",
+							"label": <?php _e ( 'Peak Ground Acceleration, in units of g', 'rp' ); ?>,
 							"retrofit": false,
 							"aggregation": {
 								"1km": { "rounding": 2, "decimals": 2 },
