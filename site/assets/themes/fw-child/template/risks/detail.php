@@ -148,8 +148,22 @@
 							<div class="row p-3">
 								<div class="col-6 pr-3">
 									<h6><?php _e ( 'Annual Economic Loss', 'rp' ); ?></h6>
+									
+									<?php
+									
+										$eaalt_prepend = '$';
+										$eaalt_append = ' CAD';
+									
+										if ( $lang == 'fr' ) {
+											
+											$eaalt_prepend = '';
+											$eaalt_append = ' $ CAD';
+											
+										}
+									
+									?>
 
-									<div data-indicator="eAALt_Asset" data-decimals="2" data-prepend="$" data-append=" CAD">eAALt_Bldg</div>
+									<div data-indicator="eAALt_Asset" data-decimals="2" data-prepend="<?php echo $eaalt_prepend; ?>" data-append="<?php echo $eaalt_append; ?>">eAALt_Bldg</div>
 								</div>
 
 								<div class="col-6 pr-3">
