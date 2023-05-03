@@ -1717,9 +1717,17 @@ var color_ramp = [
 										useHTML: true,
 										headerFormat: '',
 										formatter: function() {
+											
+											let output = '<strong>' + this.x + 'y RP:</strong> '
 
-											return '<strong>' + this.x + 'y RP:</strong> $' + plugin._format_figure(this.y)
-
+											if (plugin_settings.lang == 'fr') {
+												output += plugin._format_figure(this.y) + ' $'
+											} else {
+												output += '$' + plugin._format_figure(this.y)
+											}
+												
+											return output
+											
 										}
 									},
 									chart: {
