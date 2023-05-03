@@ -202,10 +202,11 @@
 							
 								printf ( 
 									__ ( 
-										'Loss exceedance curve data for postal code %s, as outlined in %s on the map.', 'rp' 
+										'Loss exceedance curve data for postal code %s, as outlined in %sred%s on the map.', 'rp' 
 									), 
 									'<strong data-indicator="fsauid"></strong>', 
-									'<span class="text-primary">red</span>'
+									'<span class="text-primary">',
+									'</span>'
 								);
 							
 						  ?></p>
