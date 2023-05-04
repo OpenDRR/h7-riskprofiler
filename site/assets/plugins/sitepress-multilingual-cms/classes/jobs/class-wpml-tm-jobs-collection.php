@@ -115,7 +115,6 @@ class WPML_TM_Jobs_Collection implements IteratorAggregate, Countable {
 	/**
 	 * @return ArrayIterator
 	 */
-	#[\ReturnTypeWillChange]
 	public function getIterator() {
 		return new ArrayIterator( $this->jobs );
 	}
@@ -124,7 +123,6 @@ class WPML_TM_Jobs_Collection implements IteratorAggregate, Countable {
 		return $this->jobs;
 	}
 
-	#[\ReturnTypeWillChange]
 	public function count() {
 		return count( $this->jobs );
 	}

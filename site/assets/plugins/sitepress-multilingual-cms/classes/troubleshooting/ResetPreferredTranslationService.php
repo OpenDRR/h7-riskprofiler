@@ -2,8 +2,6 @@
 
 namespace WPML\TM\Troubleshooting;
 
-use WPML\API\Sanitize;
-
 class ResetPreferredTranslationService implements \IWPML_Backend_Action {
 
 	const ACTION_ID = 'wpml-tm-reset-preferred-translation-service';
@@ -30,8 +28,8 @@ class ResetPreferredTranslationService implements \IWPML_Backend_Action {
 	}
 
 	public function resetAndFetchPreferredTS() {
-		$action = Sanitize::stringProp( 'action', $_POST );
-		$nonce  = Sanitize::stringProp( 'nonce', $_POST );
+		$action      = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+		$nonce       = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
 
 		if ( wp_verify_nonce( $nonce, $action ) ) {
 			OTGS_Installer()->settings['repositories']['wpml']['ts_info']['preferred'] = null;

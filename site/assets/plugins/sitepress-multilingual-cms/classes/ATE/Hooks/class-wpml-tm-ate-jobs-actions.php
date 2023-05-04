@@ -1,6 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
 use WPML\FP\Fns;
 use WPML\FP\Json;
 use WPML\FP\Logic;
@@ -100,7 +99,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 
 					$this->resign_job_on_error( $ate_job_id );
 				}
-				$message = Sanitize::stringProp( 'message', $_GET );
+				$message = filter_var( $_GET['message'], FILTER_SANITIZE_STRING );
 				?>
 
 				<div class="error notice-error notice otgs-notice">
@@ -306,9 +305,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 	 * @throws \InvalidArgumentException
 	 */
 	public function get_editor_url( $default_url, $job_id, $return_url = null ) {
-		$isUserActivated = $this->translator_activation_records->is_current_user_activated();
-
-		if ( $isUserActivated || is_admin() ) {
+		if ( $this->translator_activation_records->is_current_user_activated() ) {
 			$ate_job_id = $this->ate_jobs->get_ate_job_id( $job_id );
 			if ( $ate_job_id ) {
 				if ( ! $return_url ) {
@@ -471,8 +468,7 @@ class WPML_TM_ATE_Jobs_Actions implements IWPML_Action {
 
 		foreach ( $jobs as $job ) {
 			/** @var WPML_Element_Translation_Job $translationJob */
-
-			$translationJob = wpml_tm_load_job_factory()->get_translation_job( $job->id, false, 0, true );
+			$translationJob = wpml_tm_load_job_factory()->get_translation_job( $job->source_id, false, 0, true );
 			if ( $translationJob ) {
 
 				if ( ! Obj::prop( 'existing_ate_id', $job ) ) {

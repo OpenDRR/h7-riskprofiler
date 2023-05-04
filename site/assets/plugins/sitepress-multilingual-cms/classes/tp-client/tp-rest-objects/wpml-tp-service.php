@@ -664,22 +664,12 @@ class WPML_TP_Service extends WPML_TP_REST_Object implements Serializable {
 
 
 	public function serialize() {
-		return serialize( $this->__serialize() );
+		return serialize( get_object_vars( $this ) );
 	}
 
 	public function unserialize( $serialized ) {
 		$simple_array = unserialize( $serialized );
 
-		$this->__unserialize( $simple_array );
-	}
-
-	/* phpcs:ignore PHPCompatibility.FunctionNameRestrictions.NewMagicMethods.__serializeFound */
-	public function __serialize() {
-		return get_object_vars( $this );
-	}
-
-	/* phpcs:ignore PHPCompatibility.FunctionNameRestrictions.NewMagicMethods.__unserializeFound */
-	public function __unserialize( $simple_array ) {
 		foreach ( $simple_array as $property => $value ) {
 			if ( property_exists( $this, $property ) ) {
 				$this->$property = $value;

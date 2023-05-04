@@ -11,7 +11,6 @@ use WPML\FP\Obj;
 use WPML\LIB\WP\Hooks;
 use WPML\LIB\WP\PostType;
 use WPML\Posts\CountPerPostType;
-use WPML\Posts\DeleteTranslatedContentOfLanguages;
 use WPML\Posts\UntranslatedCount;
 use WPML\Setup\Option;
 use WPML\TM\ATE\AutoTranslate\Endpoint\ActivateLanguage;
@@ -43,13 +42,12 @@ class UI implements \IWPML_Backend_Action {
 		};
 
 		$data = [
-			'endpoints'                 => [
-				'checkSupportOfLanguages'           => CheckLanguageSupport::class,
-				'skipTranslationOfExistingContent'  => ActivateLanguage::class,
-				'postsToTranslatePerTypeCount'      => CountPerPostType::class,
-				'deleteTranslatedContentOfLanguage' => DeleteTranslatedContentOfLanguages::class
+			'endpoints' => [
+				'checkSupportOfLanguages'          => CheckLanguageSupport::class,
+				'skipTranslationOfExistingContent' => ActivateLanguage::class,
+				'postsToTranslatePerTypeCount'     => CountPerPostType::class,
 			],
-			'postTypes'                 => Fns::map( $getPostTypeName, PostTypes::getAutomaticTranslatable() ),
+			'postTypes' => Fns::map( $getPostTypeName, PostTypes::getAutomaticTranslatable() ),
 			'shouldTranslateEverything' => Option::shouldTranslateEverything(),
 		];
 

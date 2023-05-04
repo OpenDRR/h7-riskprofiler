@@ -77,7 +77,6 @@ class StringQuery implements Query {
 			'NULL AS review_status',
 			'NULL AS trid',
 			'NULL AS element_type',
-			'NULL AS element_id',
 			'NULL AS job_title',
 		);
 

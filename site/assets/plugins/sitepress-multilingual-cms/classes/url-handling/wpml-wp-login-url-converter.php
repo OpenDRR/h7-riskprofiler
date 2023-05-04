@@ -2,7 +2,6 @@
 
 namespace WPML\UrlHandling;
 
-use WPML\API\Sanitize;
 use WPML\Element\API\Languages;
 use WPML\FP\Obj;
 use WPML\FP\Relation;
@@ -141,10 +140,10 @@ class WPLoginUrlConverter implements \IWPML_Action {
 	public function wpml_login_page_language_from_url( $language, $url ) {
 		if ( $this->is_wp_login_url( $url ) ) {
 			if ( isset( $_GET['lang'] ) && $_GET['lang'] != $language ) {
-				return Sanitize::stringProp( 'lang', $_GET );
+				return filter_var( $_GET['lang'], FILTER_SANITIZE_STRING );
 			}
 			if ( is_multisite() && isset( $_POST['lang'] ) && $_POST['lang'] != $language ) {
-				return Sanitize::stringProp( 'lang', $_POST );
+				return filter_var( $_POST['lang'], FILTER_SANITIZE_STRING );
 			}
 		}
 
@@ -190,12 +189,8 @@ class WPLoginUrlConverter implements \IWPML_Action {
 		return $query_vars;
 	}
 
-	/**
-	 * @param bool $validateOrRollback - If true, it will be validated that the translated Login URL is accessible or rollback.
-	 * @return void
-	 */
-	public static function enable( $validateOrRollback = false ) {
-		self::saveState( true, $validateOrRollback );
+	public static function enable() {
+		self::saveState( true );
 	}
 
 	public static function disable() {
@@ -211,12 +206,11 @@ class WPLoginUrlConverter implements \IWPML_Action {
 
 	/**
 	 * @param bool $state
-	 * @param bool $validate - if true, will validate the change or undo it.
 	 *
 	 */
-	public static function saveState( $state, $validate = false ) {
+	public static function saveState( $state ) {
 		Option::update( self::SETTINGS_KEY, $state );
-		WPLoginUrlConverterRules::markRulesForUpdating( $validate );
+		WPLoginUrlConverterRules::markRulesForUpdating();
 	}
 
 	private function should_convert_url_for_multisite( $url ) {
@@ -251,10 +245,10 @@ class WPLoginUrlConverter implements \IWPML_Action {
 
 	private function get_language_param_for_convert_url() {
 		if ( isset( $_GET['lang'] ) ) {
-			return Sanitize::stringProp( 'lang', $_GET );
+			return filter_var( $_GET['lang'], FILTER_SANITIZE_STRING );
 		}
 		if ( is_multisite() && isset( $_POST['lang'] ) ) {
-			return Sanitize::stringProp( 'lang', $_POST );
+			return filter_var( $_POST['lang'], FILTER_SANITIZE_STRING );
 		}
 		if ( $this->rewrite_rule_not_found || $this->is_subdomain_multisite() ) {
 			return $this->sitepress->get_current_language();

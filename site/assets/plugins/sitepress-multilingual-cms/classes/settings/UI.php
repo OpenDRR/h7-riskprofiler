@@ -7,7 +7,6 @@ use WPML\API\PostTypes;
 use WPML\Core\WP\App\Resources;
 use WPML\FP\Either;
 use WPML\FP\Fns;
-use WPML\FP\Logic;
 use WPML\LIB\WP\Hooks;
 use WPML\Setup\Option;
 use WPML\TM\ATE\AutoTranslate\Endpoint\GetNumberOfPosts;
@@ -19,7 +18,7 @@ class UI implements \IWPML_Backend_Action {
 	public function add_hooks() {
 		Hooks::onAction( 'admin_enqueue_scripts' )
 		     ->then( Fns::always( $_GET ) )
-		     ->then( Logic::anyPass( [ [ UIPage::class, 'isMainSettingsTab' ], [ UIPage::class, 'isTroubleshooting' ] ] ) )
+		     ->then( [ UIPage::class, 'isMainSettingsTab' ] )
 		     ->then( Either::fromBool() )
 		     ->then( [ self::class, 'getData' ] )
 		     ->then( Resources::enqueueApp( 'settings' ) );

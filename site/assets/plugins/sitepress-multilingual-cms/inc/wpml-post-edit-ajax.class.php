@@ -1,7 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
-
 class WPML_Post_Edit_Ajax {
 	const AJAX_ACTION_SWITCH_POST_LANGUAGE = 'wpml_switch_post_language';
 
@@ -22,11 +20,10 @@ class WPML_Post_Edit_Ajax {
 			wp_send_json_error( 'Wrong Nonce' );
 		}
 
-		$lang        = Sanitize::stringProp( 'term_language_code', $_POST );
-		$taxonomy    = Sanitize::stringProp( 'taxonomy', $_POST );
-		$slug        = Sanitize::stringProp( 'slug', $_POST );
-		$name        = Sanitize::stringProp( 'name', $_POST );
-
+		$lang        = filter_var( $_POST['term_language_code'], FILTER_SANITIZE_STRING );
+		$taxonomy    = filter_var( $_POST['taxonomy'], FILTER_SANITIZE_STRING );
+		$slug        = filter_var( $_POST['slug'], FILTER_SANITIZE_STRING );
+		$name        = filter_var( $_POST['name'], FILTER_SANITIZE_STRING );
 		$trid        = filter_var( $_POST['trid'], FILTER_SANITIZE_NUMBER_INT );
 		$description = wp_kses_post( $_POST['description'] );
 		$meta_data   = isset( $_POST['meta_data'] ) ? $_POST['meta_data'] : array();
@@ -285,7 +282,7 @@ class WPML_Post_Edit_Ajax {
 
 		foreach ( $meta_data as $meta_key => $meta_value ) {
 			delete_term_meta( $term['term_id'], $meta_key );
-			$data = self::safe_maybe_unserialize( stripslashes( $meta_value ) );
+			$data = maybe_unserialize( stripslashes( $meta_value ) );
 			if ( ! add_term_meta( $term['term_id'], $meta_key, $data ) ) {
 				throw new RuntimeException( sprintf( 'Unable to add term meta form term: %d', $term['term_id'] ) );
 			}
@@ -296,19 +293,4 @@ class WPML_Post_Edit_Ajax {
 
 		return true;
 	}
-
-	/**
-	 * Safe unserialization for term metadata should not allow to unserialize classes.
-	 *
-	 * @param string $data
-	 * @return mixed
-	 */
-	private static function safe_maybe_unserialize( $data ) {
-		if ( is_serialized( $data ) ) { // Don't attempt to unserialize data that wasn't serialized going in.
-			return @unserialize( trim( $data ), [ 'allowed_classes' => false ] );
-		}
-
-		return $data;
-	}
-
 }

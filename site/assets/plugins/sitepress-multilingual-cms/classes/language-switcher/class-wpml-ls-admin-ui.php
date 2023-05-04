@@ -1,7 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
-
 class WPML_LS_Admin_UI extends WPML_Templates_Factory {
 
 	const NONCE_NAME            = 'wpml-language-switcher-admin';
@@ -168,8 +166,7 @@ class WPML_LS_Admin_UI extends WPML_Templates_Factory {
 	 */
 	private function parse_request_settings( $key ) {
 		$settings = array_key_exists( $key, $_POST ) ? $_POST[ $key ] : null;
-		$settings = Sanitize::string($settings, ENT_NOQUOTES);
-
+		$settings = filter_var( $settings, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES );
 		$settings = urldecode( $settings );
 		parse_str( $settings, $settings_array );
 		return $settings_array;
@@ -179,7 +176,7 @@ class WPML_LS_Admin_UI extends WPML_Templates_Factory {
 	 * @return bool
 	 */
 	private function has_valid_nonce() {
-		$nonce = Sanitize::stringProp( 'nonce', $_POST );
+		$nonce = filter_var( $_POST['nonce'], FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		return (bool) wp_verify_nonce( $nonce, self::NONCE_NAME );
 	}

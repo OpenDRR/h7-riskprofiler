@@ -3,7 +3,6 @@
 namespace WPML\Setup\Endpoint;
 
 use WPML\Ajax\IHandler;
-use WPML\API\Sanitize;
 use WPML\Collect\Support\Collection;
 use WPML\FP\Either;
 use WPML\FP\Right;
@@ -12,7 +11,7 @@ use WPML\Plugins;
 class LicenseStep implements IHandler {
 
 	public function run( Collection $data ) {
-		$site_key = Sanitize::string( $data->get( 'siteKey' ) );
+		$site_key = filter_var( $data->get( 'siteKey' ), FILTER_SANITIZE_STRING );
 		icl_set_setting( 'site_key', null, true );
 		if ( function_exists( 'OTGS_Installer' ) ) {
 			$args = [

@@ -2,14 +2,11 @@
 
 namespace WPML\PB\Gutenberg\ConvertIdsInBlock;
 
-use WPML\FP\Fns;
-use WPML\FP\Obj;
 use WPML\PB\Gutenberg\StringsInBlock\DOMHandler\StandardBlock;
 use WPML\PB\Gutenberg\StringsInBlock\HTML;
 
 class TagAttributes extends Base {
 
-	/** @var array $attributesToConvert */
 	private $attributesToConvert;
 
 	public function __construct( array $attributesToConvert ) {
@@ -22,8 +19,7 @@ class TagAttributes extends Base {
 		$xpath      = new \DOMXPath( $dom );
 
 		foreach ( $this->attributesToConvert as $attributeConfig ) {
-			$getConfig = Obj::prop( Fns::__, $attributeConfig );
-			$nodes     = $xpath->query( $getConfig( 'xpath' ) );
+			$nodes = $xpath->query( $attributeConfig['xpath'] );
 
 			if ( ! $nodes ) {
 				continue;
@@ -31,9 +27,9 @@ class TagAttributes extends Base {
 
 			foreach ( $nodes as $node ) {
 				/** @var \DOMNode $node */
-				$ids = self::convertIds( $node->nodeValue, $getConfig( 'slug' ), $getConfig( 'type' ) );
+				$ids = implode( ',' , self::convertIds( explode( ',', $node->nodeValue ), $attributeConfig['slug'], $attributeConfig['type'] ) );
 				$blockObject = \WPML_Gutenberg_Integration::sanitize_block( $block );
-				$block = (array) $domHandler->applyStringTranslations( $blockObject, $node, $ids, null );
+				$block = (array) HTML::update_string_in_innerContent( $blockObject, $node, $ids );
 				$domHandler->setElementValue( $node, $ids );
 			}
 		}

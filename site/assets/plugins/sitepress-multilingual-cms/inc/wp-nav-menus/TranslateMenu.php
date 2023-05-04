@@ -51,8 +51,7 @@ class Translate implements \IWPML_Frontend_Action {
 		if ( $item->type === 'post_type' ) {
 			$translatedId = self::getTranslatedId( $item );
 			foreach ( get_object_vars( Post::get( $translatedId ) ) as $key => $value ) {
-				// We won't send the translated ID, since it affects front-end styles negatively.
-				if ( ! in_array( $key, [ 'menu_order', 'post_type', 'ID' ] ) ) {
+				if ( $key !== 'menu_order' ) {
 					$item->$key = $value;
 				}
 			}

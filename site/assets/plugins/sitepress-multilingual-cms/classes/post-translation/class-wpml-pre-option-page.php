@@ -25,8 +25,7 @@ class WPML_Pre_Option_Page extends WPML_WPDB_And_SP_User {
 		if ( ( ( ! $cache_found || ! isset ( $results[ $type ] ) ) && ! $this->switched )
 		     || ( $this->switched && $this->sitepress->get_setting( 'setup_complete' ) )
 		) {
-			$results = [];
-			$results[ $type ] = [];
+			$results[ $type ] = array();
 			// Fetch for all languages and cache them.
 			$values = $this->wpdb->get_results(
 				$this->wpdb->prepare(

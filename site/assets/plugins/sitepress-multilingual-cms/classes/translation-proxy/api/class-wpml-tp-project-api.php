@@ -51,7 +51,6 @@ class WPML_TP_Project_API extends WPML_TP_API {
 			'project'       => $project_data,
 			'custom_fields' => $service->custom_fields_data,
 			'client'        => $site_details->getClientData(),
-			'linked_by'     => \TranslationProxy::get_service_linked_by_suid( $service->suid ),
 		];
 
 		$request = new WPML_TP_API_Request( self::PROJECTS_ENDPOINT );

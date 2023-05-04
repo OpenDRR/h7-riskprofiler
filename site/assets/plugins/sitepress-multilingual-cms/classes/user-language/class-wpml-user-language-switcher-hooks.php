@@ -1,7 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
-
 /**
  * @package    wpml-core
  * @subpackage wpml-user-language
@@ -51,7 +49,8 @@ class WPML_User_Language_Switcher_Hooks {
 	}
 
 	public function language_switcher_form_ajax() {
-		$language = Sanitize::stringProp( 'language', $_POST );
+
+		$language = filter_input( INPUT_POST, 'language', FILTER_SANITIZE_STRING );
 		$language = $this->user_language_switcher->sanitize( $language );
 
 		$email = filter_input( INPUT_POST, 'mail', FILTER_SANITIZE_EMAIL );

@@ -12,8 +12,7 @@ class ReturnedJobActionsFactory implements \IWPML_Backend_Action_Loader, \IWPML_
 		$ateJobs = make( \WPML_TM_ATE_Jobs::class );
 
 		$add = partialRight( [ ReturnedJobsQueue::class, 'add' ], [ $ateJobs, 'get_wpml_job_id' ] );
-		$removeTranslationDuplicateStatus = partialRight( [ ReturnedJobsQueue::class, 'removeJobTranslationDuplicateStatus' ], [ $ateJobs, 'get_wpml_job_id' ] );
 
-		return new ReturnedJobActions( $add, $removeTranslationDuplicateStatus );
+		return new ReturnedJobActions( $add );
 	}
 }

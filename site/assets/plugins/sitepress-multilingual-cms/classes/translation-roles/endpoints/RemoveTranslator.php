@@ -35,11 +35,7 @@ class RemoveTranslator extends Remove {
 		             ->bichain(
 		             	pipe( Fns::always( $this->msgUserNotFound() ), Either::left() ),
 		             	$runParentRemove
-		             )
-		             ->map( function( $result ) {
-		             	do_action( 'wpml_tm_ate_synchronize_translators' );
-		             	return $result;
-		             } );
+		             );
 	}
 
 	protected static function getCap() {

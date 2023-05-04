@@ -106,8 +106,7 @@ class Domains {
 				 * Admin texts, packages, string shortcodes are handled separately,
 				 * so they are loaded on-demand.
 				 */
-				return null === $domain
-					   || 0 === strpos( $domain, WPML_Admin_Texts::DOMAIN_NAME_PREFIX )
+				return 0 === strpos( $domain, WPML_Admin_Texts::DOMAIN_NAME_PREFIX )
 					   || $this->package_domains->isPackage( $domain )
 					   || Shortcode::STRING_DOMAIN === $domain
 					   || in_array( $domain, $native_mo_domains, true );

@@ -3,31 +3,18 @@
    "locale_data": {
       "messages": {
          "": {
-            "domain": "messages",
-            "lang": "en"
+            "domain": "messages"
          },
          "Accepted": [
             "Aceito"
          ],
-         "Approved!": [
-            "Aceitar esta tradução!"
-         ],
-         "Loading the next translation for review...": [
-            "Carregando a próxima tradução para revisão…"
+         "Reviewing the next translation...": [
+            "Revisando a próxima tradução…"
          ],
          "Back": [
             "Voltar"
          ],
-         "Turn off to not automatically load the next translation after finishing this review.": [
-            "Desligue para não carregar automaticamente a próxima tradução após terminar esta revisão."
-         ],
-         "Turn on to automatically load the next translation after finishing this review.": [
-            "Ative para carregar automaticamente a próxima tradução após terminar esta revisão."
-         ],
-         "Edit": [
-            "Editar"
-         ],
-         "Edit translation": [
+         "Edit Translation": [
             "Editar tradução"
          ],
          "There was an error in applying translation.": [
@@ -36,20 +23,17 @@
          "Please wait, applying translation..": [
             "Aguarde, aplicando tradução…"
          ],
-         "Next review": [
-            "Próxima revisão"
-         ],
          "Publish this translation": [
             "Publicar esta tradução"
          ],
          "Accept this translation": [
             "Aceitar esta tradução"
          ],
-         "Published!": [
-            "Publicado!"
+         "Approved!": [
+            "Aceitar esta tradução"
          ],
-         "Reviewing the next translation...": [
-            "Revisando a próxima tradução…"
+         "Loading the next translation for review...": [
+            "Carregando a próxima tradução para revisão…"
          ]
       }
    }

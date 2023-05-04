@@ -1,7 +1,5 @@
 <?php
 
-use WPML\Element\API\PostTranslations;
-
 /**
  * Class WPML_Media_Image_Translate
  * Allows getting translated images in a give language from an attachment
@@ -21,7 +19,7 @@ class WPML_Media_Image_Translate {
 	/**
 	 * WPML_Media_Image_Translate constructor.
 	 *
-	 * @param SitePress $sitepress
+	 * @param SitePress                            $sitepress
 	 * @param WPML_Media_Attachment_By_URL_Factory $attachment_by_url_factory
 	 */
 	public function __construct( SitePress $sitepress, WPML_Media_Attachment_By_URL_Factory $attachment_by_url_factory ) {
@@ -30,7 +28,7 @@ class WPML_Media_Image_Translate {
 	}
 
 	/**
-	 * @param int $attachment_id
+	 * @param int    $attachment_id
 	 * @param string $language
 	 * @param string $size
 	 *
@@ -87,19 +85,17 @@ class WPML_Media_Image_Translate {
 	 */
 	public function get_attachment_id_by_url( $img_src, $source_language ) {
 		$attachment_by_url = $this->attachment_by_url_factory->create( $img_src, $source_language );
-
 		return (int) $attachment_by_url->get_id();
 	}
 
 	/**
 	 * @param string $url
-	 * @param int $attachment_id
+	 * @param int    $attachment_id
 	 *
 	 * @return string
 	 */
 	private function get_image_size_from_url( $url, $attachment_id ) {
 		$media_sizes = new WPML_Media_Sizes();
-
 		return $media_sizes->get_image_size_from_url( $url, $attachment_id );
 	}
 
@@ -113,20 +109,18 @@ class WPML_Media_Image_Translate {
 	private function get_sized_image_url( $attachment_id, $size, $uploads_dir ) {
 		$image_url = '';
 		$meta_data = wp_get_attachment_metadata( $attachment_id );
-		$image_url_parts = array( $uploads_dir['baseurl'] );
 
-		if ( array_key_exists( 'file', $meta_data ) ) {
-			$file_subdirectory       = $meta_data['file'];
-			$file_subdirectory_parts = explode( '/', $file_subdirectory );
+		if ( array_key_exists( $size, $meta_data['sizes'] ) ) {
+			$image_url_parts = array( $uploads_dir['baseurl'] );
 
-			$fileName = array_pop( $file_subdirectory_parts );
-			$image_url_parts[] = implode( '/', $file_subdirectory_parts );
+			if ( array_key_exists( 'file', $meta_data ) ) {
+				$file_subdirectory       = $meta_data['file'];
+				$file_subdirectory_parts = explode( '/', $file_subdirectory );
 
-			if ( array_key_exists( $size, $meta_data['sizes'] ) ) {
-				$image_url_parts[] = $meta_data['sizes'][ $size ]['file'];
-			} else {
-				$image_url_parts[] = $fileName;
+				array_pop( $file_subdirectory_parts );
+				$image_url_parts[] = implode( '/', $file_subdirectory_parts );
 			}
+			$image_url_parts[] = $meta_data['sizes'][ $size ]['file'];
 
 			$image_url = implode( '/', $image_url_parts );
 		}

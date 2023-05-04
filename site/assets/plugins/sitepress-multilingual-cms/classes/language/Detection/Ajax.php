@@ -12,7 +12,7 @@ use \WPML_Request;
 class Ajax extends WPML_Request {
 
 	public function get_requested_lang() {
-		return Maybe::of( $_REQUEST )
+		return Maybe::of( $_POST )
 					->map( Obj::prop( 'lang' ) )
 					->filter( Lst::includes( Fns::__, $this->active_languages ) )
 					->map( 'sanitize_text_field' )

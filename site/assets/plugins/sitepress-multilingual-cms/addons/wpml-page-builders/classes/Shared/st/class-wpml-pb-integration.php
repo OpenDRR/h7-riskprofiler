@@ -142,18 +142,10 @@ class WPML_PB_Integration {
 	 */
 	private function is_editing_translation_with_native_editor( $translatedPostId ) {
 		// $getPOST :: string -> mixed
-		$getPOST = Obj::prop( Fns::__, $_POST ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+		$getPOST = Obj::prop( Fns::__, $_POST );
 
-		// $isQuickEditAction :: int -> bool
-		$isQuickEditAction = function( $id ) use ( $getPOST ) {
-			return wp_doing_ajax()
-				   && 'inline-save' === $getPOST( 'action' )
-				   && $id === (int) $getPOST( 'post_ID' );
-		};
-
-		$isTranslationWithNativeEditor = ( 'editpost' === $getPOST( 'action' )
-			   && (int) $getPOST( 'ID' ) === $translatedPostId )
-			|| ( $isQuickEditAction( $translatedPostId ) && WPML_PB_Last_Translation_Edit_Mode::is_native_editor( $translatedPostId ) );
+		$isTranslationWithNativeEditor = 'editpost' === $getPOST( 'action' )
+		                                 && (int) $getPOST( 'ID' ) === $translatedPostId;
 
 		/**
 		 * This filter allows to override the result if a translation
@@ -178,10 +170,9 @@ class WPML_PB_Integration {
 
 	/**
 	 * @param WP_Post $post
-	 * @param bool $allowRegisteringPostTranslation Specifies if the string registration must be allowed for posts that are not original.
 	 */
-	public function register_all_strings_for_translation( $post, $allowRegisteringPostTranslation = false ) {
-		if ( $post instanceof \WP_Post && $this->is_post_status_ok( $post ) && ( $allowRegisteringPostTranslation || $this->is_original_post( $post ) ) ) {
+	public function register_all_strings_for_translation( $post ) {
+		if ( $post instanceof \WP_Post && $this->is_post_status_ok( $post ) && $this->is_original_post( $post ) ) {
 			$this->is_registering_string = true;
 			$this->with_strategies( invoke( 'register_strings' )->with( $post ) );
 			$this->is_registering_string = false;

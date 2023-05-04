@@ -1,7 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
-
 /**
  * Class WPML_TF_Backend_Feedback_List_View
  *
@@ -86,14 +84,14 @@ class WPML_TF_Backend_Feedback_List_View {
 		}
 
 		if ( isset( $_GET['order'], $_GET['orderby'] ) ) {
-			$args['order']   = Sanitize::stringProp( 'order', $_GET );
-			$args['orderby'] = Sanitize::stringProp( 'orderby', $_GET );
+			$args['order']   = filter_var( $_GET['order'], FILTER_SANITIZE_STRING );
+			$args['orderby'] = filter_var( $_GET['orderby'], FILTER_SANITIZE_STRING );
 		}
 
 		if ( isset( $_GET['status'] ) ) {
-			$args['status'] = Sanitize::stringProp( 'status', $_GET );
+			$args['status'] = filter_var( $_GET['status'], FILTER_SANITIZE_STRING );
 		} elseif ( isset( $_GET['language'] ) ) {
-			$args['language'] = Sanitize::stringProp( 'language', $_GET );
+			$args['language'] = filter_var( $_GET['language'], FILTER_SANITIZE_STRING );
 		}
 
 		if ( isset( $_GET['post_id'] ) ) {

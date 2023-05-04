@@ -1,7 +1,5 @@
 <?php
 
-use WPML\Utils\AutoAdjustIds;
-
 class WPML_Absolute_To_Permalinks {
 
 	private $taxonomies_query;
@@ -10,12 +8,8 @@ class WPML_Absolute_To_Permalinks {
 	/** @var SitePress $sitepress */
 	private $sitepress;
 
-	/** @var AutoAdjustIds $auto_adjust_ids */
-	private $auto_adjust_ids;
-
-	public function __construct( SitePress $sitepress, AutoAdjustIds $auto_adjust_ids = null ) {
-		$this->sitepress       = $sitepress;
-		$this->auto_adjust_ids = $auto_adjust_ids ?: new AutoAdjustIds( $sitepress );
+	public function __construct( SitePress $sitepress ) {
+		$this->sitepress = $sitepress;
 	}
 
 	public function convert_text( $text ) {
@@ -43,11 +37,7 @@ class WPML_Absolute_To_Permalinks {
 
 		$parts = $this->get_found_parts( $matches );
 
-		$url = $this->auto_adjust_ids->runWith(
-			function() use ( $parts ) {
-				return $this->get_url( $parts );
-			}
-		);
+		$url = $this->get_url( $parts );
 
 		if ( $this->sitepress->get_wp_api()->is_wp_error( $url ) || empty( $url ) ) {
 			return $parts->whole;
@@ -76,6 +66,9 @@ class WPML_Absolute_To_Permalinks {
 	private function get_url( $parts ) {
 		$tax = $this->taxonomies_query->find( $parts->content_type );
 
+		$auto_adjust_ids_origin = $this->sitepress->get_setting( 'auto_adjust_ids', false );
+		$this->sitepress->set_setting( 'auto_adjust_ids', true );
+
 		if ( $parts->content_type == 'cat_ID' ) {
 			$url = $this->sitepress->get_wp_api()->get_category_link( $parts->id );
 		} elseif ( $tax ) {
@@ -83,6 +76,8 @@ class WPML_Absolute_To_Permalinks {
 		} else {
 			$url = $this->sitepress->get_wp_api()->get_permalink( $parts->id );
 		}
+
+		$this->sitepress->set_setting( 'auto_adjust_ids', $auto_adjust_ids_origin );
 
 		return $url;
 	}

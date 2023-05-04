@@ -2,66 +2,75 @@
 
 namespace WPML\TM\Jobs\Utils;
 
-use WPML\TM\Menu\PostLinkUrl;
+use stdClass;
 use WPML_Post_Translation;
+use WPML_TM_Post_Link_Factory;
 
 class ElementLink {
 
-	/** @var PostLinkUrl $postLinkUrl */
-	private $postLinkUrl;
+	/** @var WPML_TM_Post_Link_Factory $postLinkFactory */
+	private $postLinkFactory;
 
 	/** @var WPML_Post_Translation $postTranslation */
 	private $postTranslation;
 
-	public function __construct( PostLinkUrl $postLinkUrl, WPML_Post_Translation $postTranslation ) {
-		$this->postLinkUrl     = $postLinkUrl;
+	public function __construct( WPML_TM_Post_Link_Factory $postLinkFactory, WPML_Post_Translation $postTranslation ) {
+		$this->postLinkFactory = $postLinkFactory;
 		$this->postTranslation = $postTranslation;
 	}
 
-	public function getOriginal( \WPML_TM_Post_Job_Entity $job ) {
-		return $this->get( $job, $job->get_original_element_id() );
-	}
-
 	/**
-	 * @param \WPML_TM_Post_Job_Entity $job
+	 * @param stdClass $job
 	 *
 	 * @return string
 	 */
-	public function getTranslation( \WPML_TM_Post_Job_Entity $job ) {
-		if ( $this->isExternalType( $job->get_element_type_prefix() ) ) {
+	public function getOriginal( $job ) {
+		return $this->get( $job, __( 'View original', 'wpml-translation-management' ) );
+	}
+
+	/**
+	 * @param stdClass $job
+	 *
+	 * @return string
+	 */
+	public function getTranslation( $job ) {
+		if ( $this->isExternalType( $job->element_type_prefix ) ) {
 			return '';
 		}
 
-		$translatedId = $this->postTranslation->element_id_in( $job->get_original_element_id(), $job->get_target_language() );
+		$translatedId = $this->postTranslation->element_id_in( $job->original_doc_id, $job->language_code );
 
 		if ( $translatedId ) {
-			return $this->get( $job, $translatedId );
+			return $this->get( $job, __( 'View', 'wpml-translation-management' ), $translatedId );
 		}
 
 		return '';
 	}
 
 	/**
-	 * @param \WPML_TM_Post_Job_Entity $job
+	 * @param stdClass    $job
+	 * @param string      $viewText
 	 * @param string|null $elementId
 	 *
 	 * @return mixed|string|void
 	 */
-	private function get( \WPML_TM_Post_Job_Entity $job, $elementId = null ) {
-		$elementId   = $elementId ?: $job->get_target_language();
-		$elementType = preg_replace( '/^' . $job->get_element_type_prefix() . '_/', '', $job->get_element_type() );
+	private function get( $job, $viewText, $elementId = null ) {
+		$elementId   = $elementId ?: $job->original_doc_id;
+		$elementType = preg_replace( '/^' . $job->element_type_prefix . '_/', '', $job->original_post_type );
 
-		if ( $this->isExternalType( $job->get_element_type_prefix() ) ) {
-			$tmPostLink = apply_filters( 'wpml_external_item_url', '', $elementId );
+		if ( $this->isExternalType( $job->element_type_prefix ) ) {
+			$url        = apply_filters( 'wpml_external_item_url', '', $elementId );
+			$tmPostLink = '<a href="' . $url . '">' . $viewText . '</a>';
 		} else {
-			$tmPostLink = $this->postLinkUrl->viewLinkUrl( $elementId );
+			$tmPostLink = $this->postLinkFactory->view_link_anchor( $elementId, $viewText, '_blank' );
 		}
+
 		$tmPostLink = apply_filters(
 			'wpml_document_view_item_link',
 			$tmPostLink,
-			'',
+			$viewText,
 			$job,
-			$job->get_element_type_prefix(),
+			$job->element_type_prefix,
 			$elementType
 		);
 

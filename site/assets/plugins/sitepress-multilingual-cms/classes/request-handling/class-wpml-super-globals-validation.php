@@ -9,7 +9,7 @@ class WPML_Super_Globals_Validation {
 	 *
 	 * @return mixed|null
 	 */
-	public function get( $key, $filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null ) {
+	public function get( $key, $filter = FILTER_SANITIZE_STRING, $options = null ) {
 		return $this->get_value( $key, $_GET, $filter, $options );
 	}
 
@@ -20,7 +20,7 @@ class WPML_Super_Globals_Validation {
 	 *
 	 * @return mixed|null
 	 */
-	public function post( $key, $filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null ) {
+	public function post( $key, $filter = FILTER_SANITIZE_STRING, $options = null ) {
 		return $this->get_value( $key, $_POST, $filter, $options );
 	}
 
@@ -32,16 +32,14 @@ class WPML_Super_Globals_Validation {
 	 *
 	 * @return mixed|null
 	 */
-	private function get_value( $key, array $var, $filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS, $options = null ) {
+	private function get_value( $key, array $var, $filter = FILTER_SANITIZE_STRING, $options = null ) {
 		$value = null;
 
 		if ( array_key_exists( $key, $var ) ) {
 			if ( is_array( $var[ $key ] ) ) {
 				$value = filter_var_array( $var[ $key ], $filter );
-			} elseif ( null !== $options ) {
-				$value = filter_var( $var[ $key ], $filter, $options );
 			} else {
-				$value = filter_var( $var[ $key ], $filter );
+				$value = filter_var( $var[ $key ], $filter, $options );
 			}
 		}
 

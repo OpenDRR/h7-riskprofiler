@@ -1,6 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
 use WPML\Core\Twig_Environment;
 use WPML\Core\Twig_Loader_Filesystem;
 use WPML\Core\Twig_Loader_String;
@@ -480,7 +479,7 @@ class WPML_WP_API extends WPML_PHP_Functions {
 	}
 
 	public function is_heartbeat() {
-		$action = Sanitize::stringProp( 'action', $_POST );
+		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 
 		return 'heartbeat' === $action;
 	}
@@ -488,8 +487,7 @@ class WPML_WP_API extends WPML_PHP_Functions {
 	public function is_post_edit_page() {
 		global $pagenow;
 
-		return 'post.php' === $pagenow && isset( $_GET['action'], $_GET['post'] )
-		       && 'edit' === Sanitize::stringProp( 'action', $_GET );
+		return 'post.php' === $pagenow && isset( $_GET['action'], $_GET['post'] ) && 'edit' === filter_var( $_GET['action'] );
 	}
 
 	public function is_new_post_page() {

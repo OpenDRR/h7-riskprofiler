@@ -280,13 +280,6 @@ class SitePress extends WPML_WPDB_User implements
 		$this->api_hooks();
 		add_action( 'wpml_loaded', array( $this, 'load_dependencies' ), 10000 );
 		do_action( 'wpml_after_startup' );
-
-
-        // Load adjust count for terms display as translated.
-        new WPML_Term_Display_As_Translated_Adjust_Count(
-			$this,
-			$this->wpdb
-		);
 	}
 
 	/**
@@ -552,8 +545,7 @@ class SitePress extends WPML_WPDB_User implements
 		/** @var WPML_Request $wpml_request_handler */
 		global $wpml_request_handler, $pagenow, $wpml_language_resolution, $mode;
 
-		$isLoadingATEAutomaticTranslationWidget = strpos( $_SERVER['REQUEST_URI'], 'ate-widget' );
-		if ( ! defined( 'WP_ADMIN' ) && isset( $_SERVER['HTTP_HOST'] ) && ! empty( $_SERVER['HTTP_HOST'] ) && $_SERVER['HTTP_HOST'] && ! defined( 'WP_CLI' ) && did_action( 'init' ) && ! $isLoadingATEAutomaticTranslationWidget ) {
+		if ( ! defined( 'WP_ADMIN' ) && isset( $_SERVER['HTTP_HOST'] ) && ! empty( $_SERVER['HTTP_HOST'] ) && $_SERVER['HTTP_HOST'] && ! defined( 'WP_CLI' ) && did_action( 'init' ) ) {
 			require_once WPML_PLUGIN_PATH . '/classes/request-handling/redirection/wpml-frontend-redirection.php';
 			/** @var \WPML\Language\Detection\Frontend $wpml_request_handler */
 			$redirect_helper = _wpml_get_redirect_helper();
@@ -603,11 +595,10 @@ class SitePress extends WPML_WPDB_User implements
 		// adjust queried categories and tags ids according to the language
 		if ( (bool) $this->get_setting( 'auto_adjust_ids' ) ) {
 			add_action( 'wp_list_pages_excludes', array( $this, 'adjust_wp_list_pages_excludes' ) );
-			if ( (! $this->get_wp_api()
+			if ( ! $this->get_wp_api()
 						->is_admin()
 				 || $this->get_wp_api()
-						 ->constant( 'DOING_AJAX' ))
-				    && ! wpml_is_rest_request()
+						 ->constant( 'DOING_AJAX' )
 			) {
 				add_filter( 'get_term', array( $this, 'get_term_adjust_id' ), 1, 1 );
 				add_action( 'edited_term', array( $this, 'edited_term_action' ) );
@@ -2179,7 +2170,7 @@ class SitePress extends WPML_WPDB_User implements
 						'text' => $settings_factory->show_system_fields ? __( 'Hide system fields', 'sitepress' ) : __( 'Show system fields', 'sitepress' ),
 					);
 					?>
-					<a href="<?php echo esc_url( $toggle_system_fields['url'] ); ?>"><?php echo $toggle_system_fields['text']; ?></a>
+					<a href="<?php echo $toggle_system_fields['url']; ?>"><?php echo $toggle_system_fields['text']; ?></a>
 				</p>
 				<?php
 
@@ -3425,17 +3416,11 @@ class SitePress extends WPML_WPDB_User implements
 		$output_as_query     = implode( '&', $original_attributes );
 		parse_str( $output_as_query, $attributes );
 
-		foreach ( $attributes as $key => $val ) {
-			// sanitize each attribute to make sure it only contains letters, numbers, underscores and dashes
-			$attributes[ $key ] = preg_replace( '/[^-a-zA-Z0-9_]/', '', $val );
-		}
-
 		// Adds or update the language attribute (no need to check if it exists)
 		$attributes['lang'] = '"' . esc_attr( $this->this_lang ) . '"';
 
-
 		// Convert the array back into the space separated atrributes
-		$new_output = http_build_query( $attributes, '', ' ' );
+		$new_output = http_build_query( $attributes, null, ' ' );
 
 		return urldecode( $new_output );
 	}
@@ -4583,7 +4568,7 @@ class SitePress extends WPML_WPDB_User implements
 						? $wpml_post_translations->element_id_in( $element_id, $language_code )
 						: null;
 
-					$term_id = ! $post_id && isset( $wp_taxonomies[ $element_type ] ) && $taxonomyTypeIsTranslatable
+					$term_id = isset( $wp_taxonomies[ $element_type ] ) && $taxonomyTypeIsTranslatable
 						? $wpml_term_translations->term_id_in( $element_id, $language_code )
 						: null;
 
@@ -4602,7 +4587,9 @@ class SitePress extends WPML_WPDB_User implements
 	}
 
 	public function handle_head_hreflang() {
-		( new WPML_SEO_HeadLangs( $this ) )->init_hooks();
+		$wpml_queried_object_factory = new WPML_Queried_Object_Factory();
+		$wpml_seo_headlangs          = new WPML_SEO_HeadLangs( $this, $wpml_queried_object_factory );
+		$wpml_seo_headlangs->init_hooks();
 	}
 
 	/**

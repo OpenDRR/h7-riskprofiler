@@ -2,7 +2,6 @@
 
 use \WPML\FP\Obj;
 use WPML\LIB\WP\Option as Option;
-use WPML\LIB\WP\User;
 
 /**
  * This code is inspired by WPML Widgets (https://wordpress.org/plugins/wpml-widgets/),
@@ -12,7 +11,6 @@ use WPML\LIB\WP\User;
  */
 class WPML_Widgets_Support_Backend implements IWPML_Action {
 	const NONCE = 'wpml-language-nonce';
-	const NONCE_LEGACY_WIDGET = 'wpml_change_selected_language_for_legacy_widget';
 
 	private $active_languages;
 	private $template_service;
@@ -31,9 +29,7 @@ class WPML_Widgets_Support_Backend implements IWPML_Action {
 	public function add_hooks() {
 		add_action( 'in_widget_form', array( $this, 'language_selector' ), 10, 3 );
 		add_filter( 'widget_update_callback', array( $this, 'update' ), 10, 4 );
-		if ( User::getCurrent() && User::getCurrent()->has_cap('wpml_manage_languages') ) {
-			add_action( 'wp_ajax_wpml_change_selected_language_for_legacy_widget', array( $this, 'set_selected_language_for_legacy_widget' ) );
-		}
+		add_action( 'wp_ajax_wpml_change_selected_language_for_legacy_widget', array( $this, 'set_selected_language_for_legacy_widget' ) );
 		if ( $this->is_widgets_page() ) {
 			add_action('enqueue_block_editor_assets', array($this, 'enqueue_scripts'));
 		}
@@ -44,11 +40,7 @@ class WPML_Widgets_Support_Backend implements IWPML_Action {
 		wp_localize_script(
 			'widgets-language-switcher-script',
 			'wpml_active_and_selected_languages',
-			[
-				"active_languages" => $this->active_languages,
-			    "legacy_widgets_languages" => $this->get_legacy_widgets_selected_languages(),
-				'nonce' => wp_create_nonce( self::NONCE_LEGACY_WIDGET ),
-			]
+			[ "active_languages" => $this->active_languages, "legacy_widgets_languages" => $this->get_legacy_widgets_selected_languages() ]
 		);
 		wp_enqueue_script( 'widgets-language-switcher-script' );
 	}
@@ -132,24 +124,18 @@ class WPML_Widgets_Support_Backend implements IWPML_Action {
 	}
 
 	public function set_selected_language_for_legacy_widget() {
-		$nonce   = isset( $_POST['nonce'] ) ? sanitize_text_field( $_POST['nonce'] ) : '';
-
-		if ( wp_verify_nonce( $nonce, self::NONCE_LEGACY_WIDGET )
-		     && isset( $_POST['id'] )
-		     && isset( $_POST['selected_language_value'] ) ) {
-			$widget_id               = sanitize_text_field( $_POST['id'] );
+		if ( isset( $_POST['id'] ) && isset( $_POST['selected_language_value'] ) ) {
+			$widget_id = sanitize_text_field( $_POST['id'] );
 			$selected_language_value = sanitize_text_field( $_POST['selected_language_value'] );
 
-			$widget             = explode( '-', $widget_id );
-			$widget_id          = array_pop( $widget );
-			$widget_option_name = 'widget_' . implode( '-', $widget );
-			$widgets_by_type    = get_option( $widget_option_name );
+			$widget = explode('-', $widget_id);
+			$widget_id = array_pop($widget);
+			$widget_option_name = 'widget_' . implode('-', $widget);
+			$widgets_by_type = get_option($widget_option_name);
 
-			$widgets_by_type[ $widget_id ]['wpml_language'] = $selected_language_value;
+			$widgets_by_type[$widget_id]['wpml_language'] = $selected_language_value;
 
-			Option::update( $widget_option_name, $widgets_by_type );
-		} else {
-			wp_send_json_error( esc_html__( 'Invalid request!', 'sitepress' ) );
+			Option::update($widget_option_name, $widgets_by_type);
 		}
 	}
 

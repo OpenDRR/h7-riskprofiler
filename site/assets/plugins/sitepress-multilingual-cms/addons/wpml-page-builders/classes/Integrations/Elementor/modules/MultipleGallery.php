@@ -4,7 +4,7 @@
  */
 namespace WPML\PB\Elementor\Modules;
 
-class MultipleGallery extends \WPML_Elementor_Module_With_Items {
+class MulitpleGallery extends \WPML_Elementor_Module_With_Items {
 
     protected function get_title( $field ) {
         switch ( $field ) {

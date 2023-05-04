@@ -1,7 +1,5 @@
 <?php
 
-use WPML\FP\Fns;
-
 class WPML_Term_Translation_Utils extends WPML_SP_User {
 
 	/**
@@ -34,9 +32,6 @@ class WPML_Term_Translation_Utils extends WPML_SP_User {
 	private function synchronize_terms( $original_post_id, $lang, $duplicate ) {
 		global $wpml_post_translations;
 
-		$returnTrue = Fns::always( true );
-		add_filter( 'wpml_disable_term_adjust_id', $returnTrue );
-
 		$wpml_post_translations->reload();
 		$translated_post_id = $wpml_post_translations->element_id_in( $original_post_id, $lang );
 		if ( (bool) $translated_post_id === true ) {
@@ -61,8 +56,6 @@ class WPML_Term_Translation_Utils extends WPML_SP_User {
 				}
 			}
 		}
-
-		remove_filter( 'wpml_disable_term_adjust_id', $returnTrue );
 		clean_object_term_cache( $original_post_id, get_post_type( $original_post_id ) );
 	}
 

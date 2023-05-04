@@ -1,7 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
-
 /**
  * Class WPML_Language_Per_Domain_SSO
  */
@@ -182,7 +180,7 @@ class WPML_Language_Per_Domain_SSO {
 			$transient_key = $this->create_transient_key(
 				self::TRANSIENT_USER,
 				null,
-				Sanitize::stringProp( self::IFRAME_USER_TOKEN_KEY, $_GET )
+				filter_var( $_GET[ self::IFRAME_USER_TOKEN_KEY ], FILTER_SANITIZE_STRING )
 			);
 			$user_id       = (int) get_transient( $transient_key );
 			delete_transient( $transient_key );
@@ -190,7 +188,7 @@ class WPML_Language_Per_Domain_SSO {
 			$transient_key = $this->create_transient_key(
 				self::TRANSIENT_USER,
 				$this->get_current_domain(),
-				Sanitize::stringProp( self::IFRAME_USER_TOKEN_KEY_FOR_DOMAIN, $_GET )
+				filter_var( $_GET[ self::IFRAME_USER_TOKEN_KEY_FOR_DOMAIN ], FILTER_SANITIZE_STRING )
 			);
 			$user_id       = (int) get_transient( $transient_key );
 			delete_transient( $transient_key );

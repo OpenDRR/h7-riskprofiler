@@ -36,9 +36,6 @@ class WPML_Gutenberg_Integration_Factory {
 			$integrations->add(
 				make( \WPML\PB\Gutenberg\Navigation\Frontend::class )
 			);
-			$integrations->add(
-				make( \WPML\PB\Gutenberg\ConvertIdsInBlock\Hooks::class )
-			);
 		}
 
 		$integrations->add(

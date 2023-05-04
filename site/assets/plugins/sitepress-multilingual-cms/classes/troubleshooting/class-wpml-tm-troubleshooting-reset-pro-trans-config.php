@@ -1,7 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
-
 class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factory_Obsolete {
 
 	const SCRIPT_HANDLE = 'wpml_reset_pro_trans_config';
@@ -50,13 +48,12 @@ class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factor
 	 * Loading actions.
 	 */
 	public function load_action() {
-		$page           = Sanitize::stringProp( 'page', $_GET );
+		$page           = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
 		$should_proceed = SitePress_Setup::setup_complete()
-		                  && ! $this->wpml_wp_api->is_heartbeat()
-		                  && ! $this->wpml_wp_api->is_ajax()
-		                  && ! $this->wpml_wp_api->is_cron_job()
-		                  && $page
-		                  && strpos( $page, 'sitepress-multilingual-cms/menu/troubleshooting.php' ) === 0;
+											&& ! $this->wpml_wp_api->is_heartbeat()
+											&& ! $this->wpml_wp_api->is_ajax()
+											&& ! $this->wpml_wp_api->is_cron_job()
+											&& strpos( $page, 'sitepress-multilingual-cms/menu/troubleshooting.php' ) === 0;
 
 		if ( $should_proceed ) {
 			$this->add_hooks();
@@ -116,9 +113,8 @@ class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factor
 	 * @return array|null
 	 */
 	public function reset_pro_translation_configuration_action() {
-		$action = Sanitize::stringProp( 'action', $_POST );
-		$nonce  = Sanitize::stringProp( 'nonce', $_POST );
-
+		$action      = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+		$nonce       = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
 		$valid_nonce = wp_verify_nonce( $nonce, $action );
 		if ( $valid_nonce && $_POST ) {
 			return $this->wpml_wp_api->wp_send_json_success( $this->reset_pro_translation_configuration() );

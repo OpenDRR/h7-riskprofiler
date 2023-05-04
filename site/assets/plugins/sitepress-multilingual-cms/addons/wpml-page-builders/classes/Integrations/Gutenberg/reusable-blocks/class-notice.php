@@ -2,8 +2,6 @@
 
 namespace WPML\PB\Gutenberg\ReusableBlocks;
 
-use WPML\API\Sanitize;
-
 class Notice {
 
 	/** @var \WPML_Notices $notices */
@@ -50,18 +48,15 @@ class Notice {
 	private function getRestrictScreenIDs() {
 		$screen_ids = [ 'post', 'edit-post' ];
 
-		/* phpcs:ignore WordPress.Security.NonceVerification.Recommended */
-		$return_url = Sanitize::stringProp( 'return_url', $_GET );
-
-		if ( false !== $return_url ) {
-			$query = wpml_parse_url( $return_url, PHP_URL_QUERY );
+		if ( isset( $_GET['return_url'] ) ) {
+			$query  = wpml_parse_url( $_GET['return_url'], PHP_URL_QUERY );
 			parse_str( $query, $params );
 
 			if ( isset( $params['post'] ) ) {
 				$post_id    = filter_var( $params['post'], FILTER_VALIDATE_INT );
 				$screen_ids = [ get_post_type( $post_id ) ];
 			} elseif ( isset( $params['post_type'] ) ) {
-				$post_type  = Sanitize::stringProp( 'post_type', $params );
+				$post_type  = filter_var( $params['post_type'], FILTER_SANITIZE_STRING );
 				$screen_ids = [ 'edit-' . $post_type ];
 			}
 		}

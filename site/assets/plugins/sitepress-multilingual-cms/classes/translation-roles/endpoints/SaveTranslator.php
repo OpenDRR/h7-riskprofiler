@@ -34,10 +34,7 @@ class SaveTranslator extends SaveUser {
 		           ->map( $setRole )
 		           ->map( Obj::prop( 'ID' ) )
 		           ->map( $storePairs )
-		           ->map( function( $user ) {
-					   do_action( 'wpml_update_translator' );
-					   return $user;
-				   } )
+		           ->map( Fns::tap( partial( 'do_action', 'wpml_update_translator' ) ) )
 		           ->map( Fns::always( true ) );
 	}
 }

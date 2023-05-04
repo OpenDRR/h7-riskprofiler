@@ -34,14 +34,11 @@ function filterVar( $filter ) {
 }
 
 /**
- * returns a function that will sanitize a string.
+ * returns a function that will sanitize using the FILTER_SANITIZE_STRING type.
  * @return \Closure
  */
-function sanitizeString( $flags = ENT_QUOTES ) {
-	return function( $value ) use ( $flags ) {
-		return is_string( $value ) || is_numeric( $value )
-			? str_replace( '&amp;', '&', htmlspecialchars( strip_tags( $value ), $flags ) ) : false;
-	};
+function sanitizeString() {
+	return filterVar( FILTER_SANITIZE_STRING );
 }
 
 /**

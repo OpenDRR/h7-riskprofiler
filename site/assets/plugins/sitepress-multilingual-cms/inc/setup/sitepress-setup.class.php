@@ -274,10 +274,9 @@ class SitePress_Setup {
 	private static function create_table( $name, $table_sql ) {
 		global $wpdb;
 
-		$table_name  = $wpdb->prefix . $name;
-		$found_table = (string) $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" );
+		$table_name = $wpdb->prefix . $name;
 
-		return 0 === strcasecmp( $found_table, $table_name )
+		return 0 === strcasecmp( $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" ), $table_name )
 			|| ( $wpdb->query(
 				sprintf( 'CREATE TABLE IF NOT EXISTS `%s` ', $table_name )
 				. $table_sql . ' '

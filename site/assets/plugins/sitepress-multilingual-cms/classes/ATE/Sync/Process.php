@@ -26,9 +26,17 @@ class Process {
 	/** @var WPML_TM_ATE_Job_Repository $ateRepository */
 	private $ateRepository;
 
-	public function __construct( WPML_TM_ATE_API $api, WPML_TM_ATE_Job_Repository $ateRepository ) {
+	/** @var Trigger $trigger */
+	private $trigger;
+
+	public function __construct(
+		WPML_TM_ATE_API $api,
+		WPML_TM_ATE_Job_Repository $ateRepository,
+		Trigger $trigger
+	) {
 		$this->api           = $api;
 		$this->ateRepository = $ateRepository;
+		$this->trigger       = $trigger;
 	}
 
 	/**
@@ -44,6 +52,10 @@ class Process {
 		} else {
 			$includeManualAndLongstandingJobs  = (bool) Obj::propOr( true , 'includeManualAndLongstandingJobs', $args);
 			$result = $this->runSyncInit( $result, $includeManualAndLongstandingJobs );
+		}
+
+		if ( ! $result->nextPage ) {
+			$this->trigger->setLastSync();
 		}
 
 		return $result;
@@ -98,11 +110,11 @@ class Process {
 		$ateJobIds = $this->getAteJobIdsToSync( $includeManualAndLongstandingJobs );
 
 
-		if ( $ateJobIds ) {
+		if ( $ateJobIds || $this->trigger->isSyncRequired() ) {
 			$this->ateRepository->increment_ate_sync_count( $ateJobIds );
 			$data = $this->api->sync_all( $ateJobIds );
 
-			$jobs         = Obj::propOr( [], 'items', $data );
+			$jobs = array_merge( [], Obj::propOr( [], 'items', $data ), Obj::propOr( [], 'edited', $data ) );
 			$result->jobs = $this->handleJobs( $jobs );
 
 			if ( isset( $data->next->pagination_token, $data->next->pages_number ) ) {

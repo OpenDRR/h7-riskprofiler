@@ -34,20 +34,7 @@ class JobActions implements \IWPML_Action {
 		}
 	}
 
-	/**
-	 * @param \WPML_TM_Post_Job_Entity[]|\WPML_TM_Post_Job_Entity  $jobs
-	 *
-	 * @return void
-	 */
-	public function cancelJobsInATE( $jobs ) {
-		/**
-		 * We need this check because if we pass only one job to the hook:
-		 *  do_action( 'wpml_tm_jobs_cancelled', [ $job ] )
-		 * then WordPress converts it to $job.
-		 */
-		if ( is_object( $jobs ) ) {
-			$jobs = [ $jobs ];
-		}
+	public function cancelJobsInATE( array $jobs ) {
 
 		$getIds = pipe(
 			Fns::filter( invoke( 'is_ate_editor' ) ),
@@ -88,21 +75,17 @@ class JobActions implements \IWPML_Action {
 			->filter( invoke( 'is_automatic' ) );
 
 		$canceledInATE = $this->apiClient->hideJobs(
-			$translationJobs->map( invoke( 'get_editor_job_id' ) )->values()->toArray()
+			$translationJobs->map( invoke( 'get_editor_job_id' ) )->toArray()
 		);
 
-		$isResponseValid = $canceledInATE && ! is_wp_error( $canceledInATE );
-		$jobsHiddenInATE = $isResponseValid ? Obj::propOr( [], 'jobs', $canceledInATE ) : [];
-		$isHiddenInATE   = function ( $job ) use ( $isResponseValid, $jobsHiddenInATE ) {
-			return $isResponseValid && Lst::includes( $job->get_editor_job_id(), $jobsHiddenInATE );
-		};
+		if ( $canceledInATE && ! is_wp_error( $canceledInATE ) ) {
+			$translationJobs = $translationJobs->filter( pipe(
+				invoke( 'get_editor_job_id' ),
+				Lst::includes( Fns::__, Obj::propOr( [], 'jobs', $canceledInATE ) )
+			) );
+		}
 
-		$setStatus = Fns::tap( function ( \WPML_TM_Post_Job_Entity $job ) use ( $isHiddenInATE ) {
-			$status = $isHiddenInATE( $job ) ? ICL_TM_ATE_CANCELLED : ICL_TM_NOT_TRANSLATED;
-			$job->set_status( $status );
-		} );
-
-		$translationJobs->map( $setStatus )
+		$translationJobs->map( Fns::tap( invoke( 'set_status' )->with( ICL_TM_ATE_CANCELLED ) ) )
 		                ->map( Fns::tap( [ make( \WPML_TP_Sync_Update_Job::class ), 'update_state' ] ) );
 	}
 }

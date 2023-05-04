@@ -1,21 +1,10 @@
 <?php
 
 class WPML_Translator {
-	/** @var int */
-	public $ID;
-
-	/** @var string */
-	public $display_name;
-
-	/** @var string */
-	public $user_login;
-
-	/**
-	 * Array where key represents a source language code and values are codes of target languages.
-	 *
-	 * @var array<string, string[]>
-	 */
-	public $language_pairs;
+	var $ID;
+	var $display_name;
+	var $user_login;
+	var $language_pairs;
 
 	/**
 	 * @param string $property

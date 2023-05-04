@@ -1,8 +1,6 @@
 <?php
 namespace WPML\ATE\Proxies;
 
-use WPML\API\Sanitize;
-
 class Widget implements \IWPML_Frontend_Action, \IWPML_DIC_Action {
 	const QUERY_VAR_ATE_WIDGET_SCRIPT = 'wpml-app';
 	const SCRIPT_NAME                 = 'ate-widget';
@@ -34,7 +32,7 @@ class Widget implements \IWPML_Frontend_Action, \IWPML_DIC_Action {
 			return false;
 		}
 
-		$app = Sanitize::stringProp( self::QUERY_VAR_ATE_WIDGET_SCRIPT, $_GET );
+		$app = filter_input( INPUT_GET, self::QUERY_VAR_ATE_WIDGET_SCRIPT, FILTER_SANITIZE_STRING );
 
 		if ( self::SCRIPT_NAME !== $app ) {
 			return false;

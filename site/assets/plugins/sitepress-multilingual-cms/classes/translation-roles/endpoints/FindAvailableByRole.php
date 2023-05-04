@@ -2,7 +2,6 @@
 
 namespace WPML\TranslationRoles;
 
-use WPML\API\Sanitize;
 use WPML\Collect\Support\Collection;
 use WPML\Ajax\IHandler;
 use WPML\FP\Either;
@@ -19,7 +18,7 @@ class FindAvailableByRole implements IHandler {
 	 * @inheritDoc
 	 */
 	public function run( Collection $data ) {
-		$search  = Sanitize::string( $data->get( 'search' ) );
+		$search  = filter_var( $data->get( 'search' ), FILTER_SANITIZE_STRING );
 		$records = [
 			'translator' => \WPML_Translator_Records::class,
 			'manager'    => \WPML_Translation_Manager_Records::class,

@@ -1,7 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
-
 class WPML_Troubleshooting_Terms_Menu {
 
 	/**
@@ -112,12 +110,12 @@ class WPML_Troubleshooting_Terms_Menu {
 
 		$term_names = array();
 
-		$nonce = Sanitize::stringProp( '_icl_nonce', $_POST );
+		$nonce = filter_input( INPUT_POST, '_icl_nonce', FILTER_SANITIZE_STRING );
 		if ( ! wp_verify_nonce( $nonce, 'update_term_names_nonce' ) ) {
 			die( 'Wrong Nonce' );
 		}
 
-		$request_post_terms = Sanitize::stringProp( 'terms', $_POST );
+		$request_post_terms = filter_input( INPUT_POST, 'terms', FILTER_SANITIZE_STRING );
 		if ( $request_post_terms ) {
 			$term_names = json_decode( stripcslashes( $request_post_terms ) );
 			if ( ! is_object( $term_names ) ) {

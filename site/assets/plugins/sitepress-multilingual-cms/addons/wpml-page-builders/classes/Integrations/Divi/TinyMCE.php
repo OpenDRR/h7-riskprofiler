@@ -7,9 +7,7 @@ use WPML\FP\Obj;
 class TinyMCE implements \IWPML_Backend_Action {
 
 	public function add_hooks() {
-		if ( defined( 'WPML_TM_FOLDER' ) ) {
-			add_filter( 'tiny_mce_before_init', [ $this, 'filterEditorAutoTags' ] );
-		}
+		add_filter( 'tiny_mce_before_init', [ $this, 'filterEditorAutoTags' ] );
 	}
 
 	/**
@@ -20,9 +18,8 @@ class TinyMCE implements \IWPML_Backend_Action {
 	public function filterEditorAutoTags( $config ) {
 		if ( did_action( 'admin_init' ) ) {
 			$screen = get_current_screen();
-			$cteUrl = 'wpml_page_' . constant( 'WPML_TM_FOLDER' ) . '/menu/translations-queue';
 
-			if ( Obj::prop( 'id', $screen ) === $cteUrl ) {
+			if ( Obj::prop( 'id', $screen ) === 'wpml_page_wpml-translation-management/menu/translations-queue' ) {
 				$config['wpautop']      = false;
 				$config['indent']       = true;
 				$config['tadv_noautop'] = true;

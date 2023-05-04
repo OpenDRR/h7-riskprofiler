@@ -1,7 +1,5 @@
 <?php
 
-use WPML\API\Sanitize;
-
 class WPML_TM_ATE_Translator_Message_Classic_Editor_Factory implements IWPML_Backend_Action_Loader, IWPML_AJAX_Action_Loader {
 
 	/**
@@ -34,8 +32,10 @@ class WPML_TM_ATE_Translator_Message_Classic_Editor_Factory implements IWPML_Bac
 	 * @return bool
 	 */
 	private function is_editing_old_translation_and_te_is_used_for_old_translation() {
-		return Sanitize::stringProp( 'job_id', $_GET )
-		       && get_option( WPML_TM_Old_Jobs_Editor::OPTION_NAME ) === WPML_TM_Editors::WPML;	}
+		return array_key_exists( 'job_id', $_GET )
+			   && filter_var( $_GET['job_id'], FILTER_SANITIZE_STRING )
+			   && get_option( WPML_TM_Old_Jobs_Editor::OPTION_NAME ) === WPML_TM_Editors::WPML;
+	}
 
 	/**
 	 * @return bool

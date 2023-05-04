@@ -18,12 +18,6 @@ use function WPML\FP\pipe;
 use WPML\API\Settings;
 
 /**
- * @method static callable|string getCodeByName( ...$name ) - Curried :: string->string
- *
- * It returns language code according to the given name in the current display language.
- *
- * eg. 'Französisch' in German will return 'fr'
- *
  * @method static array getActive()
  *
  * It returns an array of the active languages.
@@ -103,11 +97,11 @@ use WPML\API\Settings;
  * ]
  *```
  *
- * @method static string getDefaultCode()
+ * @method static array getDefaultCode()
  *
  * It returns a default language code.
  *
- * @method static string getCurrentCode()
+ * @method static array getCurrentCode()
  *
  * It returns a current language code.
  *
@@ -165,19 +159,6 @@ class Languages {
 	 * @return void
 	 */
 	public static function init() {
-
-		self::macro( 'getCodeByName', curryN( 1, function ( $name ) {
-			global $wpdb;
-
-			$lang_code_query = "
-				SELECT language_code
-				FROM {$wpdb->prefix}icl_languages_translations
-				WHERE name = %s AND display_language_code = %s
-			";
-
-			return $wpdb->get_var( $wpdb->prepare( $lang_code_query, $name, self::getCurrentCode() ) );
-		} ) );
-
 		self::macro( 'getActive', function () {
 			global $sitepress;
 

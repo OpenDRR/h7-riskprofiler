@@ -3,31 +3,18 @@
    "locale_data": {
       "messages": {
          "": {
-            "domain": "messages",
-            "lang": "en"
+            "domain": "messages"
          },
          "Accepted": [
             "התקבלה"
          ],
-         "Approved!": [
-            "אושר!"
-         ],
-         "Loading the next translation for review...": [
-            "טוען את התרגום הבא לבדיקה..."
+         "Reviewing the next translation...": [
+            "בדיקת התרגום הבא."
          ],
          "Back": [
             "חזרה"
          ],
-         "Turn off to not automatically load the next translation after finishing this review.": [
-            "כבה כדי לא לטעון אוטומטית את התרגום הבא לאחר סיום בדיקה זו."
-         ],
-         "Turn on to automatically load the next translation after finishing this review.": [
-            "הפעל כדי לטעון אוטומטית את התרגום הבא לאחר סיום בדיקה זו."
-         ],
-         "Edit": [
-            "ערוך"
-         ],
-         "Edit translation": [
+         "Edit Translation": [
             "ערוך תרגום"
          ],
          "There was an error in applying translation.": [
@@ -36,20 +23,17 @@
          "Please wait, applying translation..": [
             "המתן, מחיל את התרגום."
          ],
-         "Next review": [
-            "לבדיקה הבאה"
-         ],
          "Publish this translation": [
-            "פרסם תרגום זה"
+            "פרסם תרגום זה."
          ],
          "Accept this translation": [
             "קבל תרגום זה"
          ],
-         "Published!": [
-            "פורסם!"
+         "Approved!": [
+            "אושר!"
          ],
-         "Reviewing the next translation...": [
-            "בדיקת התרגום הבא."
+         "Loading the next translation for review...": [
+            "טוען את התרגום הבא לבדיקה..."
          ]
       }
    }
