@@ -35,6 +35,7 @@ class Page extends Model {
 		'build_id'            => 'BIGINT(20) UNSIGNED NULL',
 		'post_id'             => 'BIGINT(20) UNSIGNED NULL',
 		'found_on_id'         => 'BIGINT(20) UNSIGNED NULL',
+        'site_id'             => 'BIGINT(20) UNSIGNED NULL',
 		'url'                 => 'VARCHAR(255) NOT NULL',
 		'redirect_url'        => 'TEXT NULL',
 		'file_path'           => 'VARCHAR(255) NULL',
@@ -43,6 +44,7 @@ class Page extends Model {
 		'content_hash'        => 'BINARY(20) NULL',
 		'error_message'       => 'VARCHAR(255) NULL',
 		'status_message'      => 'VARCHAR(255) NULL',
+        'handler'             => 'VARCHAR(255) NULL',
 		'last_checked_at'     => "DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'",
 		'last_modified_at'    => "DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'",
 		'last_transferred_at' => "DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'",
@@ -163,4 +165,52 @@ class Page extends Model {
 	public function is_type( $content_type ) {
 		return stripos( $this->content_type, $content_type ) !== false;
 	}
+
+    /**
+     * Return if it's a binary file.
+     *
+     * @return bool
+     */
+    public function is_binary_file() {
+        return $this->is_type('application/octet-stream') || $this->is_type('image');
+    }
+
+    public function get_handler_class() {
+        $handler = $this->handler ?? Page_Handler::class;
+
+        if ( ! class_exists( $handler ) ) {
+            $handler = '\Simply_Static\\' . $handler;
+        }
+
+        if ( ! class_exists( $handler ) ) {
+            $handler = Page_Handler::class;
+        }
+
+        return $handler;
+    }
+
+    /**
+     * Get the Page Handler based on the column saved.
+     *
+     * @return Page_Handler
+     */
+    public function get_handler() {
+        $handler_class = $this->get_handler_class();
+
+        return new $handler_class( $this );
+    }
+
+    /**
+     * Set the attributes of the model
+     *
+     * @param  array $attributes Array of attributes to set.
+     * @return static            An instance of the class.
+     */
+    public function attributes( $attributes ) {
+        if ( empty( $attributes['site_id'] ) ) {
+            $attributes['site_id'] = get_current_blog_id();
+        }
+
+        return parent::attributes( $attributes );
+    }
 }

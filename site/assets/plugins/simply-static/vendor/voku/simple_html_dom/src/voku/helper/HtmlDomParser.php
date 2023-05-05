@@ -148,6 +148,11 @@ class HtmlDomParser extends AbstractDomParser
     /**
      * @var bool
      */
+    protected $isDOMDocumentCreatedWithMultiRoot = false;
+
+    /**
+     * @var bool
+     */
     protected $isDOMDocumentCreatedWithFakeEndScript = false;
 
     /**
@@ -285,10 +290,11 @@ class HtmlDomParser extends AbstractDomParser
      *
      * @param string   $html
      * @param int|null $libXMLExtraOptions
+     * @param bool     $useDefaultLibXMLOptions
      *
      * @return \DOMDocument
      */
-    protected function createDOMDocument(string $html, $libXMLExtraOptions = null): \DOMDocument
+    protected function createDOMDocument(string $html, $libXMLExtraOptions = null, $useDefaultLibXMLOptions = true): \DOMDocument
     {
         if ($this->callbackBeforeCreateDom) {
             $html = \call_user_func($this->callbackBeforeCreateDom, $html, $this);
@@ -388,6 +394,23 @@ class HtmlDomParser extends AbstractDomParser
             $this->keepSpecialSvgTags($html);
         }
 
+        if (
+            $this->isDOMDocumentCreatedWithoutHtmlWrapper
+            &&
+            $this->isDOMDocumentCreatedWithoutBodyWrapper
+        ) {
+            if (\substr_count($html, '</') >= 2) {
+                $regexForMultiRootDetection = '#<(.*)>.*?</(\1)>#su';
+                \preg_match($regexForMultiRootDetection, $html, $matches);
+                if (($matches[0] ?? '') !== $html) {
+                    $htmlTmp = \preg_replace($regexForMultiRootDetection, '', $html);
+                    if ($htmlTmp !== null && trim($htmlTmp) === '') {
+                        $this->isDOMDocumentCreatedWithMultiRoot = true;
+                    }
+                }
+            }
+        }
+
         $html = \str_replace(
             \array_map(static function ($e) {
                 return '<' . $e . '>';
@@ -405,18 +428,21 @@ class HtmlDomParser extends AbstractDomParser
         }
         \libxml_clear_errors();
 
-        $optionsXml = \LIBXML_DTDLOAD | \LIBXML_DTDATTR | \LIBXML_NONET;
+        $optionsXml = 0;
+        if ($useDefaultLibXMLOptions) {
+            $optionsXml = \LIBXML_DTDLOAD | \LIBXML_DTDATTR | \LIBXML_NONET;
 
-        if (\defined('LIBXML_BIGLINES')) {
-            $optionsXml |= \LIBXML_BIGLINES;
-        }
+            if (\defined('LIBXML_BIGLINES')) {
+                $optionsXml |= \LIBXML_BIGLINES;
+            }
 
-        if (\defined('LIBXML_COMPACT')) {
-            $optionsXml |= \LIBXML_COMPACT;
-        }
+            if (\defined('LIBXML_COMPACT')) {
+                $optionsXml |= \LIBXML_COMPACT;
+            }
 
-        if (\defined('LIBXML_HTML_NODEFDTD')) {
-            $optionsXml |= \LIBXML_HTML_NODEFDTD;
+            if (\defined('LIBXML_HTML_NODEFDTD')) {
+                $optionsXml |= \LIBXML_HTML_NODEFDTD;
+            }
         }
 
         if ($libXMLExtraOptions !== null) {
@@ -424,6 +450,8 @@ class HtmlDomParser extends AbstractDomParser
         }
 
         if (
+            $this->isDOMDocumentCreatedWithMultiRoot
+            ||
             $this->isDOMDocumentCreatedWithoutWrapper
             ||
             $this->isDOMDocumentCreatedWithCommentWrapper
@@ -453,7 +481,6 @@ class HtmlDomParser extends AbstractDomParser
 
             // UTF-8 hack: http://php.net/manual/en/domdocument.loadhtml.php#95251
             $xmlHackUsed = false;
-            /** @noinspection StringFragmentMisplacedInspection */
             if (\stripos('<?xml', $html) !== 0) {
                 $xmlHackUsed = true;
                 $html = '<?xml encoding="' . $this->getEncoding() . '" ?>' . $html;
@@ -467,7 +494,6 @@ class HtmlDomParser extends AbstractDomParser
             if ($xmlHackUsed) {
                 foreach ($this->document->childNodes as $child) {
                     if ($child->nodeType === \XML_PI_NODE) {
-                        /** @noinspection UnusedFunctionResultInspection */
                         $this->document->removeChild($child);
 
                         break;
@@ -723,7 +749,7 @@ class HtmlDomParser extends AbstractDomParser
      */
     public function getElementByClass(string $class): SimpleHtmlDomNodeInterface
     {
-        return $this->findMulti(".${class}");
+        return $this->findMulti('.' . $class);
     }
 
     /**
@@ -735,7 +761,7 @@ class HtmlDomParser extends AbstractDomParser
      */
     public function getElementById(string $id): SimpleHtmlDomInterface
     {
-        return $this->findOne("#${id}");
+        return $this->findOne('#' . $id);
     }
 
     /**
@@ -766,7 +792,7 @@ class HtmlDomParser extends AbstractDomParser
      */
     public function getElementsById(string $id, $idx = null)
     {
-        return $this->find("#${id}", $idx);
+        return $this->find('#' . $id, $idx);
     }
 
     /**
@@ -837,12 +863,13 @@ class HtmlDomParser extends AbstractDomParser
      *
      * @param string   $html
      * @param int|null $libXMLExtraOptions
+     * @param bool     $useDefaultLibXMLOptions
      *
      * @return $this
      */
-    public function loadHtml(string $html, $libXMLExtraOptions = null): DomParserInterface
+    public function loadHtml(string $html, $libXMLExtraOptions = null, $useDefaultLibXMLOptions = true): DomParserInterface
     {
-        $this->document = $this->createDOMDocument($html, $libXMLExtraOptions);
+        $this->document = $this->createDOMDocument($html, $libXMLExtraOptions, $useDefaultLibXMLOptions);
 
         return $this;
     }
@@ -852,19 +879,20 @@ class HtmlDomParser extends AbstractDomParser
      *
      * @param string   $filePath
      * @param int|null $libXMLExtraOptions
+     * @param bool     $useDefaultLibXMLOptions
      *
      * @throws \RuntimeException
      *
      * @return $this
      */
-    public function loadHtmlFile(string $filePath, $libXMLExtraOptions = null): DomParserInterface
+    public function loadHtmlFile(string $filePath, $libXMLExtraOptions = null, $useDefaultLibXMLOptions = true): DomParserInterface
     {
         if (
             !\preg_match("/^https?:\/\//i", $filePath)
             &&
             !\file_exists($filePath)
         ) {
-            throw new \RuntimeException("File ${filePath} not found");
+            throw new \RuntimeException('File ' . $filePath . ' not found');
         }
 
         try {
@@ -874,14 +902,14 @@ class HtmlDomParser extends AbstractDomParser
                 $html = \file_get_contents($filePath);
             }
         } catch (\Exception $e) {
-            throw new \RuntimeException("Could not load file ${filePath}");
+            throw new \RuntimeException('Could not load file ' . $filePath);
         }
 
         if ($html === false) {
-            throw new \RuntimeException("Could not load file ${filePath}");
+            throw new \RuntimeException('Could not load file ' . $filePath);
         }
 
-        return $this->loadHtml($html, $libXMLExtraOptions);
+        return $this->loadHtml($html, $libXMLExtraOptions, $useDefaultLibXMLOptions);
     }
 
     /**
@@ -961,6 +989,14 @@ class HtmlDomParser extends AbstractDomParser
     public function getIsDOMDocumentCreatedWithoutBodyWrapper(): bool
     {
         return $this->isDOMDocumentCreatedWithoutBodyWrapper;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsDOMDocumentCreatedWithMultiRoot(): bool
+    {
+        return $this->isDOMDocumentCreatedWithMultiRoot;
     }
 
     /**

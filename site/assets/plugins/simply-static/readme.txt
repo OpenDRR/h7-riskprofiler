@@ -2,9 +2,9 @@
 Contributors: patrickposner
 Tags: HTML, static website generator, static site, secure, fast
 Requires at least: 5.4
-Tested up to: 5.9
+Tested up to: 6.2
 Requires PHP: 7.4
-Stable tag: 2.1.5.7
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,25 +47,32 @@ Develop your site locally and only push the static exported website on a server.
 
 I highly recommend not to use another tool for local development if you are not a programmer as in most cases manual package installation is required.
 
+== Simply CDN ==
 
-== Simply Static Hosting ==
+Simply CDN is a hosting platform for static sites generated with Simply Static.
 
-Do you need an all-in-one solution to export and deploy your static website with Simply Static?
+Create an account, copy & paste the Security Token into Simply Static, and immediately push your static website live.
 
-[Simply Static Hosting](https://simplystatic.io) covers the entire process from securing your WordPress website and making it only accessible to logged-in users
-to deploying your static website to a powerful CDN for maximum security and performance. It also handles RSS-Feeds, Comments, Forms, Search, Caching, and more for you.
+[youtube https://youtu.be/7ejlvDxXMXM]
 
-The installations are completely configured for you, and you can also request a migration of your current website free of charge.
+Simply CDN also ships with a bunch of features to simplify the process of working with your static website:
 
-This solution is mainly dedicated to non-technical users that like to get the benefits of running WordPress static, but don't have the time or knowledge to configure everything by themself.
+* handles caching and security
+* temporary domains for setup and testing
+* forward form submissions to your e-mail address
+* handles 404 pages with a custom template
+* automatically export changes in the background
 
-If you like to go the self-hosted way and you can configure deployment and your server, I would recommend going with [Simply Static Pro](https://patrickposner.dev/plugins/simply-static)
-to enhance Simply Static with solutions to handle deployment via GitHub or CDN, forms, search, and CORS for you.
+It's built on BunnyCDN and combines affordable static site hosting with everything learned while developing Simply Static.
+
+Start your 7-day free trial [here](https://simplycdn.io/#pricing).
 
 
 == Simply Static Pro ==
 
 The pro version of Simply Static enhances the plugin with various features.
+
+[youtube https://www.youtube.com/watch?v=PwdO6B7Iet0]
 
 = GitHub Integration =
 
@@ -84,7 +91,6 @@ This allows deploying your static website to:
 * BunnyCDN (and other CDN providers)
 * SFTP to your server
 
-Learn more about that [here](https://patrickposner.dev/docs/simply-static/github)
 
 = Builds and Single Exports =
 
@@ -94,7 +100,6 @@ Never sit back and watch a full static export running, instead run a complete ex
 
 You can also export single pages/posts after changed something.
 
-Learn more about that [here](https://patrickposner.dev/docs/simply-static/builds)
 
 = Forms =
 
@@ -102,7 +107,6 @@ Simply Static Pro supports Contact Form 7 and Gravity Forms to use on your stati
 
 You can decide if you want to use an external service like Zapier and IFTTT or if your original WordPress website should handle the submission and send you an e-mail with all the details.
 
-Learn more about that [here](https://patrickposner.dev/docs/simply-static/forms)
 
 = Search =
 
@@ -110,7 +114,6 @@ Use a fully static search solution that does not rely on any Third-Party-Provide
 
 The search supports autosuggestion and fuzzy logic and is by default way more convenient than your default WordPress search.
 
-Learn more about that [here](https://patrickposner.dev/docs/simply-static/search)
 
 = Comments =
 
@@ -118,17 +121,23 @@ Enable comments on your static website without the requirement of Third-Party-Pr
 
 After a comment was submitted, Simply Static automatically exports a new static version of the post. You don't have to do anything.
 
-Learn more about that [here](https://patrickposner.dev/docs/simply-static/search)
+
+= Multilingual =
+
+Use WPML, Polylang or TranslatePress and run static exports per language or all at once.
+
+Simply Static Pro also supports configuring settings per language, using the available language switchers and more to export a your multilingual website as easy as possible.
+
 
 = Get the Pro version =
 
-You can get the pro version [here](https://patrickposner.dev/plugins/simply-static/).
+You can get the pro version [here](https://simplystatic.com/simply-static-pro/).
 
 = Tutorials =
 
 I publish new tutorials on how to work with Simply Static and other tools on my blog.
 
-You can check the current tutorials [here](https://patrickposner.dev/tag/simply-static/)
+You can check the current tutorials [here](https://simplystatic.com/tutorials/)
 
 
 == Installation ==
@@ -190,6 +199,141 @@ Simply Static creates a static copy of your WordPress site that is intended to b
 3. Diagnostics
 
 == Changelog ==
+
+= 2.3.0 =
+
+* fix for Yoast sitemap inclusion
+* better approach to extract URLs from HTML
+* added support for WP-CLI integration
+* better task handling with ajax and WP-Cron with progress without reload
+* better quote handling in JSON
+* improved SimplyCDN integration and security token handling
+* fix for redirect pages by removing query args before saving
+* fix for Elementor Pro for data attributes
+
+= 2.2.9 =
+
+* constants for Simply CDN implemented
+* remaining pages as argument in fetch URLs task
+* fixed log updates if running with WP-Cron
+* match_tags improvements for lazyload
+* fixed inline CSS extraction to avoid trailingslash for hexcodes
+
+= 2.2.8 =
+
+* SimplyCDN form improvement for Elementor forms
+* reset settings now in Advanced tab
+* removed unused settings for MU integration
+* added <span> tags to match_tags list
+* improved XML Sitemap handling with Yoast SEO
+* lowered min cURL version in diagnostics
+
+= 2.2.7 =
+
+* SimplyCDN integration
+* added hooks for multisite integration
+* Elementor Pro support (Lottie files and videos)
+* fixed log time with correct timezone
+* removed WP-Cron option, now handled automatically
+
+= 2.2.6 =
+
+* fixed typo in CookieYes integration class
+
+= 2.2.5 =
+
+* integration for CookieYes GPDR plugin
+* integration for Brizy Builder (image extraction)
+* fixed 301 redirections with Redirection plugin
+* fallback solution for existing pages not being crawled due to URL parameter
+
+= 2.2.4 =
+
+* reverted blackslash extraction producing invalid markup in CSS + JS
+* remember configuration for destination (while switching options)
+* unique nonce for Simply Static Ajax request to fix conflict with MiniOrange SSL On plugin
+* removed simply_static_page query parameters from URL on static site
+* automatically remove quotation marks on save additional URL/File
+
+= 2.2.3 =
+
+* min PHP version increased to 7.4
+* ability to include files without filetype (_header)
+* Elementor support for bundled JS files
+* improved URL extraction in JS and HTML files
+
+= 2.2.2 =
+
+* XML Sitemap auto-include for Yoast
+* XML Sitemap auto-include for RankMath
+* XML Sitemap auto-include for AllInOneSEO
+* XML Sitemap auto-include for SEOPress
+
+= 2.2.1.1 =
+
+* improved path conversion for Windows
+* more fail-safe check for deleting local directory before export
+* WPCS code style updates
+
+= 2.2.1 =
+
+* fixed path resolution on local path exports
+
+= 2.2 =
+
+* improved URL replacement in script tags
+* fixed clear directory before export when using local path exports
+* added action fired after ZIP file created
+* fixed path replacement for Windows filesystems in Additional Files and Directories
+* untrailingslash path on transfer files locally
+
+= 2.1.9 =
+
+* flag for cron execution with UNIX cron
+* additional save button in advanced settings
+* added filter to change the zip file name
+* increased refresh time for Ajax ping
+
+= 2.1.8 =
+
+* new option to replace URLs with regex
+* new option to clear local directory before running a new export
+* decreased default batch size to prevent timeouts
+* decreased ping timer for faster log views
+* added filter to modify remote_get arguments
+* add actions to send messages/notifications based on task progress (ss_completed)
+
+= 2.1.7.1 =
+
+* added exception handling for <style> and <script> tag extractions
+
+= 2.1.7 =
+
+* improved Basic Auth handling allowing access for external APIs
+* parse content of script tags for URL replacements
+* improved tags with HTML5 tags for header, footer, section and figure
+* added style attributes to match_tags for a, div, section and more
+
+= 2.1.6 =
+
+* adding <link> and <meta> tags to extractor class
+* validating URLs in meta tags and update them
+
+= 2.1.5.9 =
+
+* better decoding/encoding of URLs
+* added filter to modify default file extension
+* improved tag based extraction and removed catch all
+* added <picture> tags to extractor
+* increased default batch size
+* file path check improvements
+
+= 2.1.5.8 =
+
+* added SSL to diagnostics
+* added filter for origin URL
+* increased general ping time
+* Windows support: replacing paths
 
 = 2.1.5.7 =
 

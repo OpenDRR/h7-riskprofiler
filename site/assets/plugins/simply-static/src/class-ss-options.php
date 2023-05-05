@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Options {
 	/**
 	 * Singleton instance
-	 * @var Simply_Static\Options
+	 * @var \Simply_Static\Options
 	 */
 	protected static $instance = null;
 
@@ -48,7 +48,9 @@ class Options {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 
-			$options = apply_filters( 'ss_get_options', get_option( Plugin::SLUG ) );
+            $db_options = get_option( Plugin::SLUG );
+
+			$options = apply_filters( 'ss_get_options', $db_options );
 			if ( false === $options ) {
 				$options = array();
 			}
@@ -72,10 +74,22 @@ class Options {
 	 * Updates the option identified by $name with the value provided in $value
 	 * @param string $name The option name
 	 * @param mixed $value The option value
-	 * @return Simply_Static\Options
+	 * @return \Simply_Static\Options
 	 */
 	public function set( $name, $value ) {
 		$this->options[ $name ] = $value;
+		return $this;
+	}
+
+	/**
+	 * Set all options.
+	 *
+	 * @param array $options All options.
+	 *
+	 * @return \Simply_Static\Options
+	 */
+	public function set_options( $options ) {
+		$this->options = $options;
 		return $this;
 	}
 
@@ -96,7 +110,7 @@ class Options {
             (
                 defined('SIMPLY_STATIC_' . strtoupper( $name ) ) ?
                 constant('SIMPLY_STATIC_' . strtoupper( $name ) ) :
-                $this->options[ $name ]
+                apply_filters( 'ss_get_option_' . strtolower( $name ), $this->options[ $name ], $this )
             )
             : null;
 	}
@@ -128,7 +142,7 @@ class Options {
 	 * @return boolean
 	 */
 	public function save() {
-		return update_option( Plugin::SLUG, $this->options );
+		return is_network_admin() ? update_site_option( Plugin::SLUG, $this->options ) : update_option( Plugin::SLUG, $this->options );
 	}
 
 	/**
@@ -136,7 +150,7 @@ class Options {
 	 * @return string The path to the temp static archive directory
 	 */
 	public function get_archive_dir() {
-		return Util::add_trailing_directory_separator( $this->get( 'temp_files_dir' ) . $this->get( 'archive_name' ) );
+		return Util::add_trailing_directory_separator( $this->get( 'temp_files_dir' ) . apply_filters( 'ss_archive_file_name', $this->get( 'archive_name' ) ) );
 	}
 
 	/**
@@ -144,6 +158,15 @@ class Options {
 	 * @return string The destination URL
 	 */
 	public function get_destination_url() {
-		return $this->get( 'destination_scheme' ) . $this->get( 'destination_host' );
+
+        switch ( $this->get( 'destination_url_type' ) ) {
+            case 'absolute':
+                return $this->get( 'destination_scheme' ) . $this->get( 'destination_host' );
+                break;
+            case 'relative':
+                return $this->get( 'relative_path' );
+        }
+
+		return './';
 	}
 }

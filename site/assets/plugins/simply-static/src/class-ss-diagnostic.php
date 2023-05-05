@@ -16,8 +16,8 @@ class Diagnostic {
 
 	/** @const */
 	protected static $min_version = array(
-		'php' => '7.2.5',
-		'curl' => '7.15.0'
+		'php' => '7.4',
+		'curl' => '7.68.0'
 	);
 
 	/**
@@ -25,7 +25,9 @@ class Diagnostic {
 	 * @var array
 	 */
 	protected $description = array(
-		'URLs' => array(),
+		'URLs' => array(
+			array( 'function' => 'is_ssl' )
+		),
 		'Filesystem' => array(
 			array( 'function' => 'is_temp_files_dir_readable' ),
 			array( 'function' => 'is_temp_files_dir_writeable' )
@@ -119,6 +121,13 @@ class Diagnostic {
 		);
 	}
 
+	public function is_ssl() {
+		return array(
+			'label' => esc_html__('Checking if website has an SSL certificate (HTTPS)', 'simply-static' ),
+			'test' => is_ssl()
+		);
+	}
+
 	public function is_additional_url_valid( $url ) {
 		$label    = sprintf( __( 'Checking if Additional URL <code>%s</code> is valid', 'simply-static' ), $url );
 		$response = Url_Fetcher::remote_get( $url );
@@ -136,7 +145,7 @@ class Diagnostic {
 		if ( stripos( $file, get_home_path() ) !== 0 && stripos( $file, WP_PLUGIN_DIR ) !== 0 && stripos( $file, WP_CONTENT_DIR ) !== 0 ) {
 			$test = false;
 			$message = __( 'Not a valid path', 'simply-static' );
-		} else if ( ! is_readable( $file ) ) {
+		} elseif ( ! is_readable( $file ) ) {
 			$test = false;
 			$message = __( 'Not readable', 'simply-static' );;
 		} else {
@@ -162,7 +171,7 @@ class Diagnostic {
 	public function is_wp_cron_running() {
 		$label = __( 'Checking if WordPress cron is available and running', 'simply-static' );
 
-		if ( ! defined( 'DISABLE_WP_CRON' ) || DISABLE_WP_CRON !== true ) {
+		if ( ! defined( 'DISABLE_WP_CRON' ) || DISABLE_WP_CRON !== true || defined( 'SS_CRON' ) ) {
 			$is_cron = true;
 		} else {
 			$is_cron = false;
