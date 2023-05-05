@@ -1870,7 +1870,7 @@ function significant_figs ( $num ) {
 		
 		// $rounded_num = (round($num, -7).toFixed(0) * 10) + ' million'
 		
-		$rounded_num = ( number_format ( round_pow ( $num, -7 ), 1, $decimal, $thousands ) * 10 ) . ' ' . __ ( 'million', 'rp' );
+		$rounded_num = ( ( (int) round_pow ( $num, -7 ) ) * 10 ) . ' ' . __ ( 'million', 'rp' );
 		
 	} else if ($num < 10000000000) {
 		
