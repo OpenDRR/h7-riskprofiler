@@ -5,7 +5,7 @@
 	
 	$lang = 'en';
 	
-	if ( isset ( $_GET['lang'] ) ) {
+	if ( isset ( $_GET['lang'] ) && $_GET['lang'] != 'en' ) {
 		
 		do_action ( 'wpml_switch_language', $_GET['lang'] );
 		
@@ -209,7 +209,7 @@
 									'</span>'
 								);
 							
-						  ?></p>
+							?></p>
 
 							<div id="risk-detail-chart" class="chart"></div>
 
