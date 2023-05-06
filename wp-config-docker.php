@@ -145,6 +145,13 @@ define( 'WP_DISABLE_FATAL_ERROR_HANDLER', true );
 // Prevent WordPress automatic update in the middle of Simply Static export
 define( 'AUTOMATIC_UPDATER_DISABLED', true );
 
+// Ensure the WPML MO files are refreshed with the latest string translations
+// in the WordPress database when we export the website with Simply Static.
+// Not intended for a live WordPress site due to performance penalty. See:
+// - https://wpml.org/forums/topic/rebuild-all-mo-files-from-the-string-translation-database/
+// - https://wpml.org/documentation/getting-started-guide/string-translation/finding-strings-that-dont-appear-on-the-string-translation-page/#synchronizing-translation-files-for-sites-running-on-multiple-servers
+define( 'WPML_ST_SYNC_TRANSLATION_FILES', true );
+
 /* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */
