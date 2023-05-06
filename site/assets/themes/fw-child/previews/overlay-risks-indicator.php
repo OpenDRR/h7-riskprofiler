@@ -95,7 +95,12 @@
 
 		}
 
+		$risks_path_segment = 'risks';
+	        if ( apply_filters ( 'wpml_current_language', NULL ) == 'fr' ) {
+			$risks_path_segment = 'risques';
+		}
+
 	?>
 >
-	<a href="<?php echo $GLOBALS['vars']['site_url']; ?>risks/#<?php echo get_field ( 'indicator_key', $item['id'] ); ?>" class="risk-var-link d-block p-2"><span class="item-title"><?php echo $item['title']; ?></span><span class="item-description"><?php the_field ( 'description', $item['id'] ); ?></span></a>
+	<a href="<?php echo $GLOBALS['vars']['site_url'] . $risks_path_segment . '/#' . get_field ( 'indicator_key', $item['id'] ); ?>" class="risk-var-link d-block p-2"><span class="item-title"><?php echo $item['title']; ?></span><span class="item-description"><?php the_field ( 'description', $item['id'] ); ?></span></a>
 </div>
