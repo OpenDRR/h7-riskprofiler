@@ -28,7 +28,7 @@ jobs:
           gh run watch --repo OpenDRR/h7-framework "$RUN_ID"
 
       - name: "Checkout our own repo: OpenDRR/h7-riskprofiler"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
           token: ${{ secrets.GH_PAT }}
