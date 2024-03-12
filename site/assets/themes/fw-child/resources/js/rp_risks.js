@@ -1023,10 +1023,12 @@ var color_ramp = [
 
 			}
 
-			if (map.hasLayer(plugin_settings.map.layers.fsa)) {
-				plugin_settings.map.panes.fsa.style.display = 'none'
-				// map.removeLayer(plugin_settings.map.layers.fsa)
-			}
+			/* 2023-11-23: Commented out to keep huge FSA (e.g. "V0R") visible even if zoomed out to CSD aggregation;
+			 * see https://github.com/OpenDRR/riskprofiler/issues/125 */
+			// if (map.hasLayer(plugin_settings.map.layers.fsa)) {
+			// 	plugin_settings.map.panes.fsa.style.display = 'none'
+			// 	// map.removeLayer(plugin_settings.map.layers.fsa)
+			// }
 
 			var indicator_key = plugin_settings.indicator.key + '_' + plugin_settings.api.retrofit
 
@@ -1854,7 +1856,9 @@ var color_ramp = [
 
 										plugin_settings.map.layers.fsa = new L.GeoJSON(source, {
 											style: {
-												fill: false,
+												fill: true,
+												fillColor: '#FF0000',
+												fillOpacity: 0.15,
 												color: '#FF0000',
 												weight: 4,
 												opacity: 0.6
