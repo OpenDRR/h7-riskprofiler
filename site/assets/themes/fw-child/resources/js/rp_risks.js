@@ -1855,8 +1855,8 @@ var color_ramp = [
 										plugin_settings.map.layers.fsa = new L.GeoJSON(source, {
 											style: {
 												fill: false,
-												color: '#000000',
-												weight: 2,
+												color: '#FF0000',
+												weight: 4,
 												opacity: 0.6
 											},
 											pane: 'fsa'
