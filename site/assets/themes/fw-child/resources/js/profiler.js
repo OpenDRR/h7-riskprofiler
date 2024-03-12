@@ -1,5 +1,6 @@
 const geoapi_url = 'https://geo-api.riskprofiler.ca'
-const pbf_url = 'https://riskprofiler.ca'
+// const pbf_url = 'https://riskprofiler.ca'
+const pbf_url = 'https://riskprofiler-ca.github.io'
 const api_url = 'https://api.riskprofiler.ca'
 
 // scenario profiler
