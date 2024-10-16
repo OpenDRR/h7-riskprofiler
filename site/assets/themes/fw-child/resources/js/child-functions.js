@@ -15,6 +15,15 @@ var child_logging = true
 
     $(document).data('child_theme_dir', child_theme_dir)
 
+		// Scroll event handler
+		$(window).scroll(function() {		
+			if ($(this).scrollTop() > 50) {
+				$('#main-header').css('background-color', 'rgba(236, 241, 244, 1)');
+			} else {
+				$('#main-header').css('background-color', 'rgba(236, 241, 244, 0.5)');
+			}
+		});
+	
 		//
 		// HEADER
 		//
@@ -189,9 +198,7 @@ var child_logging = true
 			})
 			
 		}
-
     if (child_logging == true) {
-		console.log('im here')
       console.log('end of child-functions.js')
       console.log('- - - - -')
     }
