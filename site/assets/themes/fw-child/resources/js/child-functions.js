@@ -191,6 +191,7 @@ var child_logging = true
 		}
 
     if (child_logging == true) {
+		console.log('im here')
       console.log('end of child-functions.js')
       console.log('- - - - -')
     }
