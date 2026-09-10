@@ -243,17 +243,18 @@ var color_ramp = [
 			// BASEMAP
 
 			var current_year = new Date().getFullYear()
-			var basemap_URL = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&region=CA'
+			var basemap_URL = 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&gl=ca'
 			var basemap_att = 'Map data © ' + current_year + ' Google | <a href="https://www.google.com/intl/en_ca/help/terms_maps/" target="_blank">Terms of use</a>'
 
 			if ($('body').hasClass('lang-fr')) {
 				basemap_URL += '&hl=fr-CA'
 				basemap_att = 'Données cartographiques © ' + current_year + ' Google | <a href="https://www.google.com/intl/fr_ca/help/terms_maps/" target="_blank">Conditions d’utilisation</a>'
 			} else {
-				basemap_URL += '&hl=en'
+				basemap_URL += '&hl=en-CA'
 			}
 
 			L.tileLayer(basemap_URL, {
+				subdomains: ['0', '1', '2', '3'],
 				attribution: basemap_att
 			}).addTo(map)
 
