@@ -36,7 +36,7 @@ jobs:
           fi
 
           sleep 10
-          RUN_ID=$(gh run list --repo OpenDRR/h7-framework --limit 1 --json databaseId --template '{{range .}}{{tablerow .databaseId}}{{end}}')
+          RUN_ID=$(gh run list --repo OpenDRR/h7-framework --workflow sync.yml --branch gh-workflows --event workflow_dispatch --limit 1 --json databaseId --template '{{range .}}{{tablerow .databaseId}}{{end}}')
           gh run watch --repo OpenDRR/h7-framework "$RUN_ID" || \
             echo 'WARNING: Unable to watch OpenDRR/h7-framework sync; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
 
