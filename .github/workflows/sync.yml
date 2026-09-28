@@ -41,8 +41,13 @@ jobs:
             echo 'WARNING: Unable to find the triggered OpenDRR/h7-framework sync run; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          gh run watch --repo OpenDRR/h7-framework "$RUN_ID" || \
+          if ! gh run watch --repo OpenDRR/h7-framework --exit-status "$RUN_ID"; then
+            RUN_CONCLUSION=$(gh run view --repo OpenDRR/h7-framework "$RUN_ID" --json conclusion --template '{{.conclusion}}' 2>/dev/null || true)
+            if [[ -n "$RUN_CONCLUSION" && "$RUN_CONCLUSION" != "success" ]]; then
+              exit 1
+            fi
             echo 'WARNING: Unable to watch OpenDRR/h7-framework sync; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: "Checkout our own repo: OpenDRR/h7-riskprofiler"
         uses: actions/checkout@v4
