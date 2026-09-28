@@ -43,8 +43,9 @@ jobs:
             exit 0
           fi
           if ! gh run watch --repo OpenDRR/h7-framework --exit-status "$RUN_ID"; then
+            RUN_STATUS=$(gh run view --repo OpenDRR/h7-framework "$RUN_ID" --json status --template '{{.status}}' 2>/dev/null || true)
             RUN_CONCLUSION=$(gh run view --repo OpenDRR/h7-framework "$RUN_ID" --json conclusion --template '{{.conclusion}}' 2>/dev/null || true)
-            if [[ -n "$RUN_CONCLUSION" && "$RUN_CONCLUSION" != "success" ]]; then
+            if [[ "$RUN_STATUS" == "completed" && -n "$RUN_CONCLUSION" && "$RUN_CONCLUSION" != "success" ]]; then
               exit 1
             fi
             echo 'WARNING: Unable to watch OpenDRR/h7-framework sync; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
