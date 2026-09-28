@@ -30,15 +30,16 @@ jobs:
             exit 0
           fi
 
-          if ! gh workflow run sync.yml --repo OpenDRR/h7-framework --ref gh-workflows; then
+          if ! DISPATCH_OUTPUT=$(gh workflow run sync.yml --repo OpenDRR/h7-framework --ref gh-workflows 2>&1); then
             echo 'WARNING: Unable to trigger OpenDRR/h7-framework sync; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
-          sleep 10
-          RUN_ID=$(gh run list --repo OpenDRR/h7-framework --workflow sync.yml --branch gh-workflows --event workflow_dispatch --limit 1 --json databaseId --template '{{range .}}{{tablerow .databaseId}}{{end}}')
-          if [[ -z "$RUN_ID" ]]; then
-            echo 'WARNING: Unable to find the triggered OpenDRR/h7-framework sync run; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
+          if [[ "$DISPATCH_OUTPUT" =~ /actions/runs/([0-9]+) ]]; then
+            RUN_ID="${BASH_REMATCH[1]}"
+          fi
+          if [[ -z "${RUN_ID:-}" ]]; then
+            echo 'WARNING: Unable to determine the triggered OpenDRR/h7-framework sync run id; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           if ! gh run watch --repo OpenDRR/h7-framework --exit-status "$RUN_ID"; then
