@@ -1,5 +1,8 @@
 name: Sync with H7
 
+permissions:
+  contents: write
+
 on:
   #push:
   #  branches: [gh-workflows]
@@ -22,16 +25,26 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           set -x
-          gh workflow run sync.yml --repo OpenDRR/h7-framework --ref gh-workflows
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo 'WARNING: `GH_PAT` is not configured; skipping OpenDRR/h7-framework sync.' | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          if ! gh workflow run sync.yml --repo OpenDRR/h7-framework --ref gh-workflows; then
+            echo 'WARNING: Unable to trigger OpenDRR/h7-framework sync; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
           sleep 10
           RUN_ID=$(gh run list --repo OpenDRR/h7-framework --limit 1 --json databaseId --template '{{range .}}{{tablerow .databaseId}}{{end}}')
-          gh run watch --repo OpenDRR/h7-framework "$RUN_ID"
+          gh run watch --repo OpenDRR/h7-framework "$RUN_ID" || \
+            echo 'WARNING: Unable to watch OpenDRR/h7-framework sync; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: "Checkout our own repo: OpenDRR/h7-riskprofiler"
         uses: actions/checkout@v4
         with:
           ref: main
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ github.token }}
           fetch-depth: 0
 
       - name: Fetch and merge latest commits from upstream, and push to GitHub
