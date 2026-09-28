@@ -30,14 +30,20 @@ jobs:
             exit 0
           fi
 
-          if ! DISPATCH_OUTPUT=$(gh workflow run sync.yml --repo OpenDRR/h7-framework --ref gh-workflows 2>&1); then
+          TRIGGERED_AT=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+          if ! gh api --method POST repos/OpenDRR/h7-framework/actions/workflows/sync.yml/dispatches -f ref=gh-workflows; then
             echo 'WARNING: Unable to trigger OpenDRR/h7-framework sync; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
-          if [[ "$DISPATCH_OUTPUT" =~ /actions/runs/([0-9]+) ]]; then
-            RUN_ID="${BASH_REMATCH[1]}"
-          fi
+          sleep 10
+          RUN_ID=$(
+            gh api --method GET repos/OpenDRR/h7-framework/actions/workflows/sync.yml/runs -f branch=gh-workflows -f event=workflow_dispatch -f per_page=20 --jq '.workflow_runs[] | [.created_at, .id, .actor.login] | @tsv' |
+              awk -v triggered_at="$TRIGGERED_AT" -v actor="$GITHUB_ACTOR" '$3 == actor && $1 >= triggered_at {print $1 "\t" $2}' |
+              sort |
+              head -n 1 |
+              cut -f 2
+          )
           if [[ -z "${RUN_ID:-}" ]]; then
             echo 'WARNING: Unable to determine the triggered OpenDRR/h7-framework sync run id; continuing with the local sync.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
