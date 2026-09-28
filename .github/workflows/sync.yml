@@ -39,7 +39,7 @@ jobs:
 
           sleep 10
           RUN_ID=$(
-            gh api --method GET repos/OpenDRR/h7-framework/actions/workflows/sync.yml/runs -f branch=gh-workflows -f event=workflow_dispatch -f per_page=20 --jq '.workflow_runs[] | [.created_at, .id, .actor.login] | @tsv' |
+            gh api --method GET repos/OpenDRR/h7-framework/actions/workflows/sync.yml/runs -f branch=gh-workflows -f event=workflow_dispatch -f per_page=100 --jq '.workflow_runs[] | [.created_at, .id, .actor.login] | @tsv' |
               awk -v triggered_at="$TRIGGERED_AT" -v actor="$GH_LOGIN" '$3 == actor && $1 >= triggered_at {print $1 "\t" $2}' |
               sort -r |
               head -n 1 |
